@@ -1,0 +1,112 @@
+#!/usr/bin/python
+#coding:utf-8
+
+import os
+import sys
+import getopt
+import cx_Oracle
+import MySQLdb
+import threading
+import subprocess
+from concurrent.futures import ThreadPoolExecutor
+from concurrent import futures
+
+def usage():
+    print("Usage:%s [--help|--sqlplusPath|--oracleUser|--oracleHost|--oraclePort|--oracleSid|--oraclePassword] args...." % sys.argv[0])
+
+
+if __name__ == "__main__":
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], [], ["help", "sqlplusPath=", "oracleUser=", "oracleHost=", "oraclePort=", "oracleSid=", "oraclePassword="])
+        for opt, arg in opts:
+            if opt == ("--help"):
+                usage()
+                sys.exit(1)
+            elif opt == ("--sqlplusPath"):
+                sqlplusPath = arg
+            elif opt == ("--oracleUser"):
+                oracleUser = arg
+            elif opt == ("--oracleHost"):
+                oracleHost = arg
+            elif opt == ("--oraclePort"):
+                oraclePort = arg
+            elif opt == ("--oracleSid"):
+                oracleSid = arg
+            elif opt == ("--oraclePassword"):
+                oraclePassword = arg
+
+    except getopt.GetoptError:
+        print("getopt error!")
+        usage()
+        sys.exit(1)
+
+    jobCnf = """
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "oraclereader", 
+                    "parameter": {
+                        "column": [colList],
+                        "connection": [
+                            {
+                            "jdbcUrl": ["jdbc:oracle:thin:@10.0.0.114:1521:orcl"], 
+                            "querySql": ["qSQL"]
+                            }
+                        ], 
+                        "password": "sgpms_ln_all", 
+                        "username": "sgpms_ln_all"
+                    }
+                }, 
+                "writer": {
+                    "name": "mysqlwriter", 
+                    "parameter": {
+                        "column": [colList],
+                        "connection": [
+                            {
+                                "jdbcUrl": "jdbc:mysql://10.0.0.216:23306/sgpms_ln", 
+                                "table": ["tableName"]
+                            }
+                        ], 
+                        "password": "DBScale!123456", 
+                        "preSql": [], 
+                        "session": [], 
+                        "username": "dbscale", 
+                        "writeMode": "insert"
+                    }
+                }
+            }
+        ], 
+        "setting": {
+            "speed": {
+                "channel": "10",
+            }
+        }
+    }
+}
+"""
+    """ Create Oracle connection """
+    oracleDSN = "{user}/{password}@{host}:{port}/{sid}".format(user = oracleUser, password = oraclePassword, host = oracleHost, port = oraclePort, sid = oracleSid)
+    oracleConn = cx_Oracle.connect(oracleDSN,threaded=True)
+    oracleCursor = oracleConn.cursor()
+
+    """ Get table name """
+
+    #tableList = ["A_RCVBL_ENTRY", "ARC_E_PL_AMT", "A_RCVED_PL_FLOW", "ARC_E_CONS_SNAP", "A_PAY_FLOW", "A_RCVBL_PL_FLOW", "ARC_R_DATA", "A_RCVBL_FLOW", "ARC_E_MP_PARA_SNAP", "ARC_E_CONS_PRC_AMT", "A_RCVED_FLOW", "ARC_E_CONSPRC_SNAP", "ARC_E_MP_PQ", "A_PREPAY_FLOW", "A_ACCT_ENTRY", "R_EXCP_HANLE", "ARC_E_KWH_AMT", "ARC_E_CONSPRC_TACTIC_SNAP", "SA_WORKFORM_INST_HISTORY",  "NEW_SA_LOG_ALTER_HISTORY", "RT_ACTINST", "RT_ACTINST_DATA"]
+    tableList = ["P_SMS_SEND", "A_INV_IO", "O_PAY_DAY", "D_METER_ERR", "O_CONS_PQ_AMT", "NEW_SA_MSG_RECEIVE_HIS", "A_INV", "RT_WORKITEMINST"]
+
+    for eachTable in tableList:
+        sql = "SELECT LISTAGG(column_name, ', ') WITHIN GROUP(ORDER BY COLUMN_ID) FROM (SELECT COLUMN_ID, '\"' || column_name || '\"' as column_name from user_tab_cols WHERE table_name='{tableName}')".format(tableName = eachTable)
+        oracleCursor.execute(sql)
+        colList = oracleCursor.fetchall()[0][0]
+        sql = "select no_where || ' partition(' || dt.partition_name || ') t' from (select 'select /*+ parallel(t,2) */ ' || listagg || ' from ' || table_name no_where from (select table_name, LISTAGG(column_name, ',') WITHIN GROUP(ORDER BY COLUMN_ID) LISTAGG from (select table_name, column_id, column_name as column_name from user_tab_columns where table_name = '{tableName}' order by 2 desc) group by table_name)), user_tab_partitions dt where dt.table_name = '{tableName}';".format(tableName = eachTable)
+        oracleCursor.execute(sql)
+        for num, eachSQL in enumerate(oracleCursor.fetchall()):
+            jobCnfN = jobCnf.replace("tableName", eachTable).replace("colList", colList).replace("qSQL",eachSQL[0])
+            cnfName = eachTable + str(num) + ".job"
+            with open(cnfName, 'w') as f:
+                f.write(jobCnfN)
+
+    oracleCursor.close()
+    oracleConn.close()

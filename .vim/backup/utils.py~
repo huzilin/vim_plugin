@@ -1,0 +1,83 @@
+# coding=utf-8
+
+import logging
+import MySQLdb
+import time
+
+from os import listdir, sep
+from os.path import abspath, basename, isdir
+
+
+LOG = logging.getLogger(__name__)
+
+
+def mysql_query(host, port=3306, user='',
+                passwd='', db='', sql=''):
+    if not sql:
+        return {'code': 1, 'msg': 'No sql statement received.'}
+    conn = None
+    cur = None
+    try:
+        conn = MySQLdb.connect(
+            host=host,
+            port=port,
+            user=user,
+            passwd=passwd,
+            charset='utf8',
+            connect_timeout=3
+        )
+        cur = conn.cursor()
+        start_time = time.time()
+        cur.execute(sql)
+        conn.commit()
+        end_time = time.time()
+        rows = list(cur.fetchall())
+        cols = [col[0] for col in cur.description]
+        execute_time = round(end_time - start_time, 2)
+        if execute_time < 60:
+            display_time = str(execute_time) + ' sec'
+        elif execute_time < 3600:
+            minute = str(int(execute_time) // 60)
+            sec = str(round(execute_time % 60, 2))
+            display_time = minute + ' min ' + sec + ' sec'
+        else:
+            hr = str(int(execute_time) // 3600)
+            minute = str((int(execute_time) % 3600) // 60)
+            sec = str(round(execute_time % 60, 2))
+            display_time = hr + ' hour ' + minute + ' min ' + sec + ' sec'
+    except MySQLdb.Error as e:
+        try:
+            LOG.error('MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+            err_msg = e[1]
+        except IndexError:
+            LOG.error('MySQL Error: %s' % str(e))
+            err_msg = str(e)
+        return {'code': 1, 'msg': err_msg}
+    finally:
+        if cur: cur.close()
+        if conn: conn.close()
+    return {'code': 0, 'cols': cols, 'rows': rows, 'execute_time': display_time}
+
+def dir_tree(dir, data=None, dir_only=True):
+    if data is None:
+        data = []
+    children = []
+    element = {
+        'label': basename(abspath(dir)) + '/',
+        'children': children,
+        'noLeaf': True
+    }
+    data.append(element)
+    files = []
+    if dir_only:
+        files = [x for x in listdir(dir) if isdir(dir + sep + x)]
+    else:
+        files = listdir(dir)
+    for file in files:
+        path = dir + sep + file
+        if isdir(path):
+            dir_tree(path, children, dir_only)
+        else:
+            element = {'label': file}
+            children.append(element)
+    return data

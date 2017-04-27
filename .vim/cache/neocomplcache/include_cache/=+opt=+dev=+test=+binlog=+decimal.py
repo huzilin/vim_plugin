@@ -1,0 +1,1 @@
+[{'word': 'DIG_PER_DEC1', 'kind': 'v', 'abbr': 'DIG_PER_DEC1', 'dup': 1}, {'word': 'bin2decimal', 'kind': 'f', 'abbr': 'bin2decimal', 'dup': 1}, {'word': 'decimal_digit_t', 'kind': 'v', 'abbr': 'decimal_digit_t', 'dup': 1}, {'word': 'dig2bytes', 'kind': 'v', 'abbr': 'dig2bytes', 'dup': 1}]

@@ -1,0 +1,27 @@
+import tornado.ioloop
+import tornado.web
+import commands
+from tornado import httpserver
+
+class MainHandler(tornado.web.RequestHandler):
+    
+    def get(self):
+        self.write("Hello, tornado~")
+
+class ShowDisk(tornado.web.RequestHandler):
+    
+    def get(self):
+        content = commands.getoutput('df -h')
+        html_content = "<html><body><pre> %s </pre></body></html>" % content
+        self.write(html_content)
+
+application = tornado.web.Application([
+    (r"/test", MainHandler),
+    (r"/disk", ShowDisk),
+])
+
+if __name__ == "__main__":
+    http_server = httpserver.HTTPServer(application)
+    http_server.listen(9999)
+    #application.listen(9999)
+    tornado.ioloop.IOLoop.instance().start()

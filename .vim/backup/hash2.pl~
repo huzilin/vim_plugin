@@ -1,0 +1,11 @@
+#!/usr/bin/perl
+
+use 5.010;
+
+$host_name{'node1'} = '192.168.1.1';
+$host_name{'node2'} = '192.168.1.2';
+
+foreach my $host (keys %host_name){
+    say "$host , $host_name{$host}";
+}
+say %host_name;

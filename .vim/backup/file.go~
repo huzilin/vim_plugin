@@ -1,0 +1,30 @@
+package main
+
+import (
+"os"
+"os/exec"
+)
+func main() {
+　　 run1()
+　　 run2()
+}
+
+func run1() {
+cmd := exec.Command("ls", "|", "wc", "-l")
+cmd.Stdout = os.Stdout
+cmd.Stderr = os.Stderr
+cmd.Start()
+cmd.Run()
+cmd.Wait()
+}
+
+func run2() {
+c1 := exec.Command("ls")
+c2 := exec.Command("wc", "-l")
+c2.Stdin, _ = c1.StdoutPipe()
+c2.Stdout = os.Stdout
+c2.Stderr = os.Stderr
+c2.Start()
+c1.Run()
+c2.Wait()
+}

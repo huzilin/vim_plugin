@@ -1,0 +1,1 @@
+[{'word': 'init_options', 'kind': 'f', 'abbr': 'func init_options() {', 'dup': 1}, {'word': 'installPath', 'kind': 'v', 'abbr': 'var (', 'dup': 1}, {'word': 'main', 'kind': 'f', 'abbr': 'func main() {', 'dup': 1}, {'word': 'mysql', 'kind': 'v', 'abbr': 'installPath *string', 'dup': 1}]

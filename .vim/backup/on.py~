@@ -1,0 +1,115 @@
+#!/usr/bin/python
+#coding:utf-8
+
+import os
+import sys
+import getopt
+import cx_Oracle
+import MySQLdb
+import threading
+import subprocess
+from concurrent.futures import ThreadPoolExecutor
+from concurrent import futures
+
+from warnings import filterwarnings  
+filterwarnings('error', category = MySQLdb.Warning) 
+
+def usage():
+    print("Usage:%s [--help|--sqlplusPath|--oracleUser|--oracleHost|--oraclePort|--oracleSid|--oraclePassword|--mysqlHost|--mysqlPort|--mysqlUser|--mysqlPasswd|--mysqlDb|--mysqlCharset|--threadNum|--startTable|--endTable|--enclosed|--fieldsTerminated] args...." % sys.argv[0])
+
+def producer(tableName, insertSQL):
+    try:
+        conn = MySQLdb.connect(host=mysqlHost,port=mysqlPort,user=mysqlUser,passwd=mysqlPasswd,db=mysqlDb,charset=mysqlCharset)
+        conn.autocommit(1)
+        cursor = conn.cursor()
+
+        cursor.execute(insertSQL)
+
+        cursor.close()
+        conn.close()
+        return tableName + " succeed."
+    except MySQLdb.Warning, w:  
+        sqlWarning = "Warning:%s %s" % (tableName, str(w))
+        return sqlWarning
+    except MySQLdb.Error:
+        return tableName + " failed."
+
+
+if __name__ == "__main__":
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], [], ["help", "sqlplusPath=", "oracleUser=", "oracleHost=", "oraclePort=", "oracleSid=", "oraclePassword=", "mysqlHost=", "mysqlPort=", "mysqlUser=", "mysqlPasswd=", "mysqlDb=", "mysqlCharset=", "threadNum=", "alias="])
+        for opt, arg in opts:
+            if opt == ("--help"):
+                usage()
+                sys.exit(1)
+            elif opt == ("--sqlplusPath"):
+                sqlplusPath = arg
+            elif opt == ("--oracleUser"):
+                oracleUser = arg
+            elif opt == ("--oracleHost"):
+                oracleHost = arg
+            elif opt == ("--oraclePort"):
+                oraclePort = arg
+            elif opt == ("--oracleSid"):
+                oracleSid = arg
+            elif opt == ("--oraclePassword"):
+                oraclePassword = arg
+            elif opt == ("--mysqlHost"):
+                mysqlHost = arg
+            elif opt == ("--mysqlPort"):
+                mysqlPort = int(arg)
+            elif opt == ("--mysqlUser"):
+                mysqlUser = arg
+            elif opt == ("--mysqlPassword"):
+                mysqlPassword = arg
+            elif opt == ("--mysqlDb"):
+                mysqlDb = arg
+            elif opt == ("--mysqlCharset"):
+                mysqlCharset = arg
+            elif opt == ("--mysqlPasswd"):
+                mysqlPasswd = arg
+            elif opt == ("--threadNum"):
+                threadNum = int(arg)
+            elif opt == ("--alias"):
+                alias = arg
+
+    except getopt.GetoptError:
+        print("getopt error!")
+        usage()
+        sys.exit(1)
+
+    """ Create Oracle connection """
+    oracleDSN = "{user}/{password}@{host}:{port}/{sid}".format(user = oracleUser, password = oraclePassword, host = oracleHost, port = oraclePort, sid = oracleSid)
+    oracleConn = cx_Oracle.connect(oracleDSN,threaded=True)
+    oracleCursor = oracleConn.cursor()
+
+    """ Get table name """
+    #oracleCursor.execute("select segment_name from user_segments where segment_type='TABLE' group by segment_name having sum(bytes)>185920")
+    oracleCursor.execute("select table_name from user_tables order by table_name")
+    row = oracleCursor.fetchall()
+    tableList = []
+    for tableName in row:
+        tableList.append(tableName[0])
+
+    tableInsertSQL = []
+    for eachTable in tableList:
+        sql = "SELECT 'select ' || LISTAGG(column_name, ', ') WITHIN GROUP(ORDER BY COLUMN_ID) || ' from `{alias}`.`{tableName}`' FROM (SELECT COLUMN_ID, '\"' || column_name || '\"' as column_name from user_tab_cols WHERE table_name='{tableName}')".format(tableName = eachTable, alias = alias)
+        oracleCursor.execute(sql)
+        selectSQL = oracleCursor.fetchall()[0][0]
+        insertSQL = "insert into `{tableName}` {selectSQL}".format(tableName=eachTable, selectSQL=selectSQL)
+        tableInsertSQL.append((eachTable, insertSQL))
+
+    oracleCursor.close()
+    oracleConn.close()
+
+    print "start"
+    thread_pool = ThreadPoolExecutor(max_workers=threadNum)
+
+    jobs = []
+    for i in range(len(tableInsertSQL)):
+        tableName, insertSQL = tableInsertSQL[i]
+        job = thread_pool.submit(producer, tableName, insertSQL)
+        jobs.append(job)
+
+    for each in jobs:
+        print each.result()

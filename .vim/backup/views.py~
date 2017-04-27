@@ -1,0 +1,222 @@
+# coding=utf-8
+
+import os
+import uuid
+import json
+import shutil
+import logging
+
+from django.shortcuts import render
+from django.db.models import Q
+from django.utils.translation import ugettext_lazy as _
+from rest_framework import generics
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from gtms.common.pagination import PagePagination
+from gtms.common.utils import success, fail
+from gtms.project.dbscale.serializers import InstanceSerializer, \
+    TaskSerializer
+from gtms.project.dbscale.models import Instance, Task
+from gtms.project.dbscale.filters import InstanceSearchFilter, TaskFilter
+from gtms.project.dbscale.utils import mysql_query
+from gtms.project.dbscale.topo import TopoGraph
+from gtms.project.dbscale.tasks.tasks import data_backup, data_recover
+
+
+LOG = logging.getLogger(__name__)
+
+
+class InstanceList(generics.ListAPIView):
+    serializer_class = InstanceSerializer
+    pagination_class = PagePagination
+    filter_backends = (InstanceSearchFilter,)
+
+    def get_queryset(self):
+        return Instance.living.all()
+
+
+class InstanceDetail(generics.RetrieveAPIView):
+    queryset = Instance.living.all()
+    serializer_class = InstanceSerializer
+
+
+@api_view(['GET'])
+def instance_exists(request):
+    name = request.GET.get('name', None)
+    ipaddr = request.GET.get('ipaddr', None)
+    filters = Q()
+    if name:
+        filters = filters | Q(name=name)
+    if ipaddr:
+        filters = filters | Q(ipaddr=ipaddr)
+    instance = Instance.living.filter(filters)
+    return Response(not instance.exists())
+
+
+@api_view(['POST'])
+def instance_create(request):
+    data = request.data
+    LOG.info('Create DBScale instance: name [%s], ipaddr [%s], '
+             'port [%s], username [%s], password [%s].' % (
+                 data['name'], data['ipaddr'], data['port'],
+                 data['username'], data['password']))
+
+    try:
+        Instance.objects.create(name=data['name'],
+                                ipaddr=data['ipaddr'],
+                                port=data['port'],
+                                username=data['username'],
+                                password=data['password'],
+                                status='0')
+    except Exception as e:
+        LOG.exception('Exception occurred while creating DBScale instance.')
+        return fail(_('Failed to create DBScale instance: %s' % data['name']))
+    return success(_('Succeeded to create DBScale instance: %s' % data['name']))
+
+
+@api_view(['POST'])
+def instance_update(request, pk):
+    data = request.data
+    LOG.info('Update DBScale instance: name [%s], ipaddr [%s], '
+             'port [%s], username [%s], password [%s].' % (
+                 data['name'], data['ipaddr'], data['port'],
+                 data['username'], data['password']))
+
+    try:
+        instance = Instance.living.get(id=pk)
+        instance.name=data['name']
+        instance.ipaddr=data['ipaddr']
+        instance.port=data['port']
+        instance.username=data['username']
+        instance.password=data['password']
+        instance.save()
+    except Exception as e:
+        LOG.exception('Exception occurred while updating DBScale instance.')
+        return fail(_('Failed to update DBScale instance: %s' % data['name']))
+    return success(_('Succeeded to update DBScale instance: %s' % data['name']))
+
+
+@api_view(['POST'])
+def instance_delete(request, pk):
+    data = request.data
+    LOG.info('Delete DBScale instance: instance ID [%s].' % pk)
+    try:
+        Instance.living.get(id=pk).fake_delete()
+    except Exception as e:
+        LOG.exception('Exception occurred while deleting DBScale instance.')
+        return fail(_('Failed to delete DBScale instance.'))
+    return success(_('Succeeded to delete DBScale instance.'))
+
+
+@api_view(['POST'])
+def sql_query(request, pk):
+    try:
+        instance = Instance.objects.get(id=pk)
+    except Instance.DoesNotExist as e:
+        LOG.error('No such instance with ID [%s].' % pk)
+        return Response({'code': 1, 'msg': str(e)})
+    except Exception as e:
+        LOG.exception('Exception occurred while getting instance [%s].'
+                      % pk)
+        return Response({'code': 2, 'msg': str(e)})
+
+    data = request.data
+    LOG.info('Received SQL statement [%s] for cluster [%s].'
+             % (data['sql_stmt'], instance.name))
+
+    r = mysql_query(instance.ipaddr, instance.port,
+                    instance.username, instance.password,
+                    sql=data['sql_stmt'])
+    if r['code'] != 0:
+        return Response({'code': r['code'], 'msg': r['msg']})
+
+    cols, rows, execute_time, results = r['cols'], r['rows'], r['execute_time'],  []
+    for row in rows:
+        result = {}
+        for i in range(len(cols)):
+            result.update({cols[i]: row[i]})
+        results.append(result)
+
+    return Response({'code': 0, 'result': results, 'cols': cols, 'rows': rows, 'execute_time': execute_time})
+
+
+@api_view(['GET'])
+def topo_struct(request, pk):
+    try:
+        instance = Instance.objects.get(id=pk)
+    except Instance.DoesNotExist as e:
+        LOG.error('No such instance with ID [%s].' % pk)
+        return Response({'code': 1, 'msg': str(e)})
+    except Exception as e:
+        LOG.exception('Exception occurred while getting instance [%s].'
+                      % pk)
+        return Response({'code': 2, 'msg': str(e)})
+
+    instance_topo = TopoGraph(instance)
+    return Response({'code': 0, 'topo': instance_topo.get_topo_struct()})
+
+
+class TaskList(generics.ListAPIView):
+    serializer_class = TaskSerializer
+    pagination_class = PagePagination
+    filter_backends = (TaskFilter,)
+
+    def get_queryset(self):
+        return Task.living.all()
+
+
+class TaskDetail(generics.RetrieveAPIView):
+    queryset = Task.living.all()
+    serializer_class = TaskSerializer
+
+
+@api_view(['POST'])
+def create_task(request, pk):
+    task = None
+    data = request.data
+
+    try:
+        instance = Instance.objects.get(id=pk)
+        task = Task.objects.create(name=data['name'],
+                                   type=data['type'],
+                                   status='0',
+                                   progress=0,
+                                   instance=instance)
+
+        # FIXME: should check file format and content
+        configs = json.loads(data['conf_data'])
+        if str(data['type']) == '1':
+            data_backup.delay(task.id, configs['dbscale'], configs['servers'])
+        elif str(data['type']) == '2':
+            data_recover.delay(task.id, configs['global'], configs['servers'],
+                               data['backup_data_dir'])
+            #data_recover(task.id, configs['global'], configs['servers'], data['backup_data_dir'])
+        else:
+            raise Exception('Unknown task type: %s' % data['type'])
+
+    except Instance.DoesNotExist as e:
+        return fail(_('No such instance with ID [%s].' % pk))
+    except Exception as e:
+        LOG.exception('Exception occurred while creating task of instance [%s].'
+                      % pk)
+        if task:
+            task.fake_delete()
+        return fail(_('Failed to create task [%s].' % data['name']))
+
+    return success(_('Succeeded to create task [%s].' % data['name']))
+
+@api_view(['POST'])
+def delete_task(request, pk):
+    data = request.data
+    try:
+        task = Task.objects.get(id=data['task_id'])
+        if task.data_dir and task.data_dir != '/' and \
+                os.path.exists(task.data_dir):
+            shutil.rmtree(task.data_dir)
+        task.fake_delete()
+    except Exception as e:
+        LOG.exception('Exception occurred while deleting task [%s].'
+                      % data['task_name'])
+        return fail(_('Failed to delete task [%s].' % data['task_name']))
+    return success(_('Succeeded to delete task [%s].' % data['task_name']))

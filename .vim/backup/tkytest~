@@ -1,0 +1,292 @@
+-- MySQL dump 10.13  Distrib 5.6.26, for Linux (x86_64)
+--
+-- Host: localhost    Database: test
+-- ------------------------------------------------------
+-- Server version	5.7.14-8
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES latin1 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Current Database: `test`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `test` /*!40100 DEFAULT CHARACTER SET latin1 */;
+
+USE `test`;
+
+--
+-- Table structure for table `abc_time`
+--
+
+DROP TABLE IF EXISTS `abc_time`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `abc_time` (
+  `col1` int(11) DEFAULT NULL,
+  `col2` timestamp(6) NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `abc_time`
+--
+
+LOCK TABLES `abc_time` WRITE;
+/*!40000 ALTER TABLE `abc_time` DISABLE KEYS */;
+INSERT INTO `abc_time` VALUES (1,'2016-11-22 06:41:33.104544'),(2,'2016-11-22 06:41:53.891472'),(3,'2016-11-22 06:56:32.118610'),(4,'2016-11-22 06:56:35.983468'),(5,'2016-11-22 06:56:39.750563'),(6,'2016-11-22 06:56:44.704526'),(7,'2016-11-22 06:56:48.984533'),(8,'2016-11-22 06:57:08.353519'),(9,'2016-11-22 06:59:26.640554'),(10,'2016-11-22 06:59:26.641368'),(11,'2016-11-22 06:59:26.641861'),(12,'2016-11-22 06:59:26.642319'),(13,'2016-11-22 06:59:26.642777'),(14,'2016-11-22 06:59:26.643358'),(15,'2016-11-22 06:59:26.643742'),(16,'2016-11-22 06:59:26.644152'),(17,'2016-11-22 06:59:26.644625'),(18,'2016-11-22 06:59:26.645045'),(19,'2016-11-22 06:59:26.645491'),(20,'2016-11-22 06:59:28.297472'),(21,'2016-11-22 07:02:31.102646'),(22,'2016-11-22 07:02:31.103862'),(23,'2016-11-22 07:02:31.103984'),(24,'2016-11-22 07:02:31.104097'),(25,'2016-11-22 07:02:31.104249'),(26,'2016-11-22 07:02:31.107292'),(27,'2016-11-22 07:02:31.107406'),(28,'2016-11-22 07:02:31.107516'),(29,'2016-11-22 07:02:31.107646'),(30,'2016-11-22 07:02:31.108091'),(31,'2016-11-22 07:02:31.108219'),(32,'2016-11-22 07:02:31.108327'),(33,'2016-11-22 07:02:31.108459'),(34,'2016-11-22 07:02:31.108571'),(35,'2016-11-22 07:02:31.108680'),(36,'2016-11-22 07:02:31.108818'),(37,'2016-11-22 07:02:31.108936'),(38,'2016-11-22 07:02:31.109045'),(39,'2016-11-22 07:02:31.109168'),(40,'2016-11-22 07:02:31.109281'),(41,'2016-11-22 07:02:31.109391'),(42,'2016-11-22 07:02:31.109499'),(43,'2016-11-22 07:02:31.109607'),(44,'2016-11-22 07:02:31.109715'),(45,'2016-11-22 07:02:31.109823'),(46,'2016-11-22 07:02:31.109931'),(47,'2016-11-22 07:02:31.110038'),(48,'2016-11-22 07:02:31.110165'),(49,'2016-11-22 07:02:31.110278'),(50,'2016-11-22 07:02:31.110386'),(51,'2016-11-22 07:02:31.110496'),(52,'2016-11-22 07:02:31.110604'),(53,'2016-11-22 07:02:31.110712'),(54,'2016-11-22 07:02:31.110821'),(55,'2016-11-22 07:02:31.110929'),(56,'2016-11-22 07:02:31.111055'),(57,'2016-11-22 07:02:31.111188'),(58,'2016-11-22 07:02:31.111300'),(59,'2016-11-22 07:02:31.111408'),(60,'2016-11-22 07:02:31.111516'),(61,'2016-11-22 07:02:31.111625'),(62,'2016-11-22 07:02:31.111732'),(63,'2016-11-22 07:02:31.111840'),(64,'2016-11-22 07:02:31.111948'),(65,'2016-11-22 07:02:31.112057'),(66,'2016-11-22 07:02:31.112182'),(67,'2016-11-22 07:02:31.112293'),(68,'2016-11-22 07:02:31.112401'),(69,'2016-11-22 07:02:31.112510'),(70,'2016-11-22 07:02:31.112617'),(71,'2016-11-22 07:02:31.112725'),(72,'2016-11-22 07:02:31.112833'),(73,'2016-11-22 07:02:31.112941'),(74,'2016-11-22 07:02:31.113049'),(75,'2016-11-22 07:02:31.113171'),(76,'2016-11-22 07:02:31.113282'),(77,'2016-11-22 07:02:31.113392'),(78,'2016-11-22 07:02:31.113500'),(79,'2016-11-22 07:02:31.113607'),(80,'2016-11-22 07:02:31.113716'),(81,'2016-11-22 07:02:31.113825'),(82,'2016-11-22 07:02:31.113934'),(83,'2016-11-22 07:02:31.114042'),(84,'2016-11-22 07:02:31.114174'),(85,'2016-11-22 07:02:31.114287'),(86,'2016-11-22 07:02:31.114397'),(87,'2016-11-22 07:02:31.114505'),(88,'2016-11-22 07:02:31.114612'),(89,'2016-11-22 07:02:31.114720'),(90,'2016-11-22 07:02:31.114827'),(91,'2016-11-22 07:02:31.114936'),(92,'2016-11-22 07:02:31.115045'),(93,'2016-11-22 07:02:31.115167'),(94,'2016-11-22 07:02:31.115279'),(95,'2016-11-22 07:02:31.115387'),(96,'2016-11-22 07:02:31.115493'),(97,'2016-11-22 07:02:31.115603'),(98,'2016-11-22 07:02:31.115710'),(99,'2016-11-22 07:02:31.115817'),(100,'2016-11-22 07:02:31.115925');
+/*!40000 ALTER TABLE `abc_time` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 trigger test_trigger
+ AFTER INSERT ON abc_time
+ FOR EACH ROW
+ BEGIN
+      insert into abc_time2 values(new.col1,CURRENT_TIMESTAMP(6));
+ END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Table structure for table `abc_time2`
+--
+
+DROP TABLE IF EXISTS `abc_time2`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `abc_time2` (
+  `col1` int(11) DEFAULT NULL,
+  `col2` timestamp(6) NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `abc_time2`
+--
+
+LOCK TABLES `abc_time2` WRITE;
+/*!40000 ALTER TABLE `abc_time2` DISABLE KEYS */;
+INSERT INTO `abc_time2` VALUES (1,'2016-11-22 06:41:33.107307'),(2,'2016-11-22 06:41:53.891973'),(3,'2016-11-22 06:56:32.119525'),(4,'2016-11-22 06:56:35.983873'),(5,'2016-11-22 06:56:39.750951'),(6,'2016-11-22 06:56:44.704918'),(7,'2016-11-22 06:56:48.984912'),(8,'2016-11-22 06:57:08.353882'),(9,'2016-11-22 06:59:26.640925'),(10,'2016-11-22 06:59:26.641536'),(11,'2016-11-22 06:59:26.641953'),(12,'2016-11-22 06:59:26.642420'),(13,'2016-11-22 06:59:26.642994'),(14,'2016-11-22 06:59:26.643433'),(15,'2016-11-22 06:59:26.643816'),(16,'2016-11-22 06:59:26.644256'),(17,'2016-11-22 06:59:26.644704'),(18,'2016-11-22 06:59:26.645141'),(19,'2016-11-22 06:59:26.645565'),(20,'2016-11-22 06:59:28.297802'),(21,'2016-11-22 07:02:31.103692'),(22,'2016-11-22 07:02:31.103921'),(23,'2016-11-22 07:02:31.104036'),(24,'2016-11-22 07:02:31.104180'),(25,'2016-11-22 07:02:31.107217'),(26,'2016-11-22 07:02:31.107344'),(27,'2016-11-22 07:02:31.107455'),(28,'2016-11-22 07:02:31.107580'),(29,'2016-11-22 07:02:31.108021'),(30,'2016-11-22 07:02:31.108142'),(31,'2016-11-22 07:02:31.108268'),(32,'2016-11-22 07:02:31.108376'),(33,'2016-11-22 07:02:31.108511'),(34,'2016-11-22 07:02:31.108620'),(35,'2016-11-22 07:02:31.108728'),(36,'2016-11-22 07:02:31.108873'),(37,'2016-11-22 07:02:31.108985'),(38,'2016-11-22 07:02:31.109094'),(39,'2016-11-22 07:02:31.109221'),(40,'2016-11-22 07:02:31.109330'),(41,'2016-11-22 07:02:31.109438'),(42,'2016-11-22 07:02:31.109547'),(43,'2016-11-22 07:02:31.109655'),(44,'2016-11-22 07:02:31.109764'),(45,'2016-11-22 07:02:31.109872'),(46,'2016-11-22 07:02:31.109980'),(47,'2016-11-22 07:02:31.110087'),(48,'2016-11-22 07:02:31.110217'),(49,'2016-11-22 07:02:31.110327'),(50,'2016-11-22 07:02:31.110435'),(51,'2016-11-22 07:02:31.110544'),(52,'2016-11-22 07:02:31.110653'),(53,'2016-11-22 07:02:31.110761'),(54,'2016-11-22 07:02:31.110870'),(55,'2016-11-22 07:02:31.110994'),(56,'2016-11-22 07:02:31.111105'),(57,'2016-11-22 07:02:31.111240'),(58,'2016-11-22 07:02:31.111348'),(59,'2016-11-22 07:02:31.111457'),(60,'2016-11-22 07:02:31.111565'),(61,'2016-11-22 07:02:31.111673'),(62,'2016-11-22 07:02:31.111780'),(63,'2016-11-22 07:02:31.111888'),(64,'2016-11-22 07:02:31.111996'),(65,'2016-11-22 07:02:31.112106'),(66,'2016-11-22 07:02:31.112232'),(67,'2016-11-22 07:02:31.112342'),(68,'2016-11-22 07:02:31.112451'),(69,'2016-11-22 07:02:31.112558'),(70,'2016-11-22 07:02:31.112666'),(71,'2016-11-22 07:02:31.112773'),(72,'2016-11-22 07:02:31.112882'),(73,'2016-11-22 07:02:31.112989'),(74,'2016-11-22 07:02:31.113098'),(75,'2016-11-22 07:02:31.113222'),(76,'2016-11-22 07:02:31.113332'),(77,'2016-11-22 07:02:31.113440'),(78,'2016-11-22 07:02:31.113548'),(79,'2016-11-22 07:02:31.113656'),(80,'2016-11-22 07:02:31.113765'),(81,'2016-11-22 07:02:31.113873'),(82,'2016-11-22 07:02:31.113982'),(83,'2016-11-22 07:02:31.114090'),(84,'2016-11-22 07:02:31.114227'),(85,'2016-11-22 07:02:31.114337'),(86,'2016-11-22 07:02:31.114445'),(87,'2016-11-22 07:02:31.114552'),(88,'2016-11-22 07:02:31.114660'),(89,'2016-11-22 07:02:31.114768'),(90,'2016-11-22 07:02:31.114876'),(91,'2016-11-22 07:02:31.114984'),(92,'2016-11-22 07:02:31.115093'),(93,'2016-11-22 07:02:31.115218'),(94,'2016-11-22 07:02:31.115327'),(95,'2016-11-22 07:02:31.115434'),(96,'2016-11-22 07:02:31.115542'),(97,'2016-11-22 07:02:31.115651'),(98,'2016-11-22 07:02:31.115758'),(99,'2016-11-22 07:02:31.115866'),(100,'2016-11-22 07:02:31.115974');
+/*!40000 ALTER TABLE `abc_time2` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'test'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `test_ly_cursor` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = latin1 */ ;
+/*!50003 SET character_set_results = latin1 */ ;
+/*!50003 SET collation_connection  = latin1_swedish_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` PROCEDURE `test_ly_cursor`()
+BEGIN
+
+  DECLARE a int;
+	declare b int;
+ 
+
+  
+	declare start_time TIMESTAMP(6);
+	declare end_time TIMESTAMP(6);
+	DECLARE done INT DEFAULT FALSE;
+  
+	DECLARE cur CURSOR FOR SELECT ticket_quantity FROM center.left_base_center3 ; 
+ 
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+	set b=0;
+
+	set start_time = CURRENT_TIMESTAMP(6);
+  OPEN cur;
+  
+ 
+  while b<1000000 do
+ 
+    FETCH cur INTO a;
+		set b= b+1;
+    
+
+    
+
+    
+
+  END while;
+  
+  CLOSE cur;
+	set end_time = CURRENT_TIMESTAMP(6);
+	select  TIMESTAMPDIFF(MICROSECOND,start_time,end_time);
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `test_ly_group` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` PROCEDURE `test_ly_group`()
+BEGIN
+	#Routine body goes here..
+	declare aa int;
+		declare start_time TIMESTAMP(6);
+	declare end_time TIMESTAMP(6);
+  set start_time = CURRENT_TIMESTAMP(6);
+	
+	select count(*) from (select count(train_no)  from center.left_base_center group by train_no) as temptable2 ;
+
+	set end_time = CURRENT_TIMESTAMP(6);
+	select  TIMESTAMPDIFF(MICROSECOND,start_time,end_time);
+
+
+	  set start_time = CURRENT_TIMESTAMP(6);
+	
+	select count(*) from (select count(ticket_quantity) from center.left_base_center group by ticket_quantity) as tmptable ;
+	set end_time = CURRENT_TIMESTAMP(6);
+	select  TIMESTAMPDIFF(MICROSECOND,start_time,end_time);
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `test_ly_order` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` PROCEDURE `test_ly_order`()
+BEGIN
+	#Routine body goes here...
+		
+		declare start_time TIMESTAMP(6);
+	declare end_time TIMESTAMP(6);
+  set start_time = CURRENT_TIMESTAMP(6);
+Select  * from center.left_base_center where train_no='7600000Z5003' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D522400' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D585206' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D585605' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D586206' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D586608' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D587605' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D590607' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D592603' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D593003' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D593608' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D599202' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000D599602' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000G100108' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000G10030C' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000G10050B' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000G100705' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000G10090B' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000G101109' order by train_date limit 2;
+Select  * from center.left_base_center where train_no='4e000G101306' order by train_date limit 2;
+
+
+
+	set end_time = CURRENT_TIMESTAMP(6);
+	select  TIMESTAMPDIFF(MICROSECOND,start_time,end_time);
+
+
+	  set start_time = CURRENT_TIMESTAMP(6);
+	
+	Select * from center.left_base_center where train_no='4e000D522400' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000D585206' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000D585605' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000D586206' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000D586608' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000D587605' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000D590607' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000D592603' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000D593003' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000D593608' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000D599202' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000D599602' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000G100108' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000G10030C' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000G10050B' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000G100705' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000G10090B' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000G101109' order by ticket_quantity limit 2;
+Select * from center.left_base_center where train_no='4e000G101306' order by ticket_quantity limit 2;
+	set end_time = CURRENT_TIMESTAMP(6);
+	select  TIMESTAMPDIFF(MICROSECOND,start_time,end_time);
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `test_ly_trigger` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` PROCEDURE `test_ly_trigger`()
+BEGIN
+	#Routine body goes here...
+	DECLARE aa int;
+	set aa =0;
+	while aa<80 DO
+		insert into abc_time values(aa+21,current_timestamp(6));
+		set aa=aa+1;
+	end while;
+	
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2016-11-28 17:14:26

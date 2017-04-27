@@ -1,0 +1,76 @@
+# dbscale-sandbox manual
+
+## Directory Structure
+
+```
+└── sandboxes
+    ├── dbscale                             //dbscale path be installed
+    ├── auth_mysql_sandbox                  //auth_MySQL is used as the login authentication
+    │   ├── master
+    │   │   ├── data                        //datadir
+    │   │   ├── tmp                         //tmpdir
+    │   │   ├── my.sandbox.cnf              //MySQL configure
+    │   │   ├── mysql_sandbox3210.sock      //socket
+    │   │   ├── send_kill                   //kill mysqld
+    │   │   ├── start                       //start MySQL
+    │   │   ├── stop                        //stop MySQL
+    │   │   └── use                         //login MySQL
+    │   └── slave
+    │       ├── data
+    │       ├── tmp
+    │       └── ...
+    ├── rep_mysql_sandbox1                  //MySQL partition 1
+    │   ├── master
+    │   │   ├── data
+    │   │   ├── tmp
+    │   │   └── ...
+    │   └── slave
+    │       ├── data
+    │       ├── tmp
+    │       └── ...
+    ├── rep_mysql_sandbox2                  //MySQL partition 2
+    │   ├── master
+    │   │   ├── data
+    │   │   ├── tmp
+    │   │   └── ...
+    │   └── slave
+    │       ├── data
+    │       ├── tmp
+    │       └── ...
+    ├── mysql.grants                        //grants sql
+    ├── loginDBScale                        //login dbscale
+    ├── dbscale-start.sh                    //start dbscale
+    ├── dbscale-stop.sh                     //stop dbscale
+    ├── startallmysql                       //start MySQL
+    ├── stopallmysql                        //stop MySQL
+    ├── startall                            //start dbscale-sandbox
+    └── stopall                             //stop dbscale-sandbox
+```
+
+
+## start & stop
+
+### dbscale-sandbox
+```
+./startall      //start dbscale-sandbox
+./stopall       //stop dbscale-sandbox
+```
+
+### dbscale
+
+```
+./dbscale-start.sh  //start dbscale
+./dbscale-stop.sh   //stop dbscale
+```
+
+### MySQL
+
+```
+./startallmysql     //start MySQL
+./stopallmysql      //stop MySQL
+```
+## login dbscale
+
+```
+./loginDBScale
+```

@@ -1,0 +1,1 @@
+['.macro', '.long', 'todo', '.else', '.endif', '.endm', '.octa', '.ascii', '.asciz', '.byte', '.short', '.single', '.space', '.string', '.double', '.quad', '.float', '.word', '.hword', '.int', '.include']

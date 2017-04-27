@@ -1,0 +1,13 @@
+import time
+
+def bubbleSort(num_list):
+    for i in range(len(num_list)-1):
+        for j in range(len(num_list)-i-1):
+            if num_list[j] > num_list[j+1]:
+                num_list[j], num_list[j+1] = num_list[j+1], num_list[j]
+
+alist = [2,6,7,22,3,1,2,7]
+bubbleSort(alist)
+
+print alist
+

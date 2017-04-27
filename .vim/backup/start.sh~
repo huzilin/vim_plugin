@@ -1,0 +1,72 @@
+#!/bin/bash
+BASEDIR='/opt/mysql'
+export LD_LIBRARY_PATH=$BASEDIR/lib:$BASEDIR/lib/mysql:$LD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH=$BASEDIR_/lib:$BASEDIR/lib/mysql:$DYLD_LIBRARY_PATH
+MYSQLD_SAFE="$BASEDIR/bin/mysqld_safe"
+SBDIR="/home/hu/sandboxes/auth_mysql_sandbox/master"
+PIDFILE="$SBDIR/data/mysql_sandbox5628.pid"
+
+if [ ! -f $MYSQLD_SAFE ]
+then
+    echo "mysqld_safe not found in $BASEDIR/bin/"
+    exit 1
+fi
+MYSQLD_SAFE_OK=`sh -n $MYSQLD_SAFE 2>&1`
+if [ "$MYSQLD_SAFE_OK" != "" ]
+then
+    echo "$MYSQLD_SAFE has errors"
+    echo "((( $MYSQLD_SAFE_OK )))"
+    exit 1
+fi
+
+is_running()
+{
+    if [ -f $PIDFILE ]
+    then
+        MYPID=$(cat $PIDFILE)
+        ps -p $MYPID | grep $MYPID
+    fi
+}
+
+TIMEOUT=180
+if [ -n "$(is_running)" ]
+then
+    echo "sandbox server already started (found pid file $PIDFILE)"
+else
+    if [ -f $PIDFILE ]
+    then
+        # Server is not running. Removing stale pid-file
+        rm -f $PIDFILE
+    fi
+    CURDIR=`pwd`
+    cd $BASEDIR
+    $MYSQLD_SAFE --defaults-file=$SBDIR/my.sandbox.cnf $@
+    cd $CURDIR
+    ATTEMPTS=1
+    while [ ! -f $PIDFILE ] 
+    do
+        ATTEMPTS=$(( $ATTEMPTS + 1 ))
+        echo -n "."
+        if [ $ATTEMPTS = $TIMEOUT ]
+        then
+            break
+        fi
+        sleep 1
+    done
+fi
+
+if [ -f $PIDFILE ]
+then
+    echo " sandbox server started"
+    #if [ -f $SBDIR/needs_reload ]
+    #then
+    #    if [ -f $SBDIR/rescue_mysql_dump.sql ]
+    #    then
+    #        $SBDIR/use mysql < $SBDIR/rescue_mysql_dump.sql
+    #    fi
+    #    rm $SBDIR/needs_reload
+    #fi
+else
+    echo " sandbox server not started yet"
+    exit 1
+fi

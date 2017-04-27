@@ -1,0 +1,47 @@
+
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "oraclereader", 
+                    "parameter": {
+                        "column": ["ID", "YM", "YMD", "ORG_NO", "CONS_ID", "CONS_NO", "CONS_NAME", "MR_SECT_NO", "CONS_SORT_CODE", "TRADE_CODE", "PRC_CODE", "PARA_VN", "ELEC_TYPE_CODE", "VOLT_CODE", "CONTRACT_CAP", "EXEC_PEAK_FLAG", "PF_STD_CODE", "ACTUAL_PF", "T_PQ", "T_AMT", "T_KWH_AMT", "T_CAT_AMT", "T_PL_AMT", "TOPPK_PQ", "PEAK_PQ", "FLAT_PQ", "OFFPK_PQ", "VALLEY_PQ", "RP_PQ", "TOPPK_AMT", "TOPPK_AMT_ADD", "PEAK_AMT", "PEAK_AMT_ADD", "FLAT_AMT", "OFFPK_AMT", "OFFPK_AMT_SUB", "VALLEY_AMT", "VALLEY_AMT_SUB", "TOPPK_KWH_AMT", "PEAK_KWH_AMT", "FLAT_KWH_AMT", "OFFPK_KWH_AMT", "VALLEY_KWH_AMT", "BILL_CAP", "BA_CAP", "BILL_DEMAND", "DEMAND_AMT", "PF_ADJ_AMT_ADD", "PF_ADJ_AMT_SUB", "PL_AMT01", "PL_AMT02", "PL_AMT03", "PL_AMT04", "PL_AMT05", "PL_AMT06", "PL_AMT07", "PL_AMT08", "PL_AMT09", "PL_AMT10", "PL_AMT11", "PL_AMT12", "PL_AMT13", "PL_AMT14", "PL_AMT15", "PL_AMT16", "PL_AMT17", "PL_AMT18", "PL_AMT19", "PL_AMT20"],
+                        "connection": [
+                            {
+                            "jdbcUrl": ["jdbc:oracle:thin:@10.0.0.114:1521:orcl"], 
+                                "table": ["O_CONS_PQ_AMT"]
+                            }
+                        ], 
+                        "password": "sgpms_ln_all", 
+                        "username": "sgpms_ln_all"
+                        "splitPk": "spk",
+                        "samplePercentage": "0.005",
+                    }
+                }, 
+                "writer": {
+                    "name": "mysqlwriter", 
+                    "parameter": {
+                        "column": ["ID", "YM", "YMD", "ORG_NO", "CONS_ID", "CONS_NO", "CONS_NAME", "MR_SECT_NO", "CONS_SORT_CODE", "TRADE_CODE", "PRC_CODE", "PARA_VN", "ELEC_TYPE_CODE", "VOLT_CODE", "CONTRACT_CAP", "EXEC_PEAK_FLAG", "PF_STD_CODE", "ACTUAL_PF", "T_PQ", "T_AMT", "T_KWH_AMT", "T_CAT_AMT", "T_PL_AMT", "TOPPK_PQ", "PEAK_PQ", "FLAT_PQ", "OFFPK_PQ", "VALLEY_PQ", "RP_PQ", "TOPPK_AMT", "TOPPK_AMT_ADD", "PEAK_AMT", "PEAK_AMT_ADD", "FLAT_AMT", "OFFPK_AMT", "OFFPK_AMT_SUB", "VALLEY_AMT", "VALLEY_AMT_SUB", "TOPPK_KWH_AMT", "PEAK_KWH_AMT", "FLAT_KWH_AMT", "OFFPK_KWH_AMT", "VALLEY_KWH_AMT", "BILL_CAP", "BA_CAP", "BILL_DEMAND", "DEMAND_AMT", "PF_ADJ_AMT_ADD", "PF_ADJ_AMT_SUB", "PL_AMT01", "PL_AMT02", "PL_AMT03", "PL_AMT04", "PL_AMT05", "PL_AMT06", "PL_AMT07", "PL_AMT08", "PL_AMT09", "PL_AMT10", "PL_AMT11", "PL_AMT12", "PL_AMT13", "PL_AMT14", "PL_AMT15", "PL_AMT16", "PL_AMT17", "PL_AMT18", "PL_AMT19", "PL_AMT20"],
+                        "connection": [
+                            {
+                                "jdbcUrl": "jdbc:mysql://10.0.0.216:23306/sgpms_ln", 
+                                "table": ["O_CONS_PQ_AMT"]
+                            }
+                        ], 
+                        "password": "DBScale!123456", 
+                        "preSql": [], 
+                        "session": [], 
+                        "username": "dbscale", 
+                        "writeMode": "insert"
+                    }
+                }
+            }
+        ], 
+        "setting": {
+            "speed": {
+                "channel": "10",
+            }
+        }
+    }
+}

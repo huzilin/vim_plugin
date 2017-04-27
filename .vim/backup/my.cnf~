@@ -1,0 +1,15 @@
+[mysqld]
+gdb
+
+user				= hu
+basedir				= /opt/mysql-bin
+datadir				= /opt/mysql-bin/data
+port				= 3306
+socket				= /opt/mysql-bin/data/mysql.sock
+tmpdir                          = /opt/mysql-bin/tmp
+
+server_id                       = 1
+log_bin                         = mysql-bin
+
+gtid_mode=ON
+enforce_gtid_consistency

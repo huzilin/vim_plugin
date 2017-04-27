@@ -1,0 +1,22 @@
+package main
+
+import "fmt"
+
+func Println(args ...interface{}) {
+	for _, arg := range args {
+		switch arg.(type) {
+		case int:
+			fmt.Println("int")
+		case string:
+			fmt.Println("string")
+		case int64:
+			fmt.Println("int64")
+		default:
+			fmt.Println("unkown")
+		}
+	}
+}
+
+func main() {
+	Println(15, "ab")
+}

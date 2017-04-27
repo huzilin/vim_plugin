@@ -1,0 +1,16 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+OPTION_CHOICE	/opt/mysql-sandbox/blib/script/low_level_make_sandbox	/^    OPTION_CHOICE:$/;"	l
+check_sandbox_dir	/opt/mysql-sandbox/blib/script/low_level_make_sandbox	/^sub check_sandbox_dir {$/;"	s
+check_tmp_dir	/opt/mysql-sandbox/blib/script/low_level_make_sandbox	/^sub check_tmp_dir {$/;"	s
+copy_and_replace	/opt/mysql-sandbox/blib/script/low_level_make_sandbox	/^sub copy_and_replace {$/;"	s
+get_more_options	/opt/mysql-sandbox/blib/script/low_level_make_sandbox	/^sub get_more_options {$/;"	s
+quote_clause	/opt/mysql-sandbox/blib/script/low_level_make_sandbox	/^sub quote_clause {$/;"	s
+run_exec_conditionally	/opt/mysql-sandbox/blib/script/low_level_make_sandbox	/^sub run_exec_conditionally$/;"	s
+run_query	/opt/mysql-sandbox/blib/script/low_level_make_sandbox	/^sub run_query$/;"	s
+select_interactively	/opt/mysql-sandbox/blib/script/low_level_make_sandbox	/^sub select_interactively {$/;"	s
+set_sandbox_dir_scripts	/opt/mysql-sandbox/blib/script/low_level_make_sandbox	/^sub set_sandbox_dir_scripts {$/;"	s

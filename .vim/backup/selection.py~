@@ -1,0 +1,12 @@
+def select_sort(alist):
+    count = len(alist)
+    for i in range(count):
+        min = i
+        for j in range(i + 1, count):
+            if alist[min] > alist[j]:
+                min = j
+        alist[min], alist[i] = alist[i], alist[min]
+
+alist = [2,6,7,22,3,1,2,7]
+select_sort(alist)
+print alist

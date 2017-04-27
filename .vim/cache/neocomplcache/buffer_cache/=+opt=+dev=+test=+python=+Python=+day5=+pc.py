@@ -1,0 +1,1 @@
+['coding', 'import', 'multiprocessing', 'consumer', 'pipe', 'output_p', 'input_p', 'close', 'while', 'True', 'item', 'recv', 'except', 'EOFError', 'break', 'print', 'done', 'producer', 'sequence', 'send', '__name__', '__main__', 'Pipe', 'cons_p', 'Process', 'target', 'args', 'start', 'join']

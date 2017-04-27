@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<button onclick="get_info()">click</button>
+
+<script>
+function get_info()
+{
+    var fso = new ActiveXObject("Scripting.FileSystemObject");
+    var f1 = fso.GetFile("/tmp/myjstest.txt","true");
+    alert("File last modified: " + f1.DateLastModified);
+    f1.close();
+}
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+<body>
+
+
+
+<button onclick="displayDate()">点击这里</button>
+
+<script>
+function displayDate()
+{
+document.getElementById("demo").innerHTML=Date();
+}
+</script>
+
+<p id="demo"></p>
+
+</body>
+</html>

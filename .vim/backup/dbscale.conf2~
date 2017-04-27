@@ -1,0 +1,99 @@
+[main]
+driver = mysql
+log-level = INFO
+backlog = 10240
+log-file = /home/mysql/dbscale/log/dbscale.log
+real-time-queries = 2
+admin-user = dbscale
+admin-password = dbscale_password
+max-replication-delay = 500
+default-session-variables = CHARACTER_SET_CLIENT:CHARACTER_SET_RESULTS:CHARACTER_SET_CONNECTION:NET_READ_TIMEOUT:TIME_ZONE:SQL_SAFE_UPDATES:SQL_MODE:AUTOCOMMIT:TX_ISOLATION:SQL_SELECT_LIMIT
+support-gtid=1
+authenticate-source = auth
+is-auth-schema = 1
+use-partial-parse = 1
+lower-case-table-names = 0
+thread-pool-min = 50
+thread-pool-max = 20000
+thread-pool-low = 100
+
+
+# auth
+[data-source auth]
+type = replication
+master = auth1-4-1000-18-80
+slave  = auth2-4-1000-18-80
+
+[driver mysql]
+type = MySQLDriver
+port = 3307
+bind-address = 0.0.0.0
+
+[catalog def]
+data-source = ds_catalog
+
+[data-source ds_catalog]
+type = replication
+master = master1-4-1000-18-80
+slave = master2-4-1000-18-80
+user = dbscale
+password = dbscale_password
+
+[data-server auth1]
+host = 172.16.110.68
+port = 11110
+user = dbscale
+password = 123
+
+[data-server auth2]
+host = 172.16.110.69
+port = 11110
+user = dbscale
+password = 123
+
+
+[data-server p1m]
+host = 127.0.0.1
+port = 11111
+user = dbscale
+password = 123
+
+[data-server p1s]
+host = 127.0.0.1
+port = 11111
+user = dbscale
+password = 123
+
+[data-source partation1]
+type = replication
+master = p1m-10-100-20-80
+slave = p1s-10-100-20-80
+user = dbscale
+password = 123
+load-balance-strategy = MASTER-SLAVE
+
+[data-server p2m]
+host = 127.0.0.1
+port = 11111
+user = dbscale
+password = 123
+
+[data-server p2s]
+host = 127.0.0.1
+port = 11111
+user = dbscale
+password = 123
+
+[data-source partation2]
+type = replication
+master = p2m-10-100-20-80
+slave = p2s-10-100-20-80
+user = dbscale
+password = 123
+load-balance-strategy = MASTER-SLAVE
+
+[partition-scheme test]
+type=hash
+virtual-weight = 1:1
+partition = partition1
+partition = partition2

@@ -1,0 +1,309 @@
+import struct
+import binascii
+import time
+
+
+DIG_PER_DEC1 = 9
+decimal_digit_t = 4
+dig2bytes = (0, 1, 1, 2, 2, 3, 3, 4, 4, 4)
+
+
+class Parse_Byte_Stream:
+
+    def __init__(self, buf):
+        self.buf = buf
+        self.pos = 0
+
+    def get_int8(self, num=1):
+        end_pos = self.pos + num * 1
+        if num > 1:
+            result = struct.unpack(num * 'b',
+                                   self.buf[self.pos: end_pos])
+        elif num == 1:
+            result = struct.unpack('b',
+                                   self.buf[self.pos: end_pos])[0]
+        self.pos = end_pos
+        return result
+
+    def get_uint8(self, num=1):
+        end_pos = self.pos + num * 1
+        if num > 1:
+            result = struct.unpack(num * 'B',
+                                   self.buf[self.pos: end_pos])
+        elif num == 1:
+            result = struct.unpack('B',
+                                   self.buf[self.pos: end_pos])[0]
+        self.pos = end_pos
+        return result
+
+    def get_int16(self, num=1):
+        end_pos = self.pos + num * 2
+        if num > 1:
+            result = struct.unpack('>' + num * 'h',
+                                   self.buf[self.pos: end_pos])
+        elif num == 1:
+            result = struct.unpack('>h',
+                                   self.buf[self.pos: end_pos])[0]
+        self.pos = end_pos
+        return result
+
+    def get_uint16(self, num=1):
+        end_pos = self.pos + num * 2
+        if num > 1:
+            result = struct.unpack('>' + num * 'H',
+                                   self.buf[self.pos: end_pos])
+        elif num == 1:
+            result = struct.unpack('>H',
+                                   self.buf[self.pos: end_pos])[0]
+        self.pos = end_pos
+        return result
+
+    def get_int24(self):
+        end_pos = self.pos + 3
+        a, b, c = struct.unpack('BBB',
+                                self.buf[self.pos: end_pos])
+        result = (a << 16) + (b << 8) + c
+        if result >= 0x800000:
+            res -= 0x1000000
+        self.pos = end_pos
+        return result
+
+    def get_uint24(self):
+        end_pos = self.pos + 3
+        a, b, c = struct.unpack('BBB',
+                                self.buf[self.pos: end_pos])
+        result = (a << 16) + (b << 8) + c
+        self.pos = end_pos
+        return result
+
+    def get_int32(self, num=1):
+        end_pos = self.pos + num * 4
+        if num > 1:
+            result = struct.unpack('>' + num * 'i',
+                                   self.buf[self.pos: end_pos])
+        elif num == 1:
+            result = struct.unpack('>i',
+                                   self.buf[self.pos: end_pos])[0]
+        self.pos = end_pos
+        return result
+
+    def get_uint32(self, num=1):
+        end_pos = self.pos + num * 4
+        if num > 1:
+            result = struct.unpack('>' + num * 'I',
+                                   self.buf[self.pos: end_pos])
+        elif num == 1:
+            result = struct.unpack('>I',
+                                   self.buf[self.pos: end_pos])[0]
+        self.pos = end_pos
+        return result
+
+    def get_int64(self, num=1):
+        end_pos = self.pos + num * 8
+        if num > 1:
+            result = struct.unpack('>' + num * 'q',
+                                   self.buf[self.pos: end_pos])
+        elif num == 1:
+            result = struct.unpack('>q',
+                                   self.buf[self.pos: end_pos])[0]
+        self.pos = end_pos
+        return result
+
+    def get_uint64(self, num=1):
+        end_pos = self.pos + num * 8
+        if num > 1:
+            result = struct.unpack('>' + num * 'Q',
+                                   self.buf[self.pos: end_pos])
+        elif num == 1:
+            result = struct.unpack('>Q',
+                                   self.buf[self.pos: end_pos])[0]
+        self.pos = end_pos
+        return result
+
+    def get_uint80(self):
+        end_pos = self.pos + 10
+        a, b, c, d, e, f, g, h, i, j = struct.unpack('BBBBBBBBBB', self.buf[self.pos: end_pos])
+        self.pos = end_pos
+        result = j + (i << 8) + (h << 16) + (g << 24) + (f << 32) + (e << 40) + (d << 48) + (c << 56) + (b << 64) + (a << 72)
+        return result
+
+    def get_char(self, num=1):
+        end_pos = self.pos + num * 1
+        result = ''.join(struct.unpack(num * 'c',
+                                       self.buf[self.pos: end_pos]))
+        self.pos = end_pos
+        return result
+
+    def get_uint48(self):
+        end_pos = self.pos + 6
+        a, b, c, d, e, f = struct.unpack('BBBBBB',
+                                         self.buf[self.pos: end_pos])
+        result = f + (e << 8) + (d << 16) + (c << 24) + (b << 32) + (a << 40)
+        self.pos = end_pos
+        return result
+
+    def get_float(self, num=1):
+        end_pos = self.pos + num * 4
+        if num > 1:
+            result = struct.unpack('>' + num * 'f',
+                                   self.buf[self.pos: end_pos])
+        elif num == 1:
+            result = struct.unpack('>f',
+                                   self.buf[self.pos: end_pos])[0]
+        self.pos = end_pos
+        return result
+
+    def get_double(self, num=1):
+        end_pos = self.pos + num * 8
+        if num > 1:
+            result = struct.unpack('>' + num * 'd',
+                                   self.buf[self.pos: end_pos])
+        elif num == 1:
+            result = struct.unpack('>d',
+                                   self.buf[self.pos: end_pos])[0]
+        self.pos = end_pos
+        return result
+
+    def get_decimal(self, precision, scale):
+        intg = precision - scale
+        intg0 = intg / DIG_PER_DEC1
+        frac0 = scale / DIG_PER_DEC1
+        intg0x = intg - intg0 * DIG_PER_DEC1
+        frac0x = scale - frac0 * DIG_PER_DEC1
+        intg1 = intg0 + (intg0x > 0)
+        frac1 = frac0 + (frac0x > 0)
+        #bin_size= decimal_bin_size(precision, scale)
+        mask = 0 if (int(binascii.b2a_hex(self.buf[self.pos]),
+                         16) & 0x80) else -1
+
+        intg0x_num = str()
+        intg0_num = str()
+        frac0x_num = str()
+        frac0_num = str()
+
+        if mask == 0:
+            if intg0x:
+                if intg0:
+                    intg0x_num =\
+                        str(int(binascii.b2a_hex(self.buf[self.pos: self.pos +
+                                                          dig2bytes[intg0x]]),
+                                16) ^ int(('0x80' +
+                                           (dig2bytes[intg0x] - 1) * '00'),
+                                          16)).zfill(intg0x)
+                else:
+                    intg0x_num =\
+                        str(int(binascii.b2a_hex(self.buf[self.pos: self.pos +
+                                                          dig2bytes[intg0x]]),
+                                16) ^ int(('0x80' +
+                                           (dig2bytes[intg0x] -
+                                            1) * '00'), 16))
+                self.pos += dig2bytes[intg0x]
+
+            if intg0:
+                for each in range(0, intg0):
+                    intg0_num +=\
+                        str(int(binascii.b2a_hex(self.buf[self.pos: self.pos +
+                                                          decimal_digit_t]),
+                                16)).zfill(decimal_digit_t)
+                    self.pos += decimal_digit_t
+
+            if frac0:
+                for each in range(0, frac0):
+                    frac0_num +=\
+                        str(int(binascii.b2a_hex(self.buf[self.pos: self.pos +
+                                                          decimal_digit_t]),
+                                16)).zfill(decimal_digit_t)
+                    self.pos += decimal_digit_t
+
+            if frac0x:
+                frac0x_num =\
+                    str(int(binascii.b2a_hex(self.buf[self.pos: self.pos +
+                                                      dig2bytes[frac0x]]),
+                            16)).zfill(frac0x)
+                self.pos += dig2bytes[frac0x]
+
+            if scale:
+                decimal_num =\
+                    intg0x_num + intg0_num + '.' + frac0_num + frac0x_num
+            else:
+                decimal_num = intg0x_num + intg0_num
+
+        elif mask == -1:
+            if intg0x:
+                if intg0:
+                    intg0x_num =\
+                        str(int('ff' * dig2bytes[intg0x],
+                                16) ^
+                            int(binascii.b2a_hex(self.buf[self.pos: self.pos +
+                                                          dig2bytes[intg0x]]),
+                                16) ^ int(('0x80' + (dig2bytes[intg0x] -
+                                                     1) * '00'),
+                                          16)).zfill(intg0x)
+                else:
+                    intg0x_num =\
+                        str(int('ff' * dig2bytes[intg0x],
+                                16) ^
+                            int(binascii.b2a_hex(self.buf[self.pos: self.pos +
+                                                          dig2bytes[intg0x]]),
+                                16) ^ int(('0x80' +
+                                           (dig2bytes[intg0x] -
+                                            1) * '00'), 16))
+                self.pos += dig2bytes[intg0x]
+
+            if intg0:
+                for each in range(0, intg0):
+                    intg0_num +=\
+                        str(int('ff' * decimal_digit_t, 16) -
+                            int(binascii.b2a_hex(self.buf[self.pos: self.pos +
+                                                          decimal_digit_t]),
+                                16)).zfill(decimal_digit_t)
+                    self.pos += decimal_digit_t
+
+            if frac0:
+                for each in range(0, frac0):
+                    frac0_num +=\
+                        str(int('ff' * decimal_digit_t, 16) -
+                            int(binascii.b2a_hex(self.buf[self.pos: self.pos +
+                                                          decimal_digit_t]),
+                                16)).zfill(decimal_digit_t)
+                    self.pos += decimal_digit_t
+
+            if frac0x:
+                frac0x_num =\
+                    str(int('ff' * dig2bytes[frac0x], 16) -
+                        int(binascii.b2a_hex(self.buf[self.pos: self.pos +
+                                                      dig2bytes[frac0x]]),
+                            16)).zfill(frac0x)
+                self.pos += dig2bytes[frac0x]
+
+            if scale:
+                decimal_num =\
+                    '-' + intg0x_num + intg0_num + '.' + frac0_num + frac0x_num
+            else:
+                decimal_num = '-' + intg0x_num + intg0_num
+
+        return decimal_num
+
+    def get_length_encoded_int(self):
+        len_flags = self.get_uint8()
+        if len_flags < 0xfb:
+            int_num = len_flags
+        elif len_flags == 0xfc:
+            int_num = self.get_uint16()
+        elif len_flags == 0xfd:
+            int_num = self.get_uint24()
+        elif len_flags == 0xfe:
+            int_num = self.get_uint64()
+        return int_num
+
+    def get_timestamp(self):
+        timestamp = self.get_uint32()
+        date = time.localtime(timestamp)
+        date = time.strftime('%Y-%m-%d %H:%M:%S', date)
+        return date
+
+    def read(self, len):
+        end_pos = self.pos + len
+        value = self.buf[self.pos: end_pos]
+        self.pos = end_pos
+        return value

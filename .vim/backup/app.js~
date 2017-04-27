@@ -1,0 +1,158 @@
+(function init() {
+
+    updateServerList();
+    initServerOperationEvent();
+
+    $('#add-server').click(function(e) {
+        var serverData = {
+            group_name: $('#group_name_modal').val(),
+            seq: $('#seq_modal').val(),
+            ip: $('#ip_modal').val(),
+            port: $('#port_modal').val(),
+            note: $('#note_modal').val(),
+        }
+        addServer(serverData);
+    })
+
+    $('#search').click(function(e) {
+        var searchData = {
+            group_name: $('#group_name_input').val(),
+            seq: $('#seq_input').val(),
+            ip: $('#ip_input').val(),
+            port: $('#port_input').val(),
+            status: $('#status_input').val(),
+        }
+        searchServer(searchData);
+    })
+
+})();
+
+function updateServerList() {
+    var getData = $.ajax({
+        type: "GET",
+        url: "/server/list",
+        dataType: "json",
+        success: function(data) {
+            updateServerListDom(data);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+    });
+};
+
+function addServer(serverData) {
+    var postData = $.ajax({
+        type: "POST",
+        url: "/server/admin",
+        dataType: "json",
+        data: serverData,
+        success: function(data) {
+            alert(data.message);
+            updateServerList();
+            $('#addServiceModal').modal('hide');
+            cleanAddServerModal();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+    });
+};
+
+function deleteServer(serverData) {
+    var postData = $.ajax({
+        type: "POST",
+        url: "/server/delete",
+        dataType: "json",
+        data: serverData,
+        success: function(data) {
+            alert(data.message);
+            updateServerList();
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+    });
+};
+
+/*function connectServer(serverData) {
+ *     window.open("http://10.150.140.96:12345?server_ip=" + serverData[2] + "&location=" + serverData[1]);
+ *     };*/
+
+function connectServer(serverData) {
+    window.open("http://127.0.0.1:12345/");
+};
+
+function updateServerListDom(data) {
+    var tr = [],
+        td = [],
+        trData = [];
+
+    for (var i = 0, len = data.message.length; i < len; i++) {
+        (function(trData) {
+            td = [];
+
+            for (var i = 0, len = trData.length; i < len; i++) {
+                td.push('<td>' + trData[i] + '</td>');
+            };
+
+            td.push('<td>' 
+                + '<button class="server-operation btn btn-xs btn-primary"><i class="fa fa-gears"></i> Control</button>' 
+                + '<button class="server-delete btn btn-xs btn-danger"><i class="fa fa-trash"></i> Delete</button>' 
+                + '</td>');
+        })(data.message[i]);
+
+        tr.push('<tr>' + td + '</tr>');
+    };
+
+    $('#server-list').html(tr);
+};
+
+function cleanAddServerModal() {
+    $('#group_name_modal').val('');
+    $('#seq_modal').val('');
+    $('#ip_modal').val('');
+    $('#port_modal').val('');
+    $('#note_modal').val('');
+}
+
+function initServerOperationEvent() {
+
+    $('#server-list').click(function(e) {
+        if ($(e.target).hasClass("server-delete") || $(e.target).parent().hasClass("server-delete")) {
+
+            var serverData = getTrServerData($(e.target).closest("tr"));
+            deleteServer(serverData);
+
+        } else if ($(e.target).hasClass("server-operation") || $(e.target).parent().hasClass("server-operation")) {
+
+            var serverData = getTrServerData($(e.target).closest("tr"));
+            connectServer(serverData);
+
+        }
+
+    })
+
+    function getTrServerData($tr) {
+        return {
+            group_name: $tr.find('td:eq(0)').html(),
+            seq: $tr.find('td:eq(1)').html(),
+        }
+    }
+
+}
+
+function searchServer(searchData) {
+    var postData = $.ajax({
+        type: "POST",
+        url: "/server/search",
+        dataType: "json",
+        data: searchData,
+        success: function(data) {
+            updateServerListDom(data);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            alert(errorThrown);
+        }
+    });
+};

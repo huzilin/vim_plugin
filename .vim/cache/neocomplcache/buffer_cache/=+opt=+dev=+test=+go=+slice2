@@ -1,0 +1,1 @@
+['func', 'main', 'string', 'Printf', 'local', 'print', 'length', 'taddr', 'tisnil', '切片尾部追加元素append', 'elemnt', 'append', 'Sprintf', 'tlength', 'after', '删除切片元素remove', 'element', 'index', 'delete', '在切片中间插入元素insert', '注意', '保存后部剩余元素', '必须新建一个临时切片', 'rear', 'inserted', 'insert', 'tcontent', 'Println']

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>select</title>
+    <script src="jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("button").click(function(){
+                $("p").css("background-color","red")
+            })
+        })
+        $(document).ready(function(){
+            $("button#2").click(function(){
+                $("[herf = '#']").css("background-color","green")
+            })
+        })
+        $(document).ready(function(){
+            $("p").click(function(){
+                $(this).css("background-color","black")
+            })
+        })
+    </script>
+</head>
+<body>
+    <h2>This is a heading</h2>
+    <p>This is a paragraph</p>
+    <p herf="#">This is another paragraph</p>
+    <button type = "button"="">click me</button>
+    <br />
+    <button id="2" type = "button2"="">click me</button>
+</body>
+</html>

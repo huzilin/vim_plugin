@@ -1,0 +1,623 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
+import sys
+import getopt
+import MySQLdb
+import commands
+import multiprocessing
+import time
+import re
+import os
+import signal
+
+
+def usage():
+
+    print "Usage:%s [-u|-p|-h|-P|-D|-t] [--help|--alter|--execute|--rollback|--clean|--charset] args...." % sys.argv[0]
+    print '''    -u 连接dbscale的账户用户
+    -p 连接dbscale的账户密码
+    -h dbscale的ip地址
+    -P dbscale的端口
+    -D 要修改的表所在的database
+    -t 要修改的表所在的table
+    --charset 设置字符集,默认utf8
+    --help 查看有哪些参数
+    --alter 后面跟alter的子句比如"add column a int"
+    --execute 表示做执行alter操作
+    --rollback 表示做执行rollback操作
+    --clean 表示做执行clean操作'''
+
+
+def get_table_info(host, port, user, passwd, db, table, charset):
+
+    instance = list()
+    try:
+        conn = MySQLdb.connect(
+            host=host, port=port, user=user, passwd=passwd, db=db, charset=charset)
+        cursor = conn.cursor()
+        sql = "dbscale show table location " + table
+        n = cursor.execute(sql)
+
+        for each in cursor.fetchall():
+            instance.append([each[1], int(each[2])])
+        cursor.close()
+
+        print "Get instance's info."
+        return instance
+    except MySQLdb.Error:
+        return 0
+
+
+def block_table(host, port, user, passwd, db, table, charset, block_or_unblock):
+
+    instance = list()
+    try:
+        conn = MySQLdb.connect(
+            host=host, port=port, user=user, passwd=passwd, db=db, charset=charset)
+        cursor = conn.cursor()
+        if block_or_unblock == 'BLOCK':
+            sql = "DBSCALE BLOCK TABLE " + table + " ALL 1"
+        elif block_or_unblock == 'UNBLOCK':
+            sql = "DBSCALE STOP BLOCK TABLE " + table
+
+        n = cursor.execute(sql)
+        cursor.close()
+        return 1
+
+    except MySQLdb.Error:
+        print "Block Faile."
+        return 0
+
+
+def alter_worker(cmd_and_instance_info_queue, return_queue, pid_lock):
+
+    pid = str(os.getpid())
+    pid_lock.acquire()
+    with open('pid', 'a') as pid_file:
+        pid_file.write(pid + "\n")
+    pid_lock.release()
+    cmd_and_instance_info = cmd_and_instance_info_queue.get()
+    cmd, host, port = cmd_and_instance_info
+    (status, output) = commands.getstatusoutput(cmd)
+
+    if status == 0:
+        return_queue.put(0)
+    else:
+        print "Host:%s\tPort:%s\n%s" % (host, port, output)
+        return_queue.put(host + " " + str(port))
+
+
+def match_table(host, port, user, passwd, db, table, charset, match_word):
+
+    try:
+        conn = MySQLdb.connect(
+            host=host, port=port, user=user, passwd=passwd, db=db, charset=charset)
+        cursor = conn.cursor()
+        sql = "show tables"
+        n = cursor.execute(sql)
+
+        match_table = list()
+        for each in cursor.fetchall():
+            table_name = re.compile(match_word)
+            match = table_name.search(each[0])
+            if match:
+                match_table.append(match.group())
+
+        cursor.close()
+        return match_table
+
+    except MySQLdb.Error:
+        return 0
+
+
+def drop_tables(host, port, user, passwd, db, charset, table_list):
+
+    try:
+        conn = MySQLdb.connect(
+            host=host, port=port, user=user, passwd=passwd, db=db, charset=charset)
+        cursor = conn.cursor()
+        for each in table_list:
+            if each != "":
+                sql = "drop table " + each
+                n = cursor.execute(sql)
+        cursor.close()
+        return 1
+
+    except MySQLdb.Error:
+        return 0
+
+
+def drop_triggers(host, port, user, passwd, db, charset, trigger_list):
+
+    try:
+        conn = MySQLdb.connect(
+            host=host, port=port, user=user, passwd=passwd, db=db, charset=charset)
+        cursor = conn.cursor()
+        for each in trigger_list:
+            if each != "":
+                sql = "drop trigger " + each
+                n = cursor.execute(sql)
+        cursor.close()
+        return 1
+
+    except MySQLdb.Error:
+        return 0
+
+
+def match_triggers(host, port, user, passwd, db, charset, match_word_list):
+
+    try:
+        conn = MySQLdb.connect(
+            host=host, port=port, user=user, passwd=passwd, db=db, charset=charset)
+        cursor = conn.cursor()
+        sql = "show triggers"
+        n = cursor.execute(sql)
+
+        match_trigger = list()
+
+        for each in cursor.fetchall():
+            for each_match_word in match_word_list:
+                table_name = re.compile(each_match_word)
+                match = table_name.search(each[0])
+                if match:
+                    match_trigger.append(match.group())
+
+        cursor.close()
+        return match_trigger
+
+    except MySQLdb.Error:
+        return 0
+
+
+def rollback_operating(host, port, user, passwd, db, charset, table, old_table_name):
+
+    try:
+        conn = MySQLdb.connect(
+            host=host, port=port, user=user, passwd=passwd, db=db, charset=charset)
+        cursor = conn.cursor()
+
+        sql = "show tables"
+        cursor.execute(sql)
+
+        for each in cursor.fetchall():
+            match_word = "^" + table + "$"
+            table_match = re.compile(match_word)
+            match = table_match.search(each[0])
+            if match:
+                sql = "drop table " + table
+                cursor.execute(sql)
+
+        sql = "rename table " + old_table_name[0] + " to " + table
+        cursor.execute(sql)
+
+        cursor.close()
+        return 1
+
+    except MySQLdb.Error:
+        return 0
+
+
+def cleaner_worker(instance_info_queue, clean_return_queue):
+
+    instance_info = instance_info_queue.get()
+    (host, port, user, passwd, database, table, charset, error_flag) = instance_info
+
+    old_table_match = "_+" + table + "_old"
+    old_table_name = match_table(
+        host, port, user, passwd, database, table, charset, old_table_match)
+
+    if old_table_name == 0:
+        clean_return_queue.put([host, port, 101])
+        return 101
+
+    if len(old_table_name) > 0 and error_flag == 1:
+
+        rollback_return = rollback_operating(
+            host, port, user, passwd, database, charset, table, old_table_name)
+
+        if rollback_return == 0:
+            clean_return_queue.put([host, port, 102])
+            return 102
+
+        trigger_prefix = "pt_osc_" + database + "_" + table + "_"
+        trigger_match_list = [trigger_prefix + "ins",
+                              trigger_prefix + "del", trigger_prefix + "upd"]
+        drop_trigger_list = match_triggers(
+            host, port, user, passwd, database, charset, trigger_match_list)
+
+        if drop_trigger_list == 0:
+            clean_return_queue.put([host, port, 103])
+            return 103
+
+        drop_triggers_return = drop_triggers(
+            host, port, user, passwd, database, charset, drop_trigger_list)
+
+        if drop_triggers_return == 0:
+            clean_return_queue.put([host, port, 104])
+            return 104
+
+    else:
+        new_table_match = "^" + table + "_new"
+        new_table_name = match_table(
+            host, port, user, passwd, database, table, charset, new_table_match)
+
+        if new_table_name == 0:
+            clean_return_queue.put([host, port, 105])
+            return 105
+
+        trigger_prefix = "pt_osc_" + database + "_" + table + "_"
+        trigger_match_list = [trigger_prefix + "ins",
+                              trigger_prefix + "del", trigger_prefix + "upd"]
+        drop_trigger_list = match_triggers(
+            host, port, user, passwd, database, charset, trigger_match_list)
+
+        if drop_trigger_list == 0:
+            clean_return_queue.put([host, port, 103])
+            return 103
+
+        if len(old_table_name) > 0:
+
+            drop_table_list = new_table_name + old_table_name
+
+        else:
+
+            drop_table_list = new_table_name
+
+        drop_triggers_return = drop_triggers(
+            host, port, user, passwd, database, charset, drop_trigger_list)
+
+        if drop_triggers_return == 0:
+            clean_return_queue.put([host, port, 104])
+            return 104
+
+        if len(drop_table_list) > 0:
+            drop_tables_return = drop_tables(
+                host, port, user, passwd, database, charset, drop_table_list)
+
+            if drop_tables_return == 0:
+                clean_return_queue.put([host, port, 106])
+                return 106
+
+    clean_return_queue.put(0)
+    return 0
+
+
+def clean_operating(dbscale_host, dbscale_port, user, passwd, database, table, charset, instance_num, instance_info, error_flag):
+
+    #clean or rollback
+    instance_info_queue = multiprocessing.Queue(instance_num)
+    clean_return_queue = multiprocessing.Queue(instance_num)
+
+    error_dic = {101: "Got error when matching old table.", 102: "Got error when doing rollback.", 103: "Got error when matching triggers.",
+                 104: "Got error when matching drop triggers.", 105: "Got error when matching matching new table.", 106: "Got error when matching drop_tables."}
+
+    process = list()
+
+    # Maybe partition master crash down, wait few seconds for dbscale get a
+    # new topology.
+    for host, port in instance_info:
+        instance_info_queue.put(
+            (host, port, user, passwd, database, table, charset, error_flag))
+
+    for each in range(instance_num):
+        process.append(multiprocessing.Process(
+            target=cleaner_worker, args=(instance_info_queue, clean_return_queue,)))
+
+    for each in process:
+        each.start()
+
+    for each in process:
+        each.join()
+
+    return_list = list()
+
+    for each in range(instance_num):
+        return_list.append(clean_return_queue.get())
+
+    error_flag = 0
+
+    for each in return_list:
+        if each != 0:
+            print "Host:%s\tPort:%s\tError:%s" % (each[0], each[1], error_dic[each[2]])
+            error_flag += 1
+
+    if error_flag > 0:
+        return 0
+    else:
+        return 1
+
+
+def pid_clean():
+
+    with open('pid', 'r') as pid_file:
+        pid_str = pid_file.read()
+
+    match_word_dbscale = re.compile("dbscale-online-schema-change")
+    match_word_pt = re.compile("pt-online-schema-change")
+    pid_list = pid_str.split('\n')[0:-1]
+    ps_out = os.popen("ps ax")
+    for each in ps_out:
+        fields = each.split()
+        pid = fields[0]
+        if pid in pid_list:
+            match = match_word_dbscale.search(each)
+            if match:
+                os.kill(int(pid), signal.SIGTERM)
+                continue
+        match = match_word_pt.search(each)
+        if match:
+            os.kill(int(pid), signal.SIGTERM)
+
+if "__main__" == __name__:
+
+    execute = 0
+    clean = 0
+    rollback = 0
+
+    charset = 'utf8'
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "h:P:u:p:D:t:", [
+                                   "help", "output=", "alter=", "execute", "clean", "rollback", "charset="])
+        for opt, arg in opts:
+            if opt == ("--help"):
+                usage()
+                sys.exit(1)
+            elif opt == ("-h"):
+                dbscale_host = arg
+            elif opt == ("-P"):
+                dbscale_port = int(arg)
+            elif opt == ("-u"):
+                user = arg
+            elif opt == ("-p"):
+                passwd = arg
+            elif opt == ("-D"):
+                database = arg
+            elif opt == ("-t"):
+                table = arg
+            elif opt == ("--execute"):
+                execute = 1
+            elif opt == ("--clean"):
+                clean = 1
+            elif opt == ("--rollback"):
+                rollback = 1
+            elif opt == ("--charset"):
+                charset = arg
+            elif opt == ("--alter"):
+                alter = arg
+
+    except getopt.GetoptError:
+        print("getopt error!")
+        usage()
+        sys.exit(1)
+
+    if (execute + clean + rollback) == 0 or (execute + clean + rollback) > 1:
+        usage()
+        sys.exit(1)
+
+    # start handle
+
+    if execute == 1:
+        instance_info = get_table_info(
+            dbscale_host, dbscale_port, user, passwd, database, table, charset)
+        instance_num = len(instance_info)
+
+        with open('part_count', 'w') as pc:
+            pc.write(str(instance_num))
+
+        with open('table_before_swap_count', 'w') as tbsc:
+            tbsc.write('0')
+
+        with open('block_flag', 'w') as bf:
+            bf.write('0')
+
+        with open('pid', 'w') as pid_file:
+            pid_file.write('')
+
+        error_flag = 0
+
+        clean_operating_return = clean_operating(
+            dbscale_host, dbscale_port, user, passwd, database, table, charset, instance_num, instance_info, error_flag)
+
+        if clean_operating_return == 0:
+            print "Clean failed. Maybe background server load to high."
+            sys.exit(1)
+
+        # start alter
+        process = list()
+
+        cmd_and_instance_info_queue = multiprocessing.Queue(instance_num)
+        return_queue = multiprocessing.Queue(instance_num)
+        pid_lock = multiprocessing.Lock()
+
+        for host, port in instance_info:
+            cmd_and_host_port = ["pt-online-schema-change --alter \"" + alter + "\" --execute --nodrop-old-table D=" + database + ",t=" + table +
+                                 " -h" + host + " -u" + user + " -p" + passwd + " -P" + str(port) + " --new-table-name=" + table + "_new --plugin bst.pm", host, port]
+            cmd_and_instance_info_queue.put(cmd_and_host_port)
+
+        for each in range(instance_num):
+            process.append(multiprocessing.Process(target=alter_worker, args=(
+                cmd_and_instance_info_queue, return_queue, pid_lock)))
+
+        for each in process:
+            each.start()
+            time.sleep(1)
+
+        before_swap_count = 0
+        before_swap_error = 0
+        while before_swap_count != instance_num:
+            # check how many part already been before swap table
+            with open('table_before_swap_count', 'r') as tbsc:
+                before_swap_count = int(tbsc.read())
+            time.sleep(10)
+
+            # check return
+            if return_queue.qsize() != 0:
+
+                print "An error occurred on:",
+                for each in range(return_queue.qsize()):
+                    print return_queue.get(),
+
+                for each in process:
+                    each.terminate()
+
+                for each in process:
+                    each.join()
+
+                print "Execute Pt-osc Failed!"
+                before_swap_error = 1
+                break
+
+        # if have error then rollback
+        if before_swap_error == 1:
+
+            instance_new_info = get_table_info(
+                dbscale_host, dbscale_port, user, passwd, database, table, charset)
+
+            clean_operating_return = clean_operating(
+                dbscale_host, dbscale_port, user, passwd, database, table, charset, instance_num, instance_new_info, error_flag)
+
+            if clean_operating_return == 1:
+                print "All have been rollback."
+            else:
+                print "Rollback failed. Maybe background server load to high."
+            sys.exit(1)
+
+        print "All BEFORE SWAP."
+
+        block_return = block_table(
+            dbscale_host, dbscale_port, user, passwd, database, table, charset, 'BLOCK')
+
+        if block_return == 0:
+
+            for each in process:
+                each.terminate()
+
+            for each in process:
+                each.join()
+
+            print "Block Failed. Plz run scripts with rollback options."
+            sys.exit(1)
+
+        with open('block_flag', 'w') as bf:
+            bf.write('1')
+        print "Table has been block."
+
+        get_times = 0
+        while get_times < instance_num:
+            if return_queue.qsize() > 0:
+                alter_return = return_queue.get()
+                if alter_return != 0:
+                    print "An error occurred on:%s" % alter_return
+                    for each in process:
+                        each.terminate()
+                    error_flag = 1
+                    break
+                get_times += 1
+            else:
+                time.sleep(5)
+
+        for each in process:
+            each.join()
+
+        if error_flag == 1:
+            print "Rollback in 15 seconds."
+            time.sleep(15)
+        else:
+            print "Alter Successful."
+
+        clean_retry = 0
+
+        while clean_retry < 3:
+            try:
+                instance_new_info = get_table_info(
+                    dbscale_host, dbscale_port, user, passwd, database, table, charset)
+
+                clean_operating_return = clean_operating(
+                    dbscale_host, dbscale_port, user, passwd, database, table, charset, instance_num, instance_new_info, error_flag)
+                if clean_operating_return == 0:
+                    continue
+                break
+            except MySQLdb.Error:
+                print "A server crash down when cleaning."
+                clean_retry += 1
+                time.sleep(10)
+
+        if clean_retry == 3:
+            print "Clean failed.Try to run dbscale_online-schema-change.py with \"--clean.\""
+
+        block_return = block_table(
+            dbscale_host, dbscale_port, user, passwd, database, table, charset, 'UNBLOCK')
+
+        if block_return == 0:
+            time.sleep(10)
+            block_return = block_table(
+                dbscale_host, dbscale_port, user, passwd, database, table, charset, 'UNBLOCK')
+            if block_return == 0:
+                print "Unblock Failed."
+                sys.exit(1)
+
+        print "All Clean."
+
+    if clean == 1:
+
+        instance_info = get_table_info(
+            dbscale_host, dbscale_port, user, passwd, database, table, charset)
+        instance_num = len(instance_info)
+
+        error_flag = 0
+
+        pid_clean()
+        clean_operating_return = clean_operating(
+            dbscale_host, dbscale_port, user, passwd, database, table, charset, instance_num, instance_info, error_flag)
+
+        if clean_operating_return == 0:
+            print "Got error when doing clean operating."
+
+        # return to os error.
+            sys.exit(1)
+
+        block_return = block_table(
+            dbscale_host, dbscale_port, user, passwd, database, table, charset, 'UNBLOCK')
+
+        if block_return == 0:
+            time.sleep(10)
+            block_return = block_table(
+                dbscale_host, dbscale_port, user, passwd, database, table, charset, 'UNBLOCK')
+            if block_return == 0:
+                print "Unblock Failed."
+                sys.exit(1)
+
+        print "Clean sucssesful."
+
+    if rollback == 1:
+
+        instance_info = get_table_info(
+            dbscale_host, dbscale_port, user, passwd, database, table, charset)
+        instance_num = len(instance_info)
+
+        error_flag = 1
+
+        pid_clean()
+        clean_operating_return = clean_operating(
+            dbscale_host, dbscale_port, user, passwd, database, table, charset, instance_num, instance_info, error_flag)
+
+        if clean_operating_return == 0:
+            print "Got error when doing clean operating."
+
+        # return to os error.
+            sys.exit(1)
+
+        block_return = block_table(
+            dbscale_host, dbscale_port, user, passwd, database, table, charset, 'UNBLOCK')
+
+        if block_return == 0:
+            time.sleep(10)
+            block_return = block_table(
+                dbscale_host, dbscale_port, user, passwd, database, table, charset, 'UNBLOCK')
+            if block_return == 0:
+                print "Unblock Failed."
+                sys.exit(1)
+
+        print "Rollback sucssesful."

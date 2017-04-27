@@ -1,0 +1,52 @@
+#!/usr/bin/python
+#coding:utf-8
+
+import os
+import sys
+import getopt
+import cx_Oracle
+import MySQLdb
+import threading
+import subprocess
+from concurrent.futures import ThreadPoolExecutor
+from concurrent import futures
+
+
+def usage():
+    print("Usage:%s [--help|--sqlplusPath|--oracleUser|--oracleHost|--oraclePort|--oracleSid|--oraclePassword|--mysqlHost|--mysqlPort|--mysqlUser|--mysqlPasswd|--mysqlDb|--mysqlCharset|--threadNum|--startTable|--endTable|--enclosed|--fieldsTerminated] args...." % sys.argv[0])
+
+def producer(job):
+    option = "job/" + job
+    log = job +".log"
+    with open(log,'w') as f:
+        p = subprocess.Popen(["./bin/datax.py", option], stdout=f)
+    p.wait()
+
+
+if __name__ == "__main__":
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], [], ["help", "threadNum="])
+        for opt, arg in opts:
+            if opt == ("--help"):
+                usage()
+                sys.exit(1)
+            elif opt == ("--threadNum"):
+                threadNum = int(arg)
+
+    except getopt.GetoptError:
+        print("getopt error!")
+        usage()
+        sys.exit(1)
+
+    jobList = os.listdir("job")
+
+    print "start"
+    thread_pool = ThreadPoolExecutor(max_workers=threadNum)
+
+    jobs = []
+    for i in range(len(jobList)):
+        job = thread_pool.submit(producer, jobList[i])
+        jobs.append(job)
+
+    for each in jobs:
+        print each.result()

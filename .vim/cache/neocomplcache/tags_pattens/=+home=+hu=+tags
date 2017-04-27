@@ -1,0 +1,4 @@
+[[:alpha:]_.-][[:alnum:]_.-]*
+$dummy$
+
+sh

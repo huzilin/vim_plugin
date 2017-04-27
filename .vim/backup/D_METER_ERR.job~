@@ -1,0 +1,47 @@
+
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "oraclereader", 
+                    "parameter": {
+                        "column": ["ID", "READ_ID", "CHK_TYPE_CODE", "PF", "LOAD_CURRENT", "BOTH_WAY_POWER_FLAG", "ORGN_STD_ERR", "ERR1", "ERR2", "ERR3", "ERR4", "ERR5", "AVE_ERR", "INT_CONVERT_ERR", "STD_ERR_INT", "LOAD_STATUS", "GROUP_TYPE", "ERR_UPPER_LIMIT", "ERR_LOWER_LIMIT", "METER_ID"],
+                        "connection": [
+                            {
+                            "jdbcUrl": ["jdbc:oracle:thin:@10.0.0.114:1521:orcl"], 
+                                "table": ["D_METER_ERR"]
+                            }
+                        ], 
+                        "password": "sgpms_ln_all", 
+                        "username": "sgpms_ln_all"
+                        "splitPk": "spk",
+                        "samplePercentage": "0.005",
+                    }
+                }, 
+                "writer": {
+                    "name": "mysqlwriter", 
+                    "parameter": {
+                        "column": ["ID", "READ_ID", "CHK_TYPE_CODE", "PF", "LOAD_CURRENT", "BOTH_WAY_POWER_FLAG", "ORGN_STD_ERR", "ERR1", "ERR2", "ERR3", "ERR4", "ERR5", "AVE_ERR", "INT_CONVERT_ERR", "STD_ERR_INT", "LOAD_STATUS", "GROUP_TYPE", "ERR_UPPER_LIMIT", "ERR_LOWER_LIMIT", "METER_ID"],
+                        "connection": [
+                            {
+                                "jdbcUrl": "jdbc:mysql://10.0.0.216:23306/sgpms_ln", 
+                                "table": ["D_METER_ERR"]
+                            }
+                        ], 
+                        "password": "DBScale!123456", 
+                        "preSql": [], 
+                        "session": [], 
+                        "username": "dbscale", 
+                        "writeMode": "insert"
+                    }
+                }
+            }
+        ], 
+        "setting": {
+            "speed": {
+                "channel": "10",
+            }
+        }
+    }
+}

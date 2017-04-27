@@ -1,0 +1,16 @@
+package main
+
+import "fmt"
+
+func main() {
+	line1 := Newline(5)
+	fmt.Println(line1(2))
+	fmt.Println(line1(3))
+}
+
+func Newline(a int) func(x int) int {
+	return func(x int) int {
+		y := a * x
+		return y
+	}
+}

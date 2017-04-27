@@ -1,0 +1,15 @@
+#coding:utf-8
+def deco(func):
+    def _deco(a):
+        ret = func(a)
+        if isinstance(ret, int): 
+            ret = ret * 2
+        return ret
+    return _deco
+
+@deco
+def f1(a):
+    return a
+
+a = f1(1.2)
+print a

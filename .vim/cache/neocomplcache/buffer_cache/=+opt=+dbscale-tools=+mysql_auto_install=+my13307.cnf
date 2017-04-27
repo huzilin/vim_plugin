@@ -1,0 +1,1 @@
+['client', 'port', '13307', 'socket', 'home', 'database', 'mysql', 'sock', 'mysqld', 'basedir', 'datadir', 'mysql13307', 'data13307', 'error', 'error13307', 'file', 'performance_schema', 'innodb_log_group_home_dir', 'redolog', 'server_id', 'wait_timeout', '31536000', 'interactive_timeout', 'log_slave_updates', 'gtid_mode', 'enforce', 'gtid', 'consistency', 'tmpdir', 'my13307']

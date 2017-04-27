@@ -1,0 +1,16 @@
+class IP_Transform:
+
+    @staticmethod
+    def int2IP(num):
+        IP_1P = str(num % 256)
+        IP_2P = str(num / 256 % 256)
+        IP_3P = str(num / 256 / 256 % 256)
+        IP_4P = str(num / 256 / 256 / 256 % 256)
+        IP = IP_1P + '.' + IP_2P + '.' + IP_3P + '.' + IP_4P
+        return IP
+
+    @staticmethod
+    def IP2int(IP):
+        IP_num_list = IP.split('.')
+        int_num = int(IP_num_list[0]) + int(IP_num_list[1]) * 256 + int(IP_num_list[2]) * 256 * 256 + int(IP_num_list[3]) * 256 * 256 * 256
+        return int_num

@@ -1,0 +1,168 @@
+'use strict';
+
+/**
+ * Config for the router
+ */
+angular.module('app')
+    .run(['$rootScope', '$state', '$stateParams', '$http', '$cookies', 'current_user',
+        function ($rootScope, $state, $stateParams, $http, $cookies, current_user) {
+            $http.defaults.headers.common['X-CSRFToken'] = $cookies['csrftoken'];
+            $rootScope.$state = $state;
+            $rootScope.$stateParams = $stateParams;
+            $rootScope.current_user = current_user;
+        }]
+    )
+    .config(['$stateProvider', '$urlRouterProvider',
+        function ($stateProvider, $urlRouterProvider) {
+            $urlRouterProvider
+                .otherwise('overview');
+            $stateProvider
+                .state('basic', {
+                    abstract: true,
+                    url: '/',
+                    templateUrl: '/static/views/app.html'
+                })
+                .state('basic.profile_settings', {
+                    url: 'profile/settings',
+                    data: {pageTitle: 'profile.page_settings'},
+                    templateUrl: '/static/views/profile/settings.html?t=' + Math.random(),
+                    resolve: {
+                        deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                            return $ocLazyLoad.load({
+                                files: [
+                                    '/static/js/controllers/profile/settings.js'
+                                ]
+                            });
+                        }]
+                    }
+                })
+                .state('basic.profile_password', {
+                    url: 'profile/password',
+                    data: {pageTitle: 'profile.page_password'},
+                    templateUrl: '/static/views/profile/password.html?t=' + Math.random(),
+                    resolve: {
+                        deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                            return $ocLazyLoad.load({
+                                files: [
+                                    '/static/js/controllers/profile/password.js'
+                                ]
+                            });
+                        }]
+                    }
+                })
+                .state('basic.overview', {
+                    url: 'overview',
+                    data: {pageTitle: 'dbscale.page_overview'},
+                    templateUrl: '/static/views/overview/overview.html?t=' + Math.random(),
+                    controller: 'DBScaleOverviewCtrl',
+                    resolve: {
+                        deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                '/static/js/controllers/overview/overview.js',
+                                '/static/vendor/jquery/highcharts/highcharts.js']);
+                        }]
+                    }
+                })
+                .state('basic.dbscale', {
+                    url: 'dbscale',
+                    template: '<div ui-view class="fade-in-up"></div>'
+                })
+                .state('basic.dbscale.instances', {
+                    url: '/instances',
+                    data: {pageTitle: 'dbscale.page_instances'},
+                    templateUrl: '/static/views/dbscale/instances.html?t=' + Math.random(),
+                    controller: 'InstanceListCtrl',
+                    resolve: {
+                        deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                            return $ocLazyLoad.load(['/static/js/controllers/dbscale/instances.js']);
+                        }]
+                    }
+                })
+                .state('basic.dbscale.instance_detail', {
+                    url: '/instances/:id',
+                    data: {pageTitle: 'dbscale.page_instance_detail'},
+                    templateUrl: '/static/views/dbscale/instance_detail.html?t=' + Math.random(),
+                    controller: 'InstanceDetailCtrl',
+                    resolve: {
+                        instance: function ($stateParams, DBScaleInstance) {
+                            return DBScaleInstance.get({id: $stateParams.id}).$promise;
+                        },
+                        deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                            return $ocLazyLoad.load('ngGrid').then(
+                                function () {
+                                    return $ocLazyLoad.load([
+                                        '/static/js/controllers/dbscale/instance_detail.js',
+                                        '/static/vendor/modules/visjs/vis.min.css',
+                                        '/static/vendor/modules/visjs/vis.min.js']);
+                                }
+                            );
+                        }]
+                    }
+                })
+                .state('basic.dbscale.data_backup', {
+                    url: '/instances/:id/backup',
+                    data: {pageTitle: 'dbscale.page_data_backup'},
+                    templateUrl: '/static/views/dbscale/data_backup.html?t=' + Math.random(),
+                    controller: 'DataBackupCtrl',
+                    resolve: {
+                        instance: function ($stateParams, DBScaleInstance) {
+                            return DBScaleInstance.get({id: $stateParams.id}).$promise;
+                        },
+                        deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                            return $ocLazyLoad.load(['/static/js/controllers/dbscale/data_backup.js']);
+                        }]
+                    }
+                })
+                .state('basic.dbscale.task_detail', {
+                    url: '/tasks/:id',
+                    data: {pageTitle: 'dbscale.page_task_detail'},
+                    templateUrl: '/static/views/dbscale/task_detail.html?t=' + Math.random(),
+                    controller: 'TaskDetailCtrl',
+                    resolve: {
+                        task: function ($stateParams, DBScaleTask) {
+                            return DBScaleTask.get({id: $stateParams.id}).$promise;
+                        },
+                        deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                            return $ocLazyLoad.load('angularBootstrapNavTree').then(
+                                function () {
+                                    return $ocLazyLoad.load('/static/js/controllers/dbscale/task_detail.js');
+                                }
+                            );
+                        }]
+                    }
+                })
+                .state('basic.dbscale.data_recover', {
+                    url: '/instances/:id/recover',
+                    data: {pageTitle: 'dbscale.page_data_recover'},
+                    templateUrl: '/static/views/dbscale/data_recover.html?t=' + Math.random(),
+                    controller: 'DataRestoreCtrl',
+                    resolve: {
+                        instance: function ($stateParams, DBScaleInstance) {
+                            return DBScaleInstance.get({id: $stateParams.id}).$promise;
+                        },
+                        deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                            return $ocLazyLoad.load(['/static/js/controllers/dbscale/data_recover.js']);
+                        }]
+                    }
+                })
+                .state('basic.dbscale.documents', {
+                    url: '/documents',
+                    data: {pageTitle: 'dbscale.page_documents'},
+                    templateUrl: '/static/views/dbscale/documents.html?t=' + Math.random()
+                })
+                .state('basic.node', {
+                    url: 'node',
+                    template: '<div ui-view class="fade-in-up"></div>'
+                })
+                .state('basic.node.nodes', {
+                    url: '/nodes',
+                    data: {pageTitle: 'node.page_nodes'},
+                    templateUrl: '/static/views/node/nodes.html?t=' + Math.random(),
+                    controller: 'NodeListCtrl',
+                    resolve: {
+                        deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                            return $ocLazyLoad.load(['/static/js/controllers/node/nodes.js']);
+                        }]
+                    }
+                })
+    }]);

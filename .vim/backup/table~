@@ -1,0 +1,938 @@
+账户用户的登陆次数 可用作审计
+accounts
++------+--------------+---------------------+-------------------+
+| USER | HOST         | CURRENT_CONNECTIONS | TOTAL_CONNECTIONS |
++------+--------------+---------------------+-------------------+
+| NULL | NULL         |                  25 |                29 |
+| repl | localhost    |                   0 |                 1 |
+| root | localhost    |                   3 |              6086 |
+| test | 172.16.90.12 |                   1 |                 2 |
+| test | 172.16.70.59 |                   0 |                 2 |
++------+--------------+---------------------+-------------------+
+users
++------+---------------------+-------------------+
+| USER | CURRENT_CONNECTIONS | TOTAL_CONNECTIONS |
++------+---------------------+-------------------+
+| NULL |                  25 |                29 |
+| repl |                   0 |                 1 |
+| root |                   3 |              6086 |
+| test |                   0 |                 3 |
++------+---------------------+-------------------+
+hosts;
++--------------+---------------------+-------------------+
+| HOST         | CURRENT_CONNECTIONS | TOTAL_CONNECTIONS |
++--------------+---------------------+-------------------+
+| NULL         |                  25 |                35 |
+| localhost    |                   2 |              6089 |
+| 172.16.90.12 |                   1 |                 7 |
+| 172.16.70.59 |                   0 |                 2 |
++--------------+---------------------+-------------------+
+host_cache
+*************************** 1. row ***************************
+                                        IP: 172.16.90.12
+                                      HOST: NULL
+                            HOST_VALIDATED: YES
+                        SUM_CONNECT_ERRORS: 0
+                 COUNT_HOST_BLOCKED_ERRORS: 0
+           COUNT_NAMEINFO_TRANSIENT_ERRORS: 0
+           COUNT_NAMEINFO_PERMANENT_ERRORS: 0
+                       COUNT_FORMAT_ERRORS: 0
+           COUNT_ADDRINFO_TRANSIENT_ERRORS: 0
+           COUNT_ADDRINFO_PERMANENT_ERRORS: 0
+                       COUNT_FCRDNS_ERRORS: 1           The number of host name format errors. MySQL does not perform matching of Host column values in the mysql.user table against host names for which one or more of the initial components of the name are entirely numeric. The client IP address is used instead.
+                     COUNT_HOST_ACL_ERRORS: 0
+               COUNT_NO_AUTH_PLUGIN_ERRORS: 0
+                  COUNT_AUTH_PLUGIN_ERRORS: 0
+                    COUNT_HANDSHAKE_ERRORS: 0
+                   COUNT_PROXY_USER_ERRORS: 0
+               COUNT_PROXY_USER_ACL_ERRORS: 0
+               COUNT_AUTHENTICATION_ERRORS: 6
+                          COUNT_SSL_ERRORS: 0
+         COUNT_MAX_USER_CONNECTIONS_ERRORS: 0
+COUNT_MAX_USER_CONNECTIONS_PER_HOUR_ERRORS: 0
+             COUNT_DEFAULT_DATABASE_ERRORS: 0
+                 COUNT_INIT_CONNECT_ERRORS: 0
+                        COUNT_LOCAL_ERRORS: 0
+                      COUNT_UNKNOWN_ERRORS: 0
+                                FIRST_SEEN: 2016-09-14 13:41:01
+                                 LAST_SEEN: 2016-09-14 14:58:56
+                          FIRST_ERROR_SEEN: 2016-09-14 13:41:01
+                           LAST_ERROR_SEEN: 2016-09-14 14:58:56
+*************************** 2. row ***************************
+                                        IP: 172.16.70.59
+                                      HOST: NULL
+                            HOST_VALIDATED: YES
+                        SUM_CONNECT_ERRORS: 0
+                 COUNT_HOST_BLOCKED_ERRORS: 0
+           COUNT_NAMEINFO_TRANSIENT_ERRORS: 0
+           COUNT_NAMEINFO_PERMANENT_ERRORS: 1
+                       COUNT_FORMAT_ERRORS: 0
+           COUNT_ADDRINFO_TRANSIENT_ERRORS: 0
+           COUNT_ADDRINFO_PERMANENT_ERRORS: 0
+                       COUNT_FCRDNS_ERRORS: 0
+                     COUNT_HOST_ACL_ERRORS: 0
+               COUNT_NO_AUTH_PLUGIN_ERRORS: 0
+                  COUNT_AUTH_PLUGIN_ERRORS: 0
+                    COUNT_HANDSHAKE_ERRORS: 0
+                   COUNT_PROXY_USER_ERRORS: 0
+               COUNT_PROXY_USER_ACL_ERRORS: 0
+               COUNT_AUTHENTICATION_ERRORS: 0
+                          COUNT_SSL_ERRORS: 0
+         COUNT_MAX_USER_CONNECTIONS_ERRORS: 0
+COUNT_MAX_USER_CONNECTIONS_PER_HOUR_ERRORS: 0
+             COUNT_DEFAULT_DATABASE_ERRORS: 0
+                 COUNT_INIT_CONNECT_ERRORS: 0
+                        COUNT_LOCAL_ERRORS: 0
+                      COUNT_UNKNOWN_ERRORS: 0
+                                FIRST_SEEN: 2016-09-14 13:41:18
+                                 LAST_SEEN: 2016-09-14 13:48:58
+                          FIRST_ERROR_SEEN: 2016-09-14 13:41:18
+                           LAST_ERROR_SEEN: 2016-09-14 13:41:18
+
+
+
+
+表热点
+table_io_waits_summary_by_table
+*************************** 6. row ***************************
+     OBJECT_TYPE: TABLE
+   OBJECT_SCHEMA: test
+     OBJECT_NAME: t4
+      COUNT_STAR: 42
+  SUM_TIMER_WAIT: 158200857754342
+  MIN_TIMER_WAIT: 1097398
+  AVG_TIMER_WAIT: 3766687089288
+  MAX_TIMER_WAIT: 51070632293528
+      COUNT_READ: 35
+  SUM_TIMER_READ: 98934677253264
+  MIN_TIMER_READ: 1097398
+  AVG_TIMER_READ: 2826705064004
+  MAX_TIMER_READ: 51070623007912
+     COUNT_WRITE: 7
+ SUM_TIMER_WRITE: 59266180501078
+ MIN_TIMER_WRITE: 29876400
+ AVG_TIMER_WRITE: 8466597214164
+ MAX_TIMER_WRITE: 51070632293528
+     COUNT_FETCH: 35
+ SUM_TIMER_FETCH: 98934677253264
+ MIN_TIMER_FETCH: 1097398
+ AVG_TIMER_FETCH: 2826705064004
+ MAX_TIMER_FETCH: 51070623007912
+    COUNT_INSERT: 7
+SUM_TIMER_INSERT: 59266180501078
+MIN_TIMER_INSERT: 29876400
+AVG_TIMER_INSERT: 8466597214164
+MAX_TIMER_INSERT: 51070632293528
+    COUNT_UPDATE: 0
+SUM_TIMER_UPDATE: 0
+MIN_TIMER_UPDATE: 0
+AVG_TIMER_UPDATE: 0
+MAX_TIMER_UPDATE: 0
+    COUNT_DELETE: 0
+SUM_TIMER_DELETE: 0
+MIN_TIMER_DELETE: 0
+AVG_TIMER_DELETE: 0
+MAX_TIMER_DELETE: 0
+
+----
+索引使用情况
+table_io_waits_summary_by_index_usage
+*************************** 12. row ***************************
+     OBJECT_TYPE: TABLE
+   OBJECT_SCHEMA: test
+     OBJECT_NAME: t4
+      INDEX_NAME: PRIMARY
+      COUNT_STAR: 3
+  SUM_TIMER_WAIT: 31915638
+  MIN_TIMER_WAIT: 1097398
+  AVG_TIMER_WAIT: 10638546
+  MAX_TIMER_WAIT: 27275918
+      COUNT_READ: 3
+  SUM_TIMER_READ: 31915638
+  MIN_TIMER_READ: 1097398
+  AVG_TIMER_READ: 10638546
+  MAX_TIMER_READ: 27275918
+     COUNT_WRITE: 0
+ SUM_TIMER_WRITE: 0
+ MIN_TIMER_WRITE: 0
+ AVG_TIMER_WRITE: 0
+ MAX_TIMER_WRITE: 0
+     COUNT_FETCH: 3
+ SUM_TIMER_FETCH: 31915638
+ MIN_TIMER_FETCH: 1097398
+ AVG_TIMER_FETCH: 10638546
+ MAX_TIMER_FETCH: 27275918
+    COUNT_INSERT: 0
+SUM_TIMER_INSERT: 0
+MIN_TIMER_INSERT: 0
+AVG_TIMER_INSERT: 0
+MAX_TIMER_INSERT: 0
+    COUNT_UPDATE: 0
+SUM_TIMER_UPDATE: 0
+MIN_TIMER_UPDATE: 0
+AVG_TIMER_UPDATE: 0
+MAX_TIMER_UPDATE: 0
+    COUNT_DELETE: 0
+SUM_TIMER_DELETE: 0
+MIN_TIMER_DELETE: 0
+AVG_TIMER_DELETE: 0
+MAX_TIMER_DELETE: 0
+*************************** 13. row ***************************
+     OBJECT_TYPE: TABLE
+   OBJECT_SCHEMA: test
+     OBJECT_NAME: t4
+      INDEX_NAME: idx_c2
+      COUNT_STAR: 30
+  SUM_TIMER_WAIT: 98934637425398
+  MIN_TIMER_WAIT: 6447744
+  AVG_TIMER_WAIT: 3297821247346
+  MAX_TIMER_WAIT: 51070623007912
+      COUNT_READ: 30
+  SUM_TIMER_READ: 98934637425398
+  MIN_TIMER_READ: 6447744
+  AVG_TIMER_READ: 3297821247346
+  MAX_TIMER_READ: 51070623007912
+     COUNT_WRITE: 0
+ SUM_TIMER_WRITE: 0
+ MIN_TIMER_WRITE: 0
+ AVG_TIMER_WRITE: 0
+ MAX_TIMER_WRITE: 0
+     COUNT_FETCH: 30
+ SUM_TIMER_FETCH: 98934637425398
+ MIN_TIMER_FETCH: 6447744
+ AVG_TIMER_FETCH: 3297821247346
+ MAX_TIMER_FETCH: 51070623007912
+    COUNT_INSERT: 0
+SUM_TIMER_INSERT: 0
+MIN_TIMER_INSERT: 0
+AVG_TIMER_INSERT: 0
+MAX_TIMER_INSERT: 0
+    COUNT_UPDATE: 0
+SUM_TIMER_UPDATE: 0
+MIN_TIMER_UPDATE: 0
+AVG_TIMER_UPDATE: 0
+MAX_TIMER_UPDATE: 0
+    COUNT_DELETE: 0
+SUM_TIMER_DELETE: 0
+MIN_TIMER_DELETE: 0
+AVG_TIMER_DELETE: 0
+MAX_TIMER_DELETE: 0
+*************************** 14. row ***************************
+     OBJECT_TYPE: TABLE
+   OBJECT_SCHEMA: test
+     OBJECT_NAME: t4
+      INDEX_NAME: NULL
+      COUNT_STAR: 9
+  SUM_TIMER_WAIT: 59266188413306
+  MIN_TIMER_WAIT: 1662116
+  AVG_TIMER_WAIT: 6585132045880
+  MAX_TIMER_WAIT: 51070632293528
+      COUNT_READ: 2
+  SUM_TIMER_READ: 7912228
+  MIN_TIMER_READ: 1662116
+  AVG_TIMER_READ: 3956114
+  MAX_TIMER_READ: 6250112
+     COUNT_WRITE: 7
+ SUM_TIMER_WRITE: 59266180501078
+ MIN_TIMER_WRITE: 29876400
+ AVG_TIMER_WRITE: 8466597214164
+ MAX_TIMER_WRITE: 51070632293528
+     COUNT_FETCH: 2
+ SUM_TIMER_FETCH: 7912228
+ MIN_TIMER_FETCH: 1662116
+ AVG_TIMER_FETCH: 3956114
+ MAX_TIMER_FETCH: 6250112
+    COUNT_INSERT: 7
+SUM_TIMER_INSERT: 59266180501078
+MIN_TIMER_INSERT: 29876400
+AVG_TIMER_INSERT: 8466597214164
+MAX_TIMER_INSERT: 51070632293528
+    COUNT_UPDATE: 0
+SUM_TIMER_UPDATE: 0
+MIN_TIMER_UPDATE: 0
+AVG_TIMER_UPDATE: 0
+MAX_TIMER_UPDATE: 0
+    COUNT_DELETE: 0
+SUM_TIMER_DELETE: 0
+MIN_TIMER_DELETE: 0
+AVG_TIMER_DELETE: 0
+MAX_TIMER_DELETE: 0
+
+----
+文件访问
+file_summary_by_instance
+*************************** 173. row ***************************
+                FILE_NAME: /opt/mysql-5.7.13-linux-glibc2.5-x86_64/data/test/t4.ibd
+               EVENT_NAME: wait/io/file/innodb/innodb_data_file
+    OBJECT_INSTANCE_BEGIN: 139992997419456
+               COUNT_STAR: 39
+           SUM_TIMER_WAIT: 266324307556
+           MIN_TIMER_WAIT: 4258352
+           AVG_TIMER_WAIT: 6828828290
+           MAX_TIMER_WAIT: 66078505468
+               COUNT_READ: 0
+           SUM_TIMER_READ: 0
+           MIN_TIMER_READ: 0
+           AVG_TIMER_READ: 0
+           MAX_TIMER_READ: 0
+ SUM_NUMBER_OF_BYTES_READ: 0
+              COUNT_WRITE: 23
+          SUM_TIMER_WRITE: 1262688218
+          MIN_TIMER_WRITE: 4258352
+          AVG_TIMER_WRITE: 54899236
+          MAX_TIMER_WRITE: 277066940
+SUM_NUMBER_OF_BYTES_WRITE: 442368
+               COUNT_MISC: 16
+           SUM_TIMER_MISC: 265061619338
+           MIN_TIMER_MISC: 15070984
+           AVG_TIMER_MISC: 16566351088
+           MAX_TIMER_MISC: 66078505468
+
+----
+语句的执行信息
+events_statements_current
+events_statements_history
+events_statements_history_long
+
+              THREAD_ID: 6095
+               EVENT_ID: 202
+           END_EVENT_ID: 202
+             EVENT_NAME: statement/sql/select
+                 SOURCE: socket_connection.cc:98
+            TIMER_START: 78678551833621000
+              TIMER_END: 78678586048444000
+             TIMER_WAIT: 34214823000
+              LOCK_TIME: 501000000
+               SQL_TEXT: 具体SQL
+                 DIGEST: af93c8aba0539c747372d562ddc08938
+            DIGEST_TEXT: SQL的DIGEST信息
+         CURRENT_SCHEMA: performance_schema
+            OBJECT_TYPE: NULL
+          OBJECT_SCHEMA: NULL
+            OBJECT_NAME: NULL
+  OBJECT_INSTANCE_BEGIN: NULL
+            MYSQL_ERRNO: 0
+      RETURNED_SQLSTATE: NULL
+           MESSAGE_TEXT: NULL
+                 ERRORS: 0
+               WARNINGS: 0
+          ROWS_AFFECTED: 0
+              ROWS_SENT: 564
+          ROWS_EXAMINED: 4446
+CREATED_TMP_DISK_TABLES: 0
+     CREATED_TMP_TABLES: 2
+       SELECT_FULL_JOIN: 1
+ SELECT_FULL_RANGE_JOIN: 0
+           SELECT_RANGE: 0
+     SELECT_RANGE_CHECK: 0
+            SELECT_SCAN: 3
+      SORT_MERGE_PASSES: 0
+             SORT_RANGE: 0
+              SORT_ROWS: 0
+              SORT_SCAN: 0
+          NO_INDEX_USED: 1
+     NO_GOOD_INDEX_USED: 0
+       NESTING_EVENT_ID: NULL
+     NESTING_EVENT_TYPE: NULL
+
+events_statements_summary_by_account_by_event_name
+events_statements_summary_by_host_by_event_name
+events_statements_summary_by_program
+events_statements_summary_by_thread_by_event_name
+events_statements_summary_by_user_by_event_name
+events_statements_summary_global_by_event_name
+
+
+events_statements_summary_by_digest
+                SCHEMA_NAME: performance_schema
+                     DIGEST: 182896be579a941b93376b667a5647be
+                DIGEST_TEXT: SELECT SUM ( `SUM_NUMBER_OF_BYTES_ALLOC` ) / ? / ? / ? FROM `memory_summary_by_account_by_event_name` 
+                 COUNT_STAR: 10
+             SUM_TIMER_WAIT: 44540504000
+             MIN_TIMER_WAIT: 2036824000
+             AVG_TIMER_WAIT: 4454050000
+             MAX_TIMER_WAIT: 6932162000
+              SUM_LOCK_TIME: 1388000000
+                 SUM_ERRORS: 0
+               SUM_WARNINGS: 0
+          SUM_ROWS_AFFECTED: 0
+              SUM_ROWS_SENT: 10
+          SUM_ROWS_EXAMINED: 8700
+SUM_CREATED_TMP_DISK_TABLES: 0
+     SUM_CREATED_TMP_TABLES: 0
+       SUM_SELECT_FULL_JOIN: 0
+ SUM_SELECT_FULL_RANGE_JOIN: 0
+           SUM_SELECT_RANGE: 0
+     SUM_SELECT_RANGE_CHECK: 0
+            SUM_SELECT_SCAN: 10
+      SUM_SORT_MERGE_PASSES: 0
+             SUM_SORT_RANGE: 0
+              SUM_SORT_ROWS: 0
+              SUM_SORT_SCAN: 0
+          SUM_NO_INDEX_USED: 10
+     SUM_NO_GOOD_INDEX_USED: 0
+                 FIRST_SEEN: 2016-09-13 16:50:23
+                  LAST_SEEN: 2016-09-13 16:50:35
+
+-----
+连接的状态
+socket_instances
++----------------------------------------+-----------------------+-----------+-----------+------------------+-------+--------+
+| EVENT_NAME                             | OBJECT_INSTANCE_BEGIN | THREAD_ID | SOCKET_ID | IP               | PORT  | STATE  |
++----------------------------------------+-----------------------+-----------+-----------+------------------+-------+--------+
+| wait/io/socket/sql/server_tcpip_socket |              94881856 |         1 |        19 | ::               |  3306 | ACTIVE |
+| wait/io/socket/sql/server_unix_socket  |              94882176 |         1 |        21 |                  |     0 | ACTIVE |
+| wait/io/socket/sql/client_connection   |              94885376 |        36 |        35 | ::ffff:127.0.0.1 | 58488 | ACTIVE |
+| wait/io/socket/sql/client_connection   |              94887616 |      6096 |        24 |                  |     0 | ACTIVE |
++----------------------------------------+-----------------------+-----------+-----------+------------------+-------+--------+
+
+socket_summary_by_event_name 
+socket_summary_by_instance
+
+----
+session_account_connect_attrs;
+只显示活跃的
++----------------+----------------------------------+---------------------+------------------+
+| PROCESSLIST_ID | ATTR_NAME                        | ATTR_VALUE          | ORDINAL_POSITION |
++----------------+----------------------------------+---------------------+------------------+
+|             11 | _os                              | linux-glibc2.5      |                0 |
+|             11 | _client_name                     | libmysql            |                1 |
+|             11 | _pid                             | 3083                |                2 |
+|             11 | program_name                     | mysqld              |                3 |
+|             11 | _platform                        | x86_64              |                4 |
+|             11 | _client_replication_channel_name | 1                   |                5 |
+|             11 | _client_role                     | binary_log_listener |                6 |
+|             11 | _client_version                  | 5.7.13              |                7 |
+|           6071 | _os                              | linux-glibc2.5      |                0 |
+|           6071 | _client_name                     | libmysql            |                1 |
+|           6071 | _pid                             | 8821                |                2 |
+|           6071 | _client_version                  | 5.6.28              |                3 |
+|           6071 | _platform                        | x86_64              |                4 |
+|           6071 | program_name                     | mysql               |                5 |
++----------------+----------------------------------+---------------------+------------------+
+----
+metadata_locks
++-------------+--------------------+-----------------------------------+-----------------------+--------------+---------------+-------------+-------------------+-----------------+----------------+
+| OBJECT_TYPE | OBJECT_SCHEMA      | OBJECT_NAME                       | OBJECT_INSTANCE_BEGIN | LOCK_TYPE    | LOCK_DURATION | LOCK_STATUS | SOURCE            | OWNER_THREAD_ID | OWNER_EVENT_ID |
++-------------+--------------------+-----------------------------------+-----------------------+--------------+---------------+-------------+-------------------+-----------------+----------------+
+| TABLE       | test               | t4                                |       139990299394880 | SHARED_WRITE | TRANSACTION   | GRANTED     | sql_parse.cc:5944 |            6096 |            105 |
+| TABLE       | performance_schema | table_lock_waits_summary_by_table |       139990298356528 | SHARED_READ  | TRANSACTION   | GRANTED     | sql_parse.cc:5944 |            6096 |            106 |
+| TABLE       | performance_schema | metadata_locks                    |       139990299547104 | SHARED_READ  | TRANSACTION   | GRANTED     | sql_parse.cc:5944 |            6096 |            107 |
++-------------+--------------------+-----------------------------------+-----------------------+--------------+---------------+-------------+-------------------+-----------------+----------------+
+----
+table_lock_waits_summary_by_table
+COUNT_READ_WITH_SHARED_LOCKS, SUM_TIMER_READ_WITH_SHARED_LOCKS, MIN_TIMER_READ_WITH_SHARED_LOCKS, AVG_TIMER_READ_WITH_SHARED_LOCKS, MAX_TIMER_READ_WITH_SHARED_LOCKS:   These columns aggregate internal read locks.
+
+*************************** 6. row ***************************
+                      OBJECT_TYPE: TABLE
+                    OBJECT_SCHEMA: test
+                      OBJECT_NAME: t4
+                       COUNT_STAR: 27
+                   SUM_TIMER_WAIT: 51328736
+                   MIN_TIMER_WAIT: 148996
+                   AVG_TIMER_WAIT: 1901050
+                   MAX_TIMER_WAIT: 4476056
+                       COUNT_READ: 9
+                   SUM_TIMER_READ: 12744562
+                   MIN_TIMER_READ: 148996
+                   AVG_TIMER_READ: 1415848
+                   MAX_TIMER_READ: 2779972
+                      COUNT_WRITE: 18
+                  SUM_TIMER_WRITE: 38584174
+                  MIN_TIMER_WRITE: 1154912
+                  AVG_TIMER_WRITE: 2143458
+                  MAX_TIMER_WRITE: 4476056
+                COUNT_READ_NORMAL: 0
+            SUM_TIMER_READ_NORMAL: 0
+            MIN_TIMER_READ_NORMAL: 0
+            AVG_TIMER_READ_NORMAL: 0
+            MAX_TIMER_READ_NORMAL: 0
+     COUNT_READ_WITH_SHARED_LOCKS: 0    这行和一下4行是共享锁的信息，不过使用lock in share mode查询这个数字不变 These columns aggregate internal read locks.
+ SUM_TIMER_READ_WITH_SHARED_LOCKS: 0
+ MIN_TIMER_READ_WITH_SHARED_LOCKS: 0
+ AVG_TIMER_READ_WITH_SHARED_LOCKS: 0
+ MAX_TIMER_READ_WITH_SHARED_LOCKS: 0
+         COUNT_READ_HIGH_PRIORITY: 0
+     SUM_TIMER_READ_HIGH_PRIORITY: 0
+     MIN_TIMER_READ_HIGH_PRIORITY: 0
+     AVG_TIMER_READ_HIGH_PRIORITY: 0
+     MAX_TIMER_READ_HIGH_PRIORITY: 0
+             COUNT_READ_NO_INSERT: 0
+         SUM_TIMER_READ_NO_INSERT: 0
+         MIN_TIMER_READ_NO_INSERT: 0
+         AVG_TIMER_READ_NO_INSERT: 0
+         MAX_TIMER_READ_NO_INSERT: 0
+              COUNT_READ_EXTERNAL: 9
+          SUM_TIMER_READ_EXTERNAL: 12744562
+          MIN_TIMER_READ_EXTERNAL: 148996
+          AVG_TIMER_READ_EXTERNAL: 1415848
+          MAX_TIMER_READ_EXTERNAL: 2779972
+          COUNT_WRITE_ALLOW_WRITE: 0
+      SUM_TIMER_WRITE_ALLOW_WRITE: 0
+      MIN_TIMER_WRITE_ALLOW_WRITE: 0
+      AVG_TIMER_WRITE_ALLOW_WRITE: 0
+      MAX_TIMER_WRITE_ALLOW_WRITE: 0
+    COUNT_WRITE_CONCURRENT_INSERT: 0
+SUM_TIMER_WRITE_CONCURRENT_INSERT: 0
+MIN_TIMER_WRITE_CONCURRENT_INSERT: 0
+AVG_TIMER_WRITE_CONCURRENT_INSERT: 0
+MAX_TIMER_WRITE_CONCURRENT_INSERT: 0
+         COUNT_WRITE_LOW_PRIORITY: 0
+     SUM_TIMER_WRITE_LOW_PRIORITY: 0
+     MIN_TIMER_WRITE_LOW_PRIORITY: 0
+     AVG_TIMER_WRITE_LOW_PRIORITY: 0
+     MAX_TIMER_WRITE_LOW_PRIORITY: 0
+               COUNT_WRITE_NORMAL: 0
+           SUM_TIMER_WRITE_NORMAL: 0
+           MIN_TIMER_WRITE_NORMAL: 0
+           AVG_TIMER_WRITE_NORMAL: 0
+           MAX_TIMER_WRITE_NORMAL: 0
+             COUNT_WRITE_EXTERNAL: 18
+         SUM_TIMER_WRITE_EXTERNAL: 38584174
+         MIN_TIMER_WRITE_EXTERNAL: 1154912
+         AVG_TIMER_WRITE_EXTERNAL: 2143458
+         MAX_TIMER_WRITE_EXTERNAL: 4476056
+------
+global_status
+session_status
+这两个就是原来show status和show global status
+
+status_by_user
+| root | Bytes_received                | 2233240        |       发送的字节数
+| root | Bytes_sent                    | 161774493      |       收到的字节数    这两个可以计算单个用户的流量
+| root | Com_stmt_reprepare            | 0              |
+| root | Created_tmp_disk_tables       | 10             |
+| root | Created_tmp_tables            | 111            |
+| root | Handler_commit                | 44             |
+| root | Handler_delete                | 0              |
+| root | Handler_discover              | 0              |
+| root | Handler_external_lock         | 6763           |
+| root | Handler_mrr_init              | 0              |
+| root | Handler_prepare               | 20             |
+| root | Handler_read_first            | 47             |
+| root | Handler_read_key              | 5641           |
+| root | Handler_read_last             | 0              |
+| root | Handler_read_next             | 11645          |
+| root | Handler_read_prev             | 0              |
+| root | Handler_read_rnd              | 2              |
+| root | Handler_read_rnd_next         | 21866330       |
+| root | Handler_rollback              | 20             |
+| root | Handler_savepoint             | 0              |
+| root | Handler_savepoint_rollback    | 0              |
+| root | Handler_update                | 376            |
+| root | Handler_write                 | 3035078        |
+| root | Max_execution_time_exceeded   | 0              |
+| root | Max_execution_time_set        | 0              |
+| root | Max_execution_time_set_failed | 0              |
+| root | Opened_table_definitions      | 13             |       单个用户使用的多少table defintions cache
+| root | Opened_tables                 | 2482           |
+| root | Questions                     | 21121          |       可以算单个账户的qps
+| root | Select_full_join              | 4              |
+| root | Select_full_range_join        | 0              |
+| root | Select_range                  | 0              |
+| root | Select_range_check            | 0              |
+| root | Select_scan                   | 3444           |
+| root | Slow_queries                  | 4              |       单个账户的慢查询
+| root | Sort_merge_passes             | 0              |
+| root | Sort_range                    | 0              |
+| root | Sort_rows                     | 40             |
+| root | Sort_scan                     | 4              |
+| root | Table_open_cache_hits         | 3345           |       table的缓存命中率
+| root | Table_open_cache_misses       | 2482           |
+| root | Table_open_cache_overflows    | 2120           |
++------+-------------------------------+----------------+
+
+status_by_thread 和上面一样，不过是每个线程单独的数据
++-----------+-------------------------------+----------------+
+| THREAD_ID | VARIABLE_NAME                 | VARIABLE_VALUE |
++-----------+-------------------------------+----------------+
+|        36 | Bytes_received                | 735            |
+|        36 | Bytes_sent                    | 9172416        |
+|        36 | Com_stmt_reprepare            | 0              |
+|        36 | Compression                   | OFF            |
+|        36 | Created_tmp_disk_tables       | 0              |
+|        36 | Created_tmp_tables            | 0              |
+|        36 | Handler_commit                | 0              |
+|        36 | Handler_delete                | 0              |
+|        36 | Handler_discover              | 0              |
+|        36 | Handler_external_lock         | 0              |
+|        36 | Handler_mrr_init              | 0              |
+|        36 | Handler_prepare               | 0              |
+|        36 | Handler_read_first            | 0              |
+|        36 | Handler_read_key              | 0              |
+|        36 | Handler_read_last             | 0              |
+|        36 | Handler_read_next             | 0              |
+|        36 | Handler_read_prev             | 0              |
+|        36 | Handler_read_rnd              | 0              |
+|        36 | Handler_read_rnd_next         | 0              |
+|        36 | Handler_rollback              | 0              |
+|        36 | Handler_savepoint             | 0              |
+|        36 | Handler_savepoint_rollback    | 0              |
+|        36 | Handler_update                | 0              |
+|        36 | Handler_write                 | 0              |
+|        36 | Last_query_cost               | 0.000000       |
+|        36 | Last_query_partial_plans      | 0              |
+|        36 | Max_execution_time_exceeded   | 0              |
+|        36 | Max_execution_time_set        | 0              |
+|        36 | Max_execution_time_set_failed | 0              |
+|        36 | Open_tables                   | 390            |
+|        36 | Opened_table_definitions      | 0              |
+|        36 | Opened_tables                 | 0              |
+|        36 | Queries                       | 516            |
+|        36 | Questions                     | 10             |
+|        36 | Select_full_join              | 0              |
+|        36 | Select_full_range_join        | 0              |
+|        36 | Select_range                  | 0              |
+|        36 | Select_range_check            | 0              |
+|        36 | Select_scan                   | 0              |
+|        36 | Slow_launch_threads           | 0              |
+|        36 | Slow_queries                  | 0              |
+|        36 | Sort_merge_passes             | 0              |
+|        36 | Sort_range                    | 0              |
+|        36 | Sort_rows                     | 0              |
+|        36 | Sort_scan                     | 0              |
+|        36 | Ssl_cipher                    |                |
+|        36 | Ssl_cipher_list               |                |
+|        36 | Ssl_default_timeout           | 0              |
+|        36 | Ssl_server_not_after          |                |
+|        36 | Ssl_server_not_before         |                |
+|        36 | Ssl_sessions_reused           | 0              |
+|        36 | Ssl_verify_depth              | 0              |
+|        36 | Ssl_verify_mode               | 0              |
+|        36 | Ssl_version                   |                |
+|        36 | Table_open_cache_hits         | 0              |
+|        36 | Table_open_cache_misses       | 0              |
+|        36 | Table_open_cache_overflows    | 0              |
+|      6108 | Bytes_received                | 3323           |
+|      6108 | Bytes_sent                    | 182019         |
+|      6108 | Com_stmt_reprepare            | 0              |
+|      6108 | Compression                   | OFF            |
+|      6108 | Created_tmp_disk_tables       | 0              |
+|      6108 | Created_tmp_tables            | 2              |
+|      6108 | Handler_commit                | 0              |
+|      6108 | Handler_delete                | 0              |
+|      6108 | Handler_discover              | 0              |
+|      6108 | Handler_external_lock         | 3              |
+|      6108 | Handler_mrr_init              | 0              |
+|      6108 | Handler_prepare               | 0              |
+|      6108 | Handler_read_first            | 0              |
+|      6108 | Handler_read_key              | 0              |
+|      6108 | Handler_read_last             | 0              |
+|      6108 | Handler_read_next             | 0              |
+|      6108 | Handler_read_prev             | 0              |
+|      6108 | Handler_read_rnd              | 0              |
+|      6108 | Handler_read_rnd_next         | 159            |
+|      6108 | Handler_rollback              | 0              |
+|      6108 | Handler_savepoint             | 0              |
+|      6108 | Handler_savepoint_rollback    | 0              |
+|      6108 | Handler_update                | 0              |
+|      6108 | Handler_write                 | 92             |
+|      6108 | Last_query_cost               | 205.799000     |
+|      6108 | Last_query_partial_plans      | 1              |
+|      6108 | Max_execution_time_exceeded   | 0              |
+|      6108 | Max_execution_time_set        | 0              |
+|      6108 | Max_execution_time_set_failed | 0              |
+|      6108 | Open_tables                   | 390            |
+|      6108 | Opened_table_definitions      | 0              |
+|      6108 | Opened_tables                 | 86             |
+|      6108 | Queries                       | 21224          |
+|      6108 | Questions                     | 91             |
+|      6108 | Select_full_join              | 0              |
+|      6108 | Select_full_range_join        | 0              |
+|      6108 | Select_range                  | 0              |
+|      6108 | Select_range_check            | 0              |
+|      6108 | Select_scan                   | 4              |
+|      6108 | Slow_launch_threads           | 0              |
+|      6108 | Slow_queries                  | 0              |
+|      6108 | Sort_merge_passes             | 0              |
+|      6108 | Sort_range                    | 0              |
+|      6108 | Sort_rows                     | 0              |
+|      6108 | Sort_scan                     | 0              |
+|      6108 | Ssl_cipher                    |                |
+|      6108 | Ssl_cipher_list               |                |
+|      6108 | Ssl_default_timeout           | 0              |
+|      6108 | Ssl_server_not_after          |                |
+|      6108 | Ssl_server_not_before         |                |
+|      6108 | Ssl_sessions_reused           | 0              |
+|      6108 | Ssl_verify_depth              | 0              |
+|      6108 | Ssl_verify_mode               | 0              |
+|      6108 | Ssl_version                   |                |
+|      6108 | Table_open_cache_hits         | 3              |
+|      6108 | Table_open_cache_misses       | 86             |
+|      6108 | Table_open_cache_overflows    | 86             |
++-----------+-------------------------------+----------------+
+
+status_by_account 这个和第一个相比，这个粒度更细一些，第一个user名称相同会合并在一起，这个访问的主机不同也会单独记录
+| test | 172.16.90.12 | Sort_rows                     | 0              |
+| test | 172.16.90.12 | Sort_scan                     | 0              |
+| test | 172.16.90.12 | Table_open_cache_hits         | 0              |
+| test | 172.16.90.12 | Table_open_cache_misses       | 0              |
+| test | 172.16.90.12 | Table_open_cache_overflows    | 0              |
+| test | 172.16.70.59 | Bytes_received                | 233            |
+| test | 172.16.70.59 | Bytes_sent                    | 192            |
+| test | 172.16.70.59 | Com_stmt_reprepare            | 0              |
+| test | 172.16.70.59 | Created_tmp_disk_tables       | 0              |
+| test | 172.16.70.59 | Created_tmp_tables            | 0              |
+
+status_by_host 这个和上面相似，只不过只区分主机
+| 172.16.70.59 | Table_open_cache_overflows    | 0              |
+
+---
+session_variables
+global_variables
+就是原来show variables和show global variables
+
+user_variables_by_thread        User-defined variables per thread
+variables_by_thread     Session system variables per session
+应该是
+variables_by_thread
+select * from variables_by_thread where variable_name like 'read_buffer_size';
++-----------+------------------+----------------+
+| THREAD_ID | VARIABLE_NAME    | VARIABLE_VALUE |
++-----------+------------------+----------------+
+|        36 | read_buffer_size | 2097152        |
+|      6114 | read_buffer_size | 1093632        |
+|      6115 | read_buffer_size | 2097152        |
++-----------+------------------+----------------+
+
+user_variables_by_thread
++-----------+-------------------------+--------------------------------------+
+| THREAD_ID | VARIABLE_NAME           | VARIABLE_VALUE                       |
++-----------+-------------------------+--------------------------------------+
+|        36 | slave_uuid              | 565c03b3-795b-11e6-b089-780cb8c4c633 |
+|        36 | master_heartbeat_period | 30000001024                          |
+|        36 | master_binlog_checksum  | CRC32                                |
++-----------+-------------------------+--------------------------------------+
+
+socket_summary_by_event_name    server_tcpip_socket server_unix_socket client_connection这些每个不同的连接方式单独记录
+socket_summary_by_instance      每个连接一个单独的记录
+
+---
+table_handles
++-------------+---------------+-----------------------+-----------------------+-----------------+----------------+---------------+----------------+
+| OBJECT_TYPE | OBJECT_SCHEMA | OBJECT_NAME           | OBJECT_INSTANCE_BEGIN | OWNER_THREAD_ID | OWNER_EVENT_ID | INTERNAL_LOCK | EXTERNAL_LOCK  |
++-------------+---------------+-----------------------+-----------------------+-----------------+----------------+---------------+----------------+
+| TABLE       | test          | t1                    |       139990499940960 |            6118 |             12 | NULL          | WRITE EXTERNAL | 正在执行的
+| TABLE       | test          | t1                    |       139990499942000 |               0 |              0 | NULL          | NULL           |
+| TABLE       | test          | official_account_rank |       139990231248608 |               0 |              0 | NULL          | NULL           |
+| TABLE       | test          | official_accounts     |       139990231652928 |               0 |              0 | NULL          | NULL           |
+| TABLE       | test          | t2                    |       139990231521136 |               0 |              0 | NULL          | NULL           |
+| TABLE       | test          | t3                    |       139990231802816 |               0 |              0 | NULL          | NULL           |
+| TABLE       | test          | t4                    |       139990231194960 |               0 |              0 | NULL          | NULL           |
+
+---
+replication
+
+replication_connection_configuration
+*************************** 1. row ***************************
+                 CHANNEL_NAME: 1
+                         HOST: 127.0.0.1
+                         PORT: 3306
+                         USER: root
+            NETWORK_INTERFACE: 
+                AUTO_POSITION: 1
+                  SSL_ALLOWED: NO
+                  SSL_CA_FILE: 
+                  SSL_CA_PATH: 
+              SSL_CERTIFICATE: 
+                   SSL_CIPHER: 
+                      SSL_KEY: 
+SSL_VERIFY_SERVER_CERTIFICATE: NO
+                 SSL_CRL_FILE: 
+                 SSL_CRL_PATH: 
+    CONNECTION_RETRY_INTERVAL: 60
+       CONNECTION_RETRY_COUNT: 86400
+           HEARTBEAT_INTERVAL: 30.000
+                  TLS_VERSION: 
+
+replication_connection_status
+*************************** 1. row ***************************
+             CHANNEL_NAME: 1
+               GROUP_NAME: 
+              SOURCE_UUID: 7aaf67fb-7327-11e6-bad8-780cb8c4c633
+                THREAD_ID: 37
+            SERVICE_STATE: ON
+COUNT_RECEIVED_HEARTBEATS: 3134
+ LAST_HEARTBEAT_TIMESTAMP: 2016-09-14 15:06:40
+ RECEIVED_TRANSACTION_SET: 7aaf67fb-7327-11e6-bad8-780cb8c4c633:194-203
+        LAST_ERROR_NUMBER: 0
+       LAST_ERROR_MESSAGE: 
+     LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+
+select * from replication_applier_configuration
+*************************** 1. row ***************************
+ CHANNEL_NAME: 1
+DESIRED_DELAY: 0
+1 row in set (0.00 sec)
+
+replication_applier_status
+*************************** 1. row ***************************
+              CHANNEL_NAME: 1
+             SERVICE_STATE: ON
+           REMAINING_DELAY: NULL
+COUNT_TRANSACTIONS_RETRIES: 0
+
+applier_status_by_coordinator\G
+ *************************** 1. row ***************************
+         CHANNEL_NAME: 1
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+    LAST_ERROR_NUMBER: 1050
+   LAST_ERROR_MESSAGE: Coordinator stopped because there were error(s) in the worker(s). The most recent failure being: Worker 9 failed executing transaction '7aaf67fb-7327-11e6-bad8-780cb8c4c633:196' at   ↪master log mybinlog.000004, end_log_pos 4520624. See error log and/or performance_schema.replication_applier_status_by_worker table for more details about this failure or others, if any.
+ LAST_ERROR_TIMESTAMP: 2016-09-13 13:13:56
+  
+ mysql> select * from replication_applier_status_by_worker\G    单线程复制这个表为空
+ *************************** 1. row ***************************
+          CHANNEL_NAME: 1
+             WORKER_ID: 1
+             THREAD_ID: NULL
+         SERVICE_STATE: OFF
+ LAST_SEEN_TRANSACTION: 
+     LAST_ERROR_NUMBER: 0
+    LAST_ERROR_MESSAGE: 
+  LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+ *************************** 2. row ***************************
+          CHANNEL_NAME: 1
+             WORKER_ID: 2
+             THREAD_ID: NULL
+         SERVICE_STATE: OFF
+ LAST_SEEN_TRANSACTION: 
+     LAST_ERROR_NUMBER: 0
+    LAST_ERROR_MESSAGE: 
+  LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+ *************************** 3. row ***************************
+          CHANNEL_NAME: 1
+             WORKER_ID: 3
+             THREAD_ID: NULL
+         SERVICE_STATE: OFF
+ LAST_SEEN_TRANSACTION: 
+     LAST_ERROR_NUMBER: 0
+    LAST_ERROR_MESSAGE: 
+  LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+ *************************** 4. row ***************************
+          CHANNEL_NAME: 1
+             WORKER_ID: 4
+             THREAD_ID: NULL
+         SERVICE_STATE: OFF
+ LAST_SEEN_TRANSACTION: 
+     LAST_ERROR_NUMBER: 0
+    LAST_ERROR_MESSAGE: 
+  LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+ *************************** 5. row ***************************
+          CHANNEL_NAME: 1
+             WORKER_ID: 5
+             THREAD_ID: NULL
+         SERVICE_STATE: OFF
+ LAST_SEEN_TRANSACTION: 
+     LAST_ERROR_NUMBER: 0
+    LAST_ERROR_MESSAGE: 
+  LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+ *************************** 6. row ***************************
+          CHANNEL_NAME: 1
+             WORKER_ID: 6
+             THREAD_ID: NULL
+         SERVICE_STATE: OFF
+ LAST_SEEN_TRANSACTION: 
+     LAST_ERROR_NUMBER: 0
+    LAST_ERROR_MESSAGE: 
+  LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+ *************************** 7. row ***************************
+          CHANNEL_NAME: 1
+             WORKER_ID: 7
+             THREAD_ID: NULL
+         SERVICE_STATE: OFF
+ LAST_SEEN_TRANSACTION: 
+     LAST_ERROR_NUMBER: 0
+    LAST_ERROR_MESSAGE: 
+  LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+ *************************** 8. row ***************************
+          CHANNEL_NAME: 1
+             WORKER_ID: 8
+             THREAD_ID: NULL
+         SERVICE_STATE: OFF
+ LAST_SEEN_TRANSACTION: 
+     LAST_ERROR_NUMBER: 0
+    LAST_ERROR_MESSAGE:
+ *************************** 9. row ***************************
+          CHANNEL_NAME: 1
+             WORKER_ID: 9
+             THREAD_ID: NULL
+         SERVICE_STATE: OFF
+ LAST_SEEN_TRANSACTION: 
+     LAST_ERROR_NUMBER: 0
+    LAST_ERROR_MESSAGE: 
+  LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+ *************************** 10. row ***************************
+          CHANNEL_NAME: 1
+             WORKER_ID: 10
+             THREAD_ID: NULL
+         SERVICE_STATE: OFF
+ LAST_SEEN_TRANSACTION: 7aaf67fb-7327-11e6-bad8-780cb8c4c633:196
+     LAST_ERROR_NUMBER: 1050
+    LAST_ERROR_MESSAGE: Worker 9 failed executing transaction '7aaf67fb-7327-11e6-bad8-780cb8c4c633:196' at master log mybinlog.000004, end_log_pos 4520624; Error 'Table 't3' already exists' on query.      ↪Default database: 'performance_schema'. Query: 'create table test.t3(c1 int)'
+  LAST_ERROR_TIMESTAMP: 2016-09-13 13:13:56
+
+memory相关的统计
+memory_summary_by_account_by_event_name
+memory_summary_by_host_by_event_name
+memory_summary_by_thread_by_event_name
+memory_summary_by_user_by_event_name
+memory_summary_global_by_event_name
+
+select host,user, concat(sum(SUM_NUMBER_OF_BYTES_ALLOC)/1024/1024-sum(SUM_NUMBER_OF_BYTES_FREE)/1024/1024," MB") as mem from memory_summary_by_account_by_event_name group by host,user;
++--------------+------+------------------+
+| host         | user | mem              |
++--------------+------+------------------+
+| NULL         | NULL | 1251.93444538 MB |
+| 172.16.70.59 | test | 0.05579090 MB    |
+| 172.16.90.12 | test | 0.10971069 MB    |
+| localhost    | repl | 0.04611969 MB    |
+| localhost    | root | 98.72850990 MB   |
++--------------+------+------------------+
+
+wait
+objects_summary_global_by_type
++-------------+--------------------+------------------------------------------------------+------------+-----------------+----------------+----------------+----------------+
+| OBJECT_TYPE | OBJECT_SCHEMA      | OBJECT_NAME                                          | COUNT_STAR | SUM_TIMER_WAIT  | MIN_TIMER_WAIT | AVG_TIMER_WAIT | MAX_TIMER_WAIT |
++-------------+--------------------+------------------------------------------------------+------------+-----------------+----------------+----------------+----------------+
+...
+| TABLE       | test               | t1                                                   |  120956483 | 194019175489474 |         138960 |        1603830 | 15318758805040 |
+| TABLE       | test               | t2                                                   |          0 |               0 |              0 |              0 |              0 |
+| TABLE       | test               | official_account_rank                                |      11631 |     57814978096 |          42846 |        4970522 |    24759292570 |
+| TABLE       | test               | official_accounts                                    |       5600 |     17866960332 |          48250 |        3190290 |     6216558564 |
+| TABLE       | test               | t3                                                   |          7 |       100580792 |        1133296 |       14368464 |       54761820 |
+| TABLE       | test               | t4                                                   |         75 | 158200945634190 |         148996 |  2109345941712 | 51070632293528 |
+...
+
+events_waits_current
+events_waits_history
+events_waits_history_long
+events_waits_summary_by_account_by_event_name
+events_waits_summary_by_host_by_event_name
+events_waits_summary_by_instance               instance指OBJECT_INSTANCE_BEGIN
+events_waits_summary_by_thread_by_event_name
+events_waits_summary_by_user_by_event_name
+events_waits_summary_global_by_event_name
+类似如下格式，summary都是基于EVENT_NAME的统计
+events_waits_history
+*************************** 1. row ***************************
+            THREAD_ID: 1
+             EVENT_ID: 31
+         END_EVENT_ID: 31
+           EVENT_NAME: wait/io/socket/sql/server_tcpip_socket
+               SOURCE: socket_connection.cc:904
+          TIMER_START: 95494810697615660
+            TIMER_END: 95494810701451728
+           TIMER_WAIT: 3836068
+                SPINS: NULL
+        OBJECT_SCHEMA: NULL
+          OBJECT_NAME: :::3306 
+           INDEX_NAME: NULL
+          OBJECT_TYPE: SOCKET
+OBJECT_INSTANCE_BEGIN: 94881856
+     NESTING_EVENT_ID: NULL
+   NESTING_EVENT_TYPE: NULL
+            OPERATION: connect
+      NUMBER_OF_BYTES: NULL
+                FLAGS: NULL
+

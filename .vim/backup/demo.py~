@@ -1,0 +1,55 @@
+import tornado.ioloop
+import tornado.web
+import time
+
+from tornado.web import asynchronous
+from tornado.gen import coroutine
+from concurrent.futures import ThreadPoolExecutor
+from tornado.concurrent import run_on_executor
+
+
+class BaseHandler(tornado.web.RequestHandler):
+    
+    
+    def get_all_arguments(self):
+        request_params = {}
+        args = self.request.arguments
+        for key in args:
+            request_params.setdefault(key, args[key][0])
+        return request_params
+
+
+class Test2(BaseHandler):
+    
+    def post(self):
+        #print self.request
+        #print self.request.arguments
+        print self.get_all_arguments
+        self.write('hello, tornado~\n')
+
+
+class Test1(BaseHandler):
+
+    executor = ThreadPoolExecutor(3)
+
+    @coroutine
+    def get(self):
+        print 'enter test1'
+        ret = yield self.sleep()
+        self.finish({'message':ret})
+
+    @run_on_executor
+    def sleep(self):
+        time.sleep(10)
+        return 10
+
+
+application = tornado.web.Application([
+    (r"/test1", Test1),
+    (r"/test2", Test2),
+])
+
+
+if __name__ == "__main__":
+    application.listen(6888)
+    tornado.ioloop.IOLoop.instance().start()

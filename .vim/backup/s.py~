@@ -1,0 +1,11 @@
+def f1(string):
+    str_list = list(string)
+    dif_char = set(set_list)
+    print "different char:%s" % dif_char
+    for each in dif_char:
+        times_count = string.count(each)
+        print "%s: %d" % (each, times_count)
+
+f1('fsadfdsfewfewa')
+
+

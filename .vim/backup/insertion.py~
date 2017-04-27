@@ -1,0 +1,18 @@
+#coding:utf-8
+
+import time
+
+'''从第二个起，后面的和前面的比，小则交换，否则跳出'''
+
+def insert_sort(alist):
+    for index in range(1, len(alist)):
+        currentvalue = alist[index]
+        position = index
+        while position > 0 and alist[position-1] > currentvalue:
+            alist[position] = alist[position-1]
+            position -= 1
+        alist[position] = currentvalue
+    return alist
+alist = [4, 2, 16, 6, 3]
+insert_sort(alist)
+print alist

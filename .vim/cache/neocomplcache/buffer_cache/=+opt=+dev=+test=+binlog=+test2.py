@@ -1,0 +1,1 @@
+['coding', 'class', 'mylocker', '__init__', 'self', 'print', 'called', '@staticmethod', 'acquire', 'unlock', 'lockerex', 'lockhelper', 'release', '_deco', 'func', '__deco', 'args', 'kwargs', 'before', '__name__', 'return', 'finally', 'example', '@lockhelper', 'myfunc', 'myfunc2', '__main__']

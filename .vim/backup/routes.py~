@@ -1,0 +1,14 @@
+
+from opers.test_opers import Test1
+from handlers.server import *
+
+
+handlers = [
+    
+    ##'''  -------------------- server regedit-----------------------------
+    (r"/server/admin", AdminServerHandler),
+    (r"/server/delete", DeleteServerHandler),
+    (r"/server/show", ShowServerListHandler),
+    (r"/server/search", SearchServerListHandler),
+    
+]

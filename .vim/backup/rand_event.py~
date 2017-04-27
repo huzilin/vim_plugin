@@ -1,0 +1,19 @@
+import sys
+
+sys.path.append("..")
+from include.unpack_byte import *
+
+class Rand_Event:
+    """
+    13
+    seed1_len = 8
+    seed2_len = 8
+    """
+    def __init__(self, post_buf):
+        self.parse = unpack_byte.Parse_Byte_Stream(post_buf)
+        self.seed1 = self.parse.get_uint64()
+        self.seed2 = self.parse.get_uint64()
+
+    def event_output(self):
+        print "seed1: %d" % self.seed1
+        print "seed2: %d" % self.seed2

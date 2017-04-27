@@ -1,0 +1,1 @@
+java -cp .:../lib/mysql-connector-java-5.1.40-bin.jar:../lib/log4j-1.2.17.jar:../lib/apache-log4j-extras-1.1.jar:../dist/BenchmarkSQL-4.0.jar -Dprop=$1 jTPCC

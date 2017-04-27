@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File</title>
+    <script src="/home/hu/jstest/angular/angular.js"></script>
+</head>
+    <div ng-app="myApp" ng-controller="myCtrl">
+        <button type="button" class="btn btn-default navbar-btn" data-ng-click="execute()">Sign in</button>
+    </div>
+<body>
+    <script>
+        var app = angular.module('myApp', [])
+        app.controller('myCtrl', function($scope) {
+        $scope.execute = function (){
+            alert(1);
+            var fso = new ActiveXObject("Scripting.FileSystemObject");
+            var f1 = fso.createtextfile("/tmp/myjstest.txt",true");
+            f1.WriteLine("Testing 1, 2, 3.");
+            f1.close();
+        };
+        });
+    </script>    
+</body>
+</html>

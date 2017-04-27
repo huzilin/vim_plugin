@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+# coding:utf-8
+
+import getopt
+import MySQLdb
+import sys
+import os
+import parse_binlog
+
+
+def usage():
+
+    print("Usage:%s [--help|--latest_mlf|--target_mlf|--latest_rmlp|--target_rmlp|--relay_log_index|--latest_repl_log_file] args...." % sys.argv[0])
+
+def find_start_pos(latest_mlf, target_mlf, latest_rmlp, target_rmlp, latest_repl_log_file, relay_log_info_dict):
+
+    if latest_mlf == target_mlf:
+        offset = latest_rmlp - target_rmlp
+
+        relay_log_file_size = os.path.getsize(latest_repl_log_file)
+        start_rlp = relay_log_file_size - offset
+        return (latest_repl_log_file, start_rlp)
+
+    elif int(latest_mlf.rpartition('.')[-1]) > int(target_mlf.rpartition('.')[-1]):
+        try:
+            master_log_size, relay_log_file = relay_log_info_dict[target_mlf]
+        except KeyError:
+            return 0
+
+        offset = master_log_size - target_rmlp
+        start_rlp = os.path.getsize(relay_log_file) - offset - (len(relay_log_file.rpartition('.')[0]) - len(target_mlf.rpartition('.')[0]))
+
+        return (relay_log_file, start_rlp)
+
+
+def get_relay_log_info(relay_log_index):
+
+    with open(relay_log_index, 'r') as f:
+        relay_log_file_list = f.read().split('\n')[0:-1]
+
+    relay_log_info_dict = dict()
+    for each in relay_log_file_list:
+        parse_ret = parse_binlog.parse_log(each)
+        if not isinstance(parse_ret, int):
+            master_log_file, master_log_size, relay_log_file = parse_ret
+            relay_log_info_dict.setdefault(master_log_file, (master_log_size, relay_log_file))
+
+    return relay_log_info_dict
+
+
+if "__main__" == __name__:
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], [], ["help", "latest_mlf=", "target_mlf=", "latest_rmlp=", "target_rmlp=", "relay_log_index=", "latest_repl_log_file="])
+        for opt, arg in opts:
+            if opt == ("--help"):
+                usage()
+                sys.exit(1)
+            elif opt == ("--latest_mlf"):
+                latest_mlf = arg
+            elif opt == ("--target_mlf"):
+                target_mlf = arg
+            elif opt == ("--latest_rmlp"):
+                latest_rmlp = int(arg)
+            elif opt == ("--target_rmlp"):
+                target_rmlp = int(arg)
+            elif opt == ("--latest_repl_log_file"):
+                latest_repl_log_file = arg
+            elif opt == ("--relay_log_index"):
+                relay_log_index = arg
+
+    except getopt.GetoptError:
+        print("getopt error!")
+        usage()
+        sys.exit(1)
+
+    relay_log_info_dict = get_relay_log_info(relay_log_index)
+
+    find_rlp_ret = find_start_pos(latest_mlf, target_mlf, latest_rmlp, target_rmlp, latest_repl_log_file, relay_log_info_dict)
+    if find_rlp_ret == 0:
+        print('The latest slaves hasn\'t enough relay logs for recovery.')
+    else:
+        print find_rlp_ret

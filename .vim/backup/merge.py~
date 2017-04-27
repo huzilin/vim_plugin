@@ -1,0 +1,32 @@
+#!/usr/bin/python  
+import sys  
+   
+def merge(left, right):
+    i, j = 0, 0
+    result = []
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    result += left[i:]
+    result += right[j:]
+    return result
+
+
+def merge_sort(list):  
+    if len(list) <= 1:
+        return list
+    mid = len(list)/2  
+    left = merge_sort(list[:mid])
+    right = merge_sort(list[mid:])  
+    merge(left, right)
+    return merge(left, right)
+   
+if __name__ == '__main__':  
+    list = [10,8,4,-1,2,6,7,3]  
+    print 'list is:', list
+    n_list = merge_sort(list)
+    print 'merge sort:', n_list

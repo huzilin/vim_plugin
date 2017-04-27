@@ -1,0 +1,47 @@
+
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "oraclereader", 
+                    "parameter": {
+                        "column": ["SMS_SEND_ID", "CONTENT", "MOBILE", "SEND_TIME", "REQ_TIME", "SEND_FLAG", "FAIL_REASON", "FAIL_TIMES", "ORG_NO"],
+                        "connection": [
+                            {
+                            "jdbcUrl": ["jdbc:oracle:thin:@10.0.0.114:1521:orcl"], 
+                                "table": ["P_SMS_SEND"]
+                            }
+                        ], 
+                        "password": "sgpms_ln_all", 
+                        "username": "sgpms_ln_all"
+                        "splitPk": "spk",
+                        "samplePercentage": "0.005",
+                    }
+                }, 
+                "writer": {
+                    "name": "mysqlwriter", 
+                    "parameter": {
+                        "column": ["SMS_SEND_ID", "CONTENT", "MOBILE", "SEND_TIME", "REQ_TIME", "SEND_FLAG", "FAIL_REASON", "FAIL_TIMES", "ORG_NO"],
+                        "connection": [
+                            {
+                                "jdbcUrl": "jdbc:mysql://10.0.0.216:23306/sgpms_ln", 
+                                "table": ["P_SMS_SEND"]
+                            }
+                        ], 
+                        "password": "DBScale!123456", 
+                        "preSql": [], 
+                        "session": [], 
+                        "username": "dbscale", 
+                        "writeMode": "insert"
+                    }
+                }
+            }
+        ], 
+        "setting": {
+            "speed": {
+                "channel": "10",
+            }
+        }
+    }
+}

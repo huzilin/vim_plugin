@@ -1,0 +1,217 @@
+'''
+#  =============================================================================
+#       FileName: server.py
+#           Desc: 
+#         Author: Hu Zilin
+#          Email: zilin.hu@greatopensource.com
+#        Created: 2016-07-20 11:07:43
+#        Version: 0.0.1
+#     LastChange: 2016-07-21 18:53:13
+#        History:
+#                 0.0.1 | Hu Zilin | init
+#  =============================================================================
+'''
+import re
+import logging
+
+from concurrent.futures import ThreadPoolExecutor
+from tornado.web import asynchronous
+from tornado.gen import coroutine
+from tornado.concurrent import run_on_executor
+
+from handlers.base import BaseHandler
+from opers.db_opers import db_opers
+from opers.ip_transform import IP_Transform
+from tornado.options import options
+
+
+class AdminServerHandler(BaseHandler):
+
+    executor = ThreadPoolExecutor(3)
+
+    @asynchronous
+    @coroutine
+    def post(self):
+        args = self.get_all_arguments()
+        ret = yield self.do(args)
+        self.finish({'message': ret})
+
+    @run_on_executor
+    def do(self, args):
+        try:
+            group_name = args.get('group_name')
+            seq = args.get('seq')
+            ip = args.get('ip')
+            correct_ip = r'((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)'
+            if not re.match(correct_ip, ip):
+                raise ValueError("IP is incorrect!")
+            int_num = IP_Transform.IP2int(ip)
+            port = args.get('port')
+            note = args.get('note')
+            logging.info('group_name:%s seq:%s ip :%s port:%s need to add' % (
+                group_name, seq, ip, port))
+            conn = db_opers.get_mysql_connection(
+                options.mysql_host, options.mysql_user, options.mysql_passwd, options.mysql_port, True)
+            conn.select_db(options.mysql_db)
+            cursor = conn.cursor()
+            sql = "INSERT INTO `%s` (group_name, seq, ip, port, note) VALUES('%s', %s, %s, %s, '%s');" % (
+                options.mysql_table, group_name, seq, int_num, port, note)
+            cursor.execute(sql)
+            logging.info('group_name:%s seq:%s ip :%s port:%s has been added' % (
+                group_name, seq, 'ip', 'port'))
+
+        except Exception, e:
+            logging.info('group_name:%s seq:%s ip :%s port:%s failed to added\t%s' % (
+                group_name, seq, 'ip', 'port', e))
+        finally:
+            cursor.close()
+            conn.close()
+        return 'success'
+
+
+class DeleteServerHandler(BaseHandler):
+
+    executor = ThreadPoolExecutor(3)
+
+    @asynchronous
+    @coroutine
+    def post(self):
+        args = self.get_all_arguments()
+        ret = yield self.do(args)
+        self.finish({'message': ret})
+
+    @run_on_executor
+    def do(self, args):
+        try:
+            group_name = args.get('group_name')
+            seq = args.get('seq')
+            port = args.get('port')
+            logging.info('group_name:%s seq:%s need to delete' %
+                         (group_name, seq))
+            conn = db_opers.get_mysql_connection(
+                options.mysql_host, options.mysql_user, options.mysql_passwd, options.mysql_port, True)
+            conn.select_db(options.mysql_db)
+            cursor = conn.cursor()
+            sql = "DELETE FROM `%s` WHERE group_name=%s and seq=%s" % (
+                options.mysql_table, group_name, seq)
+            cursor.execute(sql)
+            logging.info('group_name:%s seq:%s has been deleted' %
+                         (group_name, seq))
+        except Exception, e:
+            logging.error('group_name:%s seq:%s failed to delete\n%s' %
+                          (group_name, seq, e))
+        finally:
+            cursor.close()
+            conn.close()
+        return 'success'
+
+
+class SearchServerListHandler(BaseHandler):
+
+    executor = ThreadPoolExecutor(3)
+
+    @asynchronous
+    @coroutine
+    def post(self):
+        args = self.get_all_arguments()
+        ret = yield self.do(args)
+        self.finish({'message': ret})
+
+    @run_on_executor
+    def do(self, args):
+        try:
+            logging.info('be requested to show server list')
+            group_name = args.get('group_name')
+            seq = args.get('seq')
+            ip = args.get('ip')
+            if ip:
+                int_num = IP_Transform.IP2int(ip)
+            port = args.get('port')
+            status = args.get('status')
+            conn = db_opers.get_mysql_connection(
+                options.mysql_host, options.mysql_user, options.mysql_passwd, options.mysql_port, True)
+            conn.select_db(options.mysql_db)
+            cursor = conn.cursor()
+            sql = "SELECT group_name, seq, ip, port, note, status FROM %s" % options.mysql_table
+            condition_num = 0
+
+            if group_name:
+                sql += " where group_name='%s'" % group_name
+                condition_num += 1
+
+            if seq:
+                if condition_num:
+                    sql += " and seq=%s" % seq
+                else:
+                    sql += " where seq=%s" % seq
+                    condition_num += 1
+
+            if ip:
+                if condition_num:
+                    sql += " and ip='%s'" % int_num
+                else:
+                    sql += " where ip='%s'" % int_num
+                    condition_num += 1
+
+            if port:
+                if condition_num:
+                    sql += " and port='%s'" % port
+                else:
+                    sql += " where port='%s'" % port
+                    condition_num += 1
+
+            if status:
+                if condition_num:
+                    sql += " and status='%s'" % status
+                else:
+                    sql += " where status='%s'" % status
+                    condition_num += 1
+
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            rows = list(rows)
+            for row_num, each_row in enumerate(rows):
+                each_row = list(each_row)
+                int_num = each_row[2]
+                ip = IP_Transform.int2IP(int_num)
+                each_row[2] = ip
+                rows[row_num] = each_row
+            logging.info('show server list sucessful %s' % rows)
+        except Exception, e:
+            logging.error('failed to show server list action\n%s' % e)
+        finally:
+            conn.close()
+        return rows
+
+
+class ShowServerListHandler(BaseHandler):
+
+    executor = ThreadPoolExecutor(3)
+
+    @asynchronous
+    @coroutine
+    def get(self):
+        ret = yield self.do()
+        self.finish({'message': ret})
+
+    @run_on_executor
+    def do(self):
+        try:
+            logging.info('be requested to show server list')
+            conn = db_opers.get_mysql_connection(
+                options.mysql_host, options.mysql_user, options.mysql_passwd, options.mysql_port, True)
+            rows = db_opers.get_table_data(
+                conn, options.mysql_db, options.mysql_table)
+            rows = list(rows)
+            for row_num, each_row in enumerate(rows):
+                each_row = list(each_row)
+                int_num = each_row[2]
+                ip = IP_Transform.int2IP(int_num)
+                each_row[2] = ip
+                rows[row_num] = each_row
+            logging.info('show server list sucessful')
+        except Exception, e:
+            logging.error('failed to show server list action\t%s' % e)
+        finally:
+            conn.close()
+        return rows

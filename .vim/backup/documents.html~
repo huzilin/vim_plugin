@@ -1,0 +1,16 @@
+<div class="hbox hbox-auto-xs hbox-auto-sm">
+    <!-- main -->
+    <div class="col">
+        <!-- main header -->
+        <div class="bg-light lter b-b wrapper-md">
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <h1 class="m-n font-thin h3 text-black" translate="dbscale.manual"></h1>
+                </div>
+            </div>
+        </div>
+        <!-- / main header -->
+
+         <iframe width="100%" style="height: 100vh; border:none" ng-src="/static/views/dbscale/documents/index.html"></iframe>
+    </div>
+</div>

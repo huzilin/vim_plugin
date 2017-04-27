@@ -1,0 +1,33 @@
+# coding=utf-8
+
+from django.conf.urls import url
+
+from gtms.project.dbscale import views
+
+
+urlpatterns = [
+    url(r'^dbscale/instances/$', views.InstanceList.as_view(),
+        name='instances'),
+    url(r'^dbscale/instances/(?P<pk>[\d]+)/$', views.InstanceDetail.as_view(),
+        name='instance_detail'),
+    url(r'^dbscale/instances/exists/$', views.instance_exists,
+        name='instance_exists'),
+    url(r'^dbscale/instances/create/$', views.instance_create,
+        name='instance_create'),
+    url(r'^dbscale/instances/(?P<pk>[\d]+)/update/$', views.instance_update,
+        name='instance_update'),
+    url(r'^dbscale/instances/(?P<pk>[\d]+)/delete/$', views.instance_delete,
+        name='instance_delete'),
+    url(r'^dbscale/instances/(?P<pk>[\d]+)/sql-query/$', views.sql_query,
+        name='sql_query'),
+    url(r'^dbscale/instances/(?P<pk>[\d]+)/topo-struct/$', views.topo_struct,
+        name='topo_struct'),
+    url(r'^dbscale/instances/(?P<pk>[\d]+)/tasks/$', views.TaskList.as_view(),
+        name='tasks'),
+    url(r'^dbscale/instances/(?P<pk>[\d]+)/create-task/$', views.create_task,
+        name='create_task'),
+    url(r'^dbscale/instances/(?P<pk>[\d]+)/delete-task/$', views.delete_task,
+        name='delete_task'),
+    url(r'^dbscale/tasks/(?P<pk>[\d]+)/$', views.TaskDetail.as_view(),
+        name='task_detail'),
+]

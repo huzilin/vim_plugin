@@ -1,0 +1,68 @@
+#!/usr/bin/python2
+import MySQLdb
+import random
+
+conn = MySQLdb.connect(host='127.0.0.1',port=3306,user='root',passwd='123',db="t2",charset="utf8")  
+cursor = conn.cursor()
+
+sql = "create table NativeSecurityType( NativeSecurityType smallint(6) not null, Currency char(4) default null, PricePrecision decimal(13,4) default null, QtyUnit decimal(15,2) default null, ParValue decimal(13,4) default null, Exchange char(4) default null, Description varchar(50) default null, primary key(NativeSecurityType), key FK_Reference57 (Currency), key FK_Reference77 (Exchange) );"
+cursor.execute(sql)
+sql = "create table ListSecurity ( SecurityID char(8) not null, Symbol char(40) default null, EnglishName char(40) default null, ISIN char(12) default null, UnderlyingSecurityID char(8) default null, ListDate int(11) default null, NativeSecurityType smallint(6) not null, ParValue decimal(13,4) default null, OutStandingShare decimal(18,2) default null, PublicFloatShareQuantity decimal(18,2) default null, DayTrading smallint(6) default null, PrevClosePx decimal(13,4) default null, OnList smallint(6) default null, QualificationFlag smallint(6) default null, primary key (SecurityID), key FK_Reference_3 (NativeSecurityType), constraint fk_reference_3 foreign key (NativeSecurityType) references NativeSecurityType (NativeSecurityType) );"
+cursor.execute(sql)
+
+sql = "create table Gage ( SecurityID char(8) not null, Ratio decimal(5,2) default NULL, primary key (SecurityID), constraint fk_reference_70 foreign key(SecurityID) references ListSecurity (SecurityID) );"
+cursor.execute(sql)
+
+sql = "create table CreditSecurity( SecurityID char(8) not null, Side char(1) not null,PriceCheckMode tinyint(4) default null, MarketOrderPermit smallint(6) default null, primary key(SecurityID,Side), constraint fk_reference_72 foreign key(SecurityID) references ListSecurity (SecurityID) );"
+cursor.execute(sql)
+
+sql = "create table PledgeRule( SecurityID char(8) not null, ContractMultiplier decimal(5,4) default null, RegularShare char(22) default null, PledgeShareRcRuleTemplate char(32) default null, SolutionShareRcRuleTemplate char(32) default null, primary key(SecurityID), key FK_Reference315 (SolutionShareRcRuleTemplate), key FK_Reference316 (PledgeShareRcRuleTemplate), constraint fk_reference_109 foreign key(SecurityID) references ListSecurity (SecurityID) );"
+cursor.execute(sql)
+
+sql = "create table Stock( SecurityID char(8) not null, IndustryClassifcation char(4) default null, PreviousYearProfitPerShare decimal(10,4) default null, CurrentYearProfitPerShare decimal(10,4) default null, primary key (SecurityID), constraint fk_reference_4 foreign key(SecurityID) references ListSecurity (SecurityID) );"
+cursor.execute(sql)
+
+sql = "create table Opt( SecurityID char(8) not null, CallOrPut char(1) default null, ListType smallint(6) default null, DeliveryType char(1) default null, DeliveryMonth int(11) not null, DeliveryDay int(11) default null, LastTradeDay int(11) default null, ExerciseType char(1) default null, ExercisePrice decimal(13,4) default null, ContractUnit decimal(15,2) default null, PrevClearingPric decimal(13,4) default null, ContractPosition decimal(18,2) default null, AdjustTime tinyint(4) default null, Primary key (SecurityID), constraint fk_reference_10 foreign key(SecurityID) references ListSecurity (SecurityID) );"
+cursor.execute(sql)
+
+sql = "create table Repo( SecurityID char(8) not null, ExpirationDays int(11) default null, RegularShare char(8) default null, Primary key (SecurityID), constraint fk_reference_9 foreign key(SecurityID) references ListSecurity (SecurityID) );"
+cursor.execute(sql)
+
+sql = "create table Warrant( SecurityID char(8) not null, ExpireDate int(11) default null, CallOrPut char(1) default null, LastTradeDay int(11) default null, ExerciseType char(1) default null, ExerciseRatio decimal(10,4) default null, ExercisePrice decimal(13,4) default null, DeliveryType char(1) default null, ClearingPrice decimal(13,4) default null, Primary key (SecurityID), constraint fk_reference_7 foreign key(SecurityID) references ListSecurity (SecurityID) );"
+cursor.execute(sql)
+
+sql = "create table Fund( SecurityID char(8) not null, NAV decimal(13,4) default null, Member char(6) not null, Primary key (SecurityID), key FK_Reference_157 (Member), constraint fk_reference_5 foreign key(SecurityID) references ListSecurity (SecurityID) );"
+cursor.execute(sql)
+
+sql = "create table Bond( SecurityID char(8) not null, CouponRate decimal(8,4) default null, IssuePrice decimal(13,4) default null, Intereat decimal(12,8) default null, IntereatAccrualDate int(11) default null, MaturityDate int(11) default null, Primary key (SecurityID), constraint fk_reference_106 foreign key(SecurityID) references ListSecurity (SecurityID) );"
+cursor.execute(sql)
+
+sql = "INSERT INTO `NativeSecurityType` VALUES (1,'CNT',0.0100,1.00,1.0000,'XSHE','fasdfa'),(2,'CNT',0.0100,1.00,1.0000,'XSHE','fasdfa'),(3,'CNT',0.0100,1.00,1.0000,'XSHE','fasdfa'),(4,'CNT',0.0100,1.00,1.0000,'XSHE','fasdfa'),(5,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(6,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(7,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(8,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(9,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(10,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(11,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(12,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(13,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(14,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(15,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(16,'CNT',0.0010,1.00,1.0000,'XSHE','fasdfa'),(17,'CNT',0.0010,1.00,1.0000,'XSHE','fasdfa'),(18,'CNT',0.0010,1.00,1.0000,'XSHE','fasdfa'),(19,'CNT',0.0010,1.00,1.0000,'XSHE','fasdfa'),(20,'CNT',0.0010,1.00,1.0000,'XSHE','fasdfa'),(21,'CNT',0.0001,1.00,1.0000,'XSHE','fasdfa'),(22,'CNT',0.0001,1.00,1.0000,'XSHE','fasdfa'),(23,'CNT',0.0001,1.00,1.0000,'XSHE','fasdfa'),(24,'CNT',0.0001,1.00,1.0000,'XSHE','fasdfa'),(25,'CNT',0.0001,1.00,1.0000,'XSHE','fasdfa'),(26,'CNT',0.0001,1.00,1.0000,'XSHE','fasdfa'),(28,'CNT',0.0001,1.00,1.0000,'XSHE','fasdfa'),(29,'CNT',0.0001,1.00,0.0000,'XSHE','fasdfa'),(30,'CNT',0.0001,1.00,0.0000,'XSHE','fasdfa'),(31,'CNT',0.0001,1.00,0.0000,'XSHE','fasdfa'),(32,'CNT',0.0001,1.00,0.0000,'XSHE','fasdfa'),(33,'CNT',0.0010,1.00,1.0000,'XSHE','fasdfa'),(34,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(35,'CNT',0.0010,1.00,100.0000,'XSHE','fasdfa'),(63,'CNT',0.0000,1.00,100.0000,'XSHE','fasdfa');"
+cursor.execute(sql)
+a=1
+for j in range(1,23):
+    for i in range(a, a+100):
+        sql = "insert into ListSecurity values ('" + str(i).zfill(6) + "' ,'awk','fff',NULL,'000002',19940606," + str(j) + ",1,9520745656.00,557234.00,0,7.23,1,0)"
+        cursor.execute(sql)
+        a += 1
+
+for i in range(1,2200):
+    sql = "insert into Gage values ('" + str(i).zfill(6) + "'," + str(random.choice([65,70,0])) + ")"
+    cursor.execute(sql)
+
+for i in random.sample(range(1,2200), 820):
+    sql = "insert into PledgeRule values ('" + str(i).zfill(6) + "', 0.93, 131900,'PledgeWithfdsaf','PledgeWithfdsaffas')"
+    cursor.execute(sql)
+
+for i in random.sample(range(1,2200), 300):
+    sql = "insert into CreditSecurity values ('" + str(i).zfill(6) + "', 1,1,0)"
+    n = cursor.execute(sql)
+    sql = "insert into CreditSecurity values ('" + str(i).zfill(6) + "', 2,1,0)"
+    cursor.execute(sql)
+
+for table_name, num in (('Stock', 1584), ('Opt',40), ('Repo',9),('Warrant',1), ('Fund', 364), ('Bond',591)):
+    for i in random.sample(range(1,2200), num):
+        sql = "insert into " + table_name + " (SecurityID) values ('" + str(i).zfill(6) + "')"
+        cursor.execute(sql)
+cursor.execute("commit")
+cursor.close()

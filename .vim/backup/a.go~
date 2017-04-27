@@ -1,0 +1,24 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	stmt := []string{
+		"create table part_tb01 (id int, c1 int, c2 varchar(20), primary key id) engine=innodb",
+		"create table part_tb02 (id int, c1 int, c2 varchar(20), primary key id) engine=innodb",
+		"insert into part_tb01 values (1, 1, 'hello world.')",
+		"insert into part_tb01 values (2, 2, 'welecome to dbscale.')",
+		"insert into part_tb01 values (3, 3, 'this is a demo partition table.')",
+		"insert into part_tb01 values (4, 4, 'plz try and have fun.')",
+	}
+	for i := 5; i < 101; i++ {
+		sql := "insert into part_tb01 values (%d, %d, 'this is test text%d')"
+		sql = fmt.Sprintf(sql, i, i, i)
+		stmt = append(stmt, sql)
+	}
+	for _, j := range stmt {
+		fmt.Println(j)
+	}
+}

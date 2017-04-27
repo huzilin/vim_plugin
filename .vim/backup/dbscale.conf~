@@ -1,0 +1,110 @@
+[main]
+driver = mysql
+log-level = INFO
+backlog = 10240
+log-file = log/dbscale.log
+real-time-queries = 2
+admin-user = dbscale
+admin-password = dbscale
+max-replication-delay = 500
+default-session-variables = CHARACTER_SET_CLIENT:CHARACTER_SET_RESULTS:CHARACTER_SET_CONNECTION:NET_READ_TIMEOUT:TIME_ZONE:SQL_SAFE_UPDATES:SQL_MODE:AUTOCOMMIT:TX_ISOLATION:SQL_SELECT_LIMIT
+support-gtid=1
+authenticate-source = auth
+is-auth-schema = 1
+use-partial-parse = 1
+lower-case-table-names = 0
+thread-pool-min = 50
+thread-pool-max = 80
+thread-pool-low = 40
+backend-thread-pool-max= 80
+handler-thread-pool-max=80
+max-fetchnode-ready-rows-size=1000000
+auto-inc-lock-mode=0
+enable-get-rep-connection = 1
+enable-session-swap=0
+
+[driver mysql]
+type = MySQLDriver
+port = 13001
+bind-address = 0.0.0.0
+
+[catalog def]
+data-source = ds_catalog
+
+[data-source ds_catalog]
+type = replication
+master = p1m-4-50-18-40
+slave = p1s-4-50-18-40
+user = dbscale
+password = dbscale
+load-balance-strategy = MASTER-SLAVES
+
+[data-server auth_m]
+host = 127.0.0.1
+port = 3210
+user = dbscale
+password = dbscale
+
+[data-server auth_s]
+host = 127.0.0.1
+port = 3211
+user = dbscale
+password = dbscale
+
+[data-source auth]
+type = replication
+master = auth_m-4-50-18-40
+slave  = auth_s-4-50-18-40
+load-balance-strategy = MASTER-SLAVES
+
+[data-server p1m]
+host = 127.0.0.1
+port = 3212
+user = dbscale
+password = dbscale
+
+[data-server p1s]
+host = 127.0.0.1
+port = 3213
+user = dbscale
+password = dbscale
+
+[data-source partition1]
+type = replication
+master = p1m-10-50-20-40
+slave = p1s-10-50-20-40
+user = dbscale
+password = dbscale
+load-balance-strategy = MASTER-SLAVES
+
+[data-server p2m]
+host = 127.0.0.1
+port = 3214
+user = dbscale
+password = dbscale
+
+[data-server p2s]
+host = 127.0.0.1
+port = 3215
+user = dbscale
+password = dbscale
+
+[data-source partition2]
+type = replication
+master = p2m-10-50-20-40
+slave = p2s-10-50-20-40
+user = dbscale
+password = dbscale
+load-balance-strategy = MASTER-SLAVES
+
+[partition-scheme test]
+type=hash
+virtual-weight = 1:1
+partition = partition1
+partition = partition2
+
+[table test.part]
+type = partition
+pattern=test.*
+partition-scheme = test
+partition-key = id 

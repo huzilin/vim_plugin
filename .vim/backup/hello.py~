@@ -1,0 +1,22 @@
+from fabric.api import run, roles, execute, env, runs_once, task
+
+env.roledefs = {
+        'db': ['root@172.16.90.151', 'root@172.16.90.152'],
+        'web': ['root@172.16.90.11', 'root@172.16.90.151', 'root@172.16.90.12'],
+}
+
+env.hosts = ['172.16.90.151', '172.16.90.152']
+
+env.user='root'
+env.password = 'abc123'
+
+def migrate():
+    return run('pwd')
+
+def update():
+    return run('pwd')
+
+@task
+@runs_once
+def a():
+    execute(migrate, hosts=['172.16.90.152'])

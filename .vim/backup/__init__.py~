@@ -1,0 +1,21 @@
+import begin_load_query_event
+import event_common_header
+#import execute_load_query_event
+import format_description_event
+import gtid_log_event
+import incident_event
+import intvar_event
+import previous_gtids_log_event
+#import query_event
+import rand_event
+import rotate_event
+import rows_event
+import rows_query_log_event
+import start_event_v3
+import start_event_v3
+import stop_event
+import table_map_event
+import user_var_event
+import xid_event
+
+print a

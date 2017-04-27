@@ -1,0 +1,1652 @@
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` PROCEDURE `DS50_Proc_Share`(INOUT `transform_date_in` char(8),IN `train_no_in` char(12),IN `train_code_in` char(8),IN `start_station_telecode_in` char(3),IN `end_station_telecode_in` char(3),IN `transform_station_telecode_in` char(3),INOUT `transform_no_in` char(2),IN `seat_type_code_in` VARCHAR(255),INOUT `purpose_code_in` VARCHAR(255),INOUT `range_in` tinyint unsigned,IN `day_difference_from_in` tinyint ,INOUT `fetch_w_seat_in` tinyint unsigned,INOUT `share_flag_in` CHAR(1),INOUT `share_string_in` VARCHAR(8192),IN `output_in` CHAR(1),INOUT `sale_station_in` char(3),IN `sale_center_code_in` CHAR(2),IN `sale_subbureau_in` CHAR(2),IN `GCN_in` CHAR(2),IN `GSN_in` CHAR(4),IN `GDP_in` CHAR(1),IN `SB_LIST_in` char(3),IN `to_station_no_in` CHAR(2),IN `to_station_no_limit_in` CHAR(2),IN `module_type_in` CHAR(1),IN `operate_type_in` CHAR(1),IN `window_range_in` tinyint unsigned,IN `v_FromRange_in` tinyint unsigned,IN `v_ToRange_in` tinyint unsigned,INOUT `range_in1` tinyint unsigned,INOUT `range_in2` tinyint unsigned,INOUT `range_in3` tinyint unsigned,INOUT `range_in4` tinyint unsigned,INOUT `range_in5` tinyint unsigned,IN `GU_in` smallint,IN `GM_in` smallint,IN `GD_in` smallint,IN `ticket_num_in` smallint,IN `Is_Bed_in` tinyint unsigned,INOUT `start_coach_no_in` CHAR(2),INOUT `end_coach_no_in` CHAR(2),INOUT `start_seat_no_in` CHAR(4),INOUT `end_seat_no_in` CHAR(4),IN `application_msg_in` CHAR(10),IN `ticket_num_ary_in` VARCHAR(36),IN `share_station_in` VARCHAR(30),IN `operater_msg_in` VARCHAR(30),IN `right_limit_in` CHAR(10),IN `train_type_in` CHAR(1),OUT `return_in` int)
+BEGIN
+	DECLARE l_Version CHAR(30)
+
+	;DECLARE l_train_date      CHAR(8)   ;DECLARE l_from_station_no    CHAR(2)
+	 ;DECLARE l_sale_mode      CHAR(1)   ;DECLARE l_return_code     INTEGER
+	 ;DECLARE l_rowcount      INTEGER   ;DECLARE l_error       INTEGER
+	 ;DECLARE l_original_station_telecode VARCHAR(3)  ;DECLARE l_original_subbureau_code CHAR(2)
+	 ;DECLARE l_original_bureau_code  CHAR(1)   ;DECLARE l_delay_days      SMALLINT
+	 ;DECLARE l_pre_sale_time     INTEGER   ;DECLARE l_transform_start_time  CHAR(4)
+	 ;DECLARE l_old_fetch_w_seat    tinyint unsigned   ;DECLARE l_new_fetch_w_seat    tinyint unsigned
+	 ;DECLARE l_old_sale_station    CHAR(3)   ;DECLARE  l_transform_bureau_code   CHAR(1)
+	 ;DECLARE l_transform_subbureau_code  CHAR(2)   ;DECLARE l_old_range      tinyint unsigned
+	 ;DECLARE l_location_share_string   VARCHAR(8192) ;DECLARE l_day_difference1    tinyint unsigned
+	 ;DECLARE  l_day_difference2     tinyint unsigned   ;DECLARE l_tmp_range      tinyint unsigned
+	 ;DECLARE l_tmp_start_coach_no    CHAR(2)   ;DECLARE l_tmp_end_coach_no    CHAR(2)
+	 ;DECLARE l_tmp_start_seat_no   CHAR(4)   ;DECLARE l_tmp_end_seat_no    CHAR(4)
+	 ;DECLARE l_old_range1      tinyint unsigned   ;DECLARE l_old_range2      tinyint unsigned
+	 ;DECLARE l_old_range3      tinyint unsigned   ;DECLARE l_old_range4      tinyint unsigned
+	 ;DECLARE l_old_range5      tinyint unsigned   ;DECLARE l_fetch_range     tinyint unsigned
+	 ;DECLARE l_old_start_coach_no   CHAR(2)   ;DECLARE l_old_end_coach_no    CHAR(2)
+	 ;DECLARE l_old_start_seat_no   CHAR(4)   ;DECLARE l_old_end_seat_no    CHAR(4)
+	 ;DECLARE l_Kind        CHAR(1)   ;DECLARE l_Kind_flag      tinyint unsigned
+	 ;DECLARE l_row         SMALLINT   ;DECLARE  l_total_row       INTEGER 
+	 ;DECLARE  l_w_seat_flag      CHAR(1)   ;DECLARE l_union_flag      tinyint unsigned
+	 ;DECLARE l_tmp_station_telecode  CHAR(3)   ;DECLARE l_train_start_date    CHAR(8)
+	 ;DECLARE l_pre_time      INTEGER   ;DECLARE l_seat_type      CHAR(1)
+	 ;DECLARE l_purpose_list     VARCHAR(512) ;DECLARE l_old_purpose_code    CHAR(2)
+	 ;DECLARE l_basic_station_telecode  CHAR(3)   ;DECLARE l_basic_ahead_time    INTEGER
+	 ;DECLARE l_basic_start_time    CHAR(4)   ;DECLARE l_tmp_purpose_code    CHAR(2)
+	 ;DECLARE l_basic_station_no    CHAR(2)   ;DECLARE l_STM        CHAR(3)
+	 ;DECLARE l_ATT        tinyint unsigned   ;DECLARE l_schedule_flag     tinyint unsigned
+	 ;DECLARE l_seat_coach_no     CHAR(2)   ;DECLARE l_schedule_coach    CHAR(2)
+	 ;DECLARE l_seat_type_list    VARCHAR(512) ;DECLARE l_share_base_id     SMALLINT   
+	 ;DECLARE l_tmp_seat_type     CHAR(1)   ;DECLARE l_transform_num     SMALLINT   
+	 ;DECLARE l_SQL        VARCHAR(512) ;DECLARE l_multi_flag      tinyint unsigned
+	 ;DECLARE l_old_to_station_no_limit CHAR(2)   ;DECLARE l_office_no      CHAR(7)
+	 ;DECLARE l_window_no      tinyint unsigned   ;DECLARE l_ahead_time      INTEGER
+	 ;DECLARE l_start_datetime    DATETIME   ;DECLARE l_start_time      CHAR(4)
+	 ;DECLARE l_start_station_name   CHAR(10)   ;DECLARE l_end_station_name    CHAR(10)   
+	;DECLARE Lable_s int;DECLARE Lable_OK_s int;
+	 Declare record_not_found Integer Default 0;
+
+		DECLARE cursor_share_station CURSOR FOR
+		 SELECT station_telecode,train_date,station_no,range_in,fetch_w_seat,start_coach_no,end_coach_no,start_seat_no,end_seat_no
+			,  purpose_code,seat_type_code,ticket_num,range1,range2,range3,range4,range5,far_from_no
+			FROM tmp_share_detail WHERE flag = 1 AND ticket_num > 0 AND station_no < l_from_station_no
+		 ORDER BY ticket_num,station_no;
+	Declare Continue handler For Sqlstate '02000' Set record_not_found = 1;
+
+	
+	 if output_in='9' then
+		select '1===come in procedure DS50_Proc_Share';
+	 end if;
+	SET l_Version = "Ver20150130.08:40"; 
+	
+							 
+							 
+
+	set Lable_OK_s = 1;
+	Lable_OK_RETURN:loop
+	if Lable_OK_s = 0 THEN
+			leave Lable_OK_RETURN;
+	end if;
+	 
+	
+	IF transform_no_in = '01' THEN  
+		 SET l_multi_flag = 0
+			,  l_transform_num = 0;
+		 LEAVE lable_OK_return;
+	END if;
+
+	
+	SELECT station_name into l_start_station_name FROM basic.station_dictionary 
+	 WHERE station_telecode = start_station_telecode_in;
+	SELECT station_name into l_end_station_name FROM basic.station_dictionary 
+	 WHERE station_telecode = start_station_telecode_in;
+
+	
+	SET l_old_range       = range_in
+	 ,  l_old_to_station_no_limit = to_station_no_limit_in;
+
+	
+	IF transform_station_telecode_in = sale_station_in THEN 
+		set range_in = 0;
+	ELSE 
+		SET range_in = v_FromRange_in;
+	end if;
+
+	
+	
+	CREATE Temporary TABLE If Not Exists tmp_share2
+	 (   
+		 station_telecode CHAR(8) NOT NULL
+	 , delay_days   SMALLINT NOT NULL
+	 , pre_saletime   INTEGER NOT NULL
+	 , w_seat_flag    CHAR(1) NOT NULL 
+	 , purpose_code   CHAR(2) NOT NULL
+	 , seat_type_code  CHAR(1) NOT NULL
+	 , range_in     tinyint unsigned NOT NULL
+	 , start_coach_no  CHAR(2) NOT NULL
+	 , end_coach_no   CHAR(2) NOT NULL
+	 , start_seat_no   CHAR(4) NOT NULL
+	 , end_seat_no   CHAR(4) NOT NULL
+	 , basic_station_telecode CHAR(3) NOT NULL 
+	 , basic_ahead_time INTEGER NOT NULL
+	 );
+	 delete from tmp_share2;
+	
+	
+	CREATE Temporary TABLE if not exists  tmp_share_schedule 
+	 (station_telecode CHAR(3) NOT NULL
+	 , delay_days   SMALLINT NOT NULL
+	 , pre_saletime   INTEGER NOT NULL
+	 , w_seat_flag    CHAR(1) NOT NULL 
+	 , purpose_code   CHAR(2) NOT NULL
+	 , seat_type_code  CHAR(1) NOT NULL
+	 , range_in     tinyint unsigned NOT NULL
+	 , start_coach_no  CHAR(2) NOT NULL
+	 , end_coach_no   CHAR(2) NOT NULL
+	 , start_seat_no   CHAR(4) NOT NULL
+	 , end_seat_no   CHAR(4) NOT NULL);
+	 delete from  tmp_share_schedule;
+	
+	
+	CREATE Temporary TABLE if not exists tmp_share_stop_time
+	(
+	 start_date char(8)   NOT NULL,
+	 stop_date char(8)   NOT NULL,
+	 train_no char(12)   NOT NULL,
+	 station_no char(2)   NOT NULL,
+	 station_name char(10)   NOT NULL,
+	 station_shortcode char(3)   NOT NULL,
+	 station_telecode char(3)   NOT NULL,
+	 station_train_code char(8)   NOT NULL,
+	 route_tele_code char(3)   NOT NULL,
+	 segment_code char(4)   NOT NULL,
+	 bureau_code char(1)   NOT NULL,
+	 subbureau_code char(2)   NOT NULL,
+	 day_difference tinyint unsigned   NOT NULL,
+	 arrive_time char(4)   NOT NULL,
+	 start_time char(4)   NOT NULL,
+	 distance smallint   NOT NULL,
+	 distance1 smallint   NOT NULL,
+	 distance2 smallint   NOT NULL,
+	 distance3 smallint   NOT NULL,
+	 distance4 smallint   NOT NULL,
+	 distance5 smallint   NOT NULL,
+	 line_alter1 char(7)   NOT NULL,
+	 line_alter2 char(7)   NOT NULL,
+	 line_alter3 char(7)   NOT NULL,
+	 line_alter4 char(7)   NOT NULL,
+	 origin char(2)   NOT NULL
+         KEY `idx_st` (`station_telecode`)
+	);
+	delete from tmp_share_stop_time;
+	
+	CREATE Temporary TABLE if not exists tmp_share_detail
+	(station_telecode CHAR(3) NOT NULL,
+	 train_date     CHAR(8) NOT NULL,
+	 station_no   CHAR(2) NOT NULL,
+	 range_in      tinyint unsigned NOT NULL,
+	 fetch_w_seat  tinyint unsigned NOT NULL,
+	 define_range  tinyint unsigned NOT NULL,
+	 start_coach_no  CHAR(2) NOT NULL,
+	 end_coach_no  CHAR(2) NOT NULL,
+	 start_seat_no  CHAR(4) NOT NULL,
+	 end_seat_no   CHAR(4) NOT NULL,
+	 purpose_code  CHAR(2) NOT NULL,
+	 flag     tinyint unsigned NOT NULL,   
+	 seat_type_code  CHAR(1) NOT NULL    
+	, ticket_num   SMALLINT NOT NULL   
+	, range1    SMALLINT NOT NULL
+	, range2    SMALLINT NOT NULL
+	, range3    SMALLINT NOT NULL
+	, range4    SMALLINT NOT NULL
+	, range5    SMALLINT NOT NULL
+	, board_bureau  CHAR(1)  NOT NULL   
+	, far_from_no   CHAR(2)  NOT NULL
+	, start_time   CHAR(4)  NOT NULL
+	 );
+	 delete from tmp_share_detail;
+	if output_in='9' then
+		select '1_1===come here',transform_date_in;
+	 end if;
+	set l_train_date   = transform_date_in
+	 , l_from_station_no  = transform_no_in
+	 , l_sale_mode   = share_flag_in              
+	 , l_office_no    = substring( operater_msg_in, 10, 7 );
+	 begin
+		declare tmp_op varchar(30);
+		set tmp_op=substring( operater_msg_in, 18, 3 );
+		if trim(tmp_op)='' then 
+			set tmp_op='0';
+		end if;
+		set l_window_no    = cast(tmp_op as SIGNED integer);
+	 end ;
+	 if output_in='9' then 
+		select '2===',fetch_w_seat_in,sale_station_in,range_in1,range_in2,range_in3,range_in4,range_in5,start_coach_no_in,end_coach_no_in,start_seat_no_in,end_seat_no_in,purpose_code_in;
+	 end if;
+	
+	set l_old_fetch_w_seat = fetch_w_seat_in
+	 , l_old_sale_station = sale_station_in
+	 , l_old_range1   = range_in1
+	 , l_old_range2   = range_in2
+	 , l_old_range3   = range_in3
+	 , l_old_range4   = range_in4
+	 , l_old_range5   = range_in5
+	 , l_old_start_coach_no = start_coach_no_in
+	 , l_old_end_coach_no  = end_coach_no_in
+	 , l_old_start_seat_no = start_seat_no_in
+	 , l_old_end_seat_no  = end_seat_no_in
+	 
+	 , l_multi_flag    = 0
+	 , l_train_start_date  = date_format(date_add(l_train_date,interval 0 - day_difference_from_in day),'%Y%m%d') 
+	 , l_transform_num   = 0;
+	 set l_old_purpose_code  = substring(purpose_code_in,1,2);
+
+	
+	IF seat_type_code_in = '%' THEN 
+		SET seat_type_code_in = '0123456789ABCDTFGHIJKLMOPQS';
+	end if;
+	IF l_office_no = '' then
+		SET l_office_no = '%',l_window_no = 0;
+	end if;
+	if output_in='9' then
+		select '3===come is here',train_no_in;
+	 end if;
+	
+	 
+	INSERT INTO tmp_share_stop_time SELECT start_date, stop_date, train_no, station_no, station_name, station_shortcode, station_telecode, station_train_code, route_tele_code, 
+	segment_code, bureau_code, subbureau_code, day_difference, arrive_time, start_time, distance, distance1, distance2, distance3, distance4, distance5, line_alter1, line_alter2, 
+	line_alter3, line_alter4, origin FROM basic.stop_time WHERE train_no = train_no_in;
+
+	
+	 if output_in='9' then 
+		select '5_1===',train_code_in,start_station_telecode_in,end_station_telecode_in,transform_station_telecode_in,purpose_code_in,l_train_start_date;
+	 end if;
+	INSERT INTO tmp_share_schedule 
+	 SELECT station_telecode,delay_days,pre_saletime,wseat_flag,purpose_code,seat_type_code,DJ52_share_schema.`range`
+		,start_coach_no,end_coach_no,start_seat_no,end_seat_no
+		FROM basic.DJ52_share_schema  FORCE INDEX(share_define_idx1)
+		 WHERE (train_code = train_code_in AND start_station_telecode = start_station_telecode_in AND end_station_telecode = end_station_telecode_in)
+		AND transform_station_telecode IN (transform_station_telecode_in,'*')      
+	 
+		AND (purpose_code   = '**' OR (instr(purpose_code_in,purpose_code) % 2 = 1) )  
+	 
+		AND start_date <= l_train_start_date
+		AND stop_date >= l_train_start_date
+		AND running_rule & (power(2,datediff(l_train_start_date,start_date) % running_style)) > 0
+	 UNION
+	 SELECT station_telecode,delay_days,pre_saletime,wseat_flag,purpose_code,seat_type_code,a.`range`
+		,start_coach_no,end_coach_no,start_seat_no,end_seat_no
+		FROM basic.DJ52_share_schema a FORCE INDEX(share_define_idx1)
+		 WHERE train_code = '*'
+		AND transform_station_telecode IN (transform_station_telecode_in,'*')      
+	 
+		AND (purpose_code   = '**' OR (instr(purpose_code_in,purpose_code) % 2 = 1) )  
+	 
+		AND start_date <= l_train_start_date
+		AND stop_date >= l_train_start_date
+		AND running_rule & (power(2,datediff(l_train_start_date,start_date) % running_style)) > 0
+	;
+	 if output_in='9' then
+		select '5===come is here';
+		select * from tmp_share_schedule order by station_telecode , delay_days, pre_saletime, w_seat_flag, purpose_code, seat_type_code, range_in, start_coach_no, end_coach_no, start_seat_no, end_seat_no;
+	 end if;
+	
+	set l_Kind = substring(application_msg_in,5,1); 
+
+	
+	SET l_Kind = '0';
+	
+	IF l_Kind IN ('1','2') THEN 
+		IF EXISTS ( SELECT  count(*) FROM basic.station_dictionary FORCE INDEX(station_telecode_idx)
+								 WHERE station_telecode in (transform_station_telecode_in,start_station_telecode_in)
+								 GROUP BY bureau_code HAVING count(*) > 1
+			) THEN 
+			set l_Kind_flag = 1 ; 
+		ELSE 
+			SET l_Kind_flag = 0;
+		end if;
+	end if;
+
+	 
+	 IF l_Kind_flag = 1 THEN
+			IF sale_station_in = transform_station_telecode_in THEN 
+				 SET l_Kind_flag = 0 ; 
+			ELSE
+				 CALL arith.CS50_Same_City (l_transform_date,sale_station_in,transform_station_telecode_in,"2",l_return_code);
+				 IF l_return_code = 1 THEN
+						SET l_Kind_flag = 0; 
+				 ELSE 
+						SET l_Kind_flag = 1;
+				 END if;
+			END if;
+	ELSE 
+			SET l_Kind_flag = 0;
+	end if;
+
+	
+	IF l_Kind_flag = 1 THEN 
+	 set l_original_station_telecode = start_station_telecode_in  
+		,  transform_no_in   = '01'
+		,  fetch_w_seat_in   =  l_old_fetch_w_seat
+		,  l_tmp_range    =  9 
+		,  l_tmp_start_coach_no = '00'
+		,  l_tmp_end_coach_no   = 'A9'
+		,  l_tmp_start_seat_no  = '0000'
+		,  l_tmp_end_seat_no    = '9999'
+		,  share_flag_in    = '1'  
+		,  transform_date_in   = l_train_start_date 
+	;
+	if output_in='9' then
+		select '6===come is here';
+	 end if;
+	 
+	 SELECT pre_saletime into l_pre_sale_time FROM tmp_share_schedule
+		WHERE station_telecode IN (start_station_telecode_in,'*')
+		AND purpose_code IN ('**',purpose_code_in)
+		AND start_coach_no != end_coach_no;   
+	 set l_error =  @@error_count,l_rowcount = found_rows();
+	 IF l_rowcount > 0 AND l_error = 0 THEN 
+		
+		SELECT start_time into l_transform_start_time
+			FROM tmp_share_stop_time
+			WHERE train_no = train_no_in
+			AND station_telecode = l_original_station_telecode
+			AND station_no   = '01'
+			AND start_date <= l_train_start_date
+			AND stop_date >= l_train_start_date;
+
+		set l_error =  @@error_count,l_rowcount = found_rows();
+		IF l_rowcount = 0 OR l_error != 0 THEN
+		
+		 set share_flag_in = '0'
+			,  l_location_share_string = '';
+		ELSE
+		 
+		 IF timestampdiff(MINUTE,now(),str_to_date(concat(transform_date_in,l_transform_start_time),'%Y%m%d%H%i')) <= l_pre_sale_time THEN
+			
+			SELECT share_flag_in = '0'
+			 ,  l_location_share_string = '';
+		 ELSE
+			set l_location_share_string = concat(l_original_station_telecode , transform_date_in , transform_no_in ,  CONVERT(fetch_w_seat_in,CHAR(1))
+				, CONVERT(l_tmp_range,CHAR(1)) , l_tmp_start_coach_no , l_tmp_end_coach_no ,l_tmp_start_seat_no , l_tmp_end_seat_no);
+		 END if;
+		END if;
+	 ELSE 
+		SET l_location_share_string = concat(l_original_station_telecode , transform_date_in , transform_no_in ,  CONVERT(fetch_w_seat_in,CHAR(1))
+				, CONVERT(l_tmp_range,CHAR(1)) , l_tmp_start_coach_no , l_tmp_end_coach_no , l_tmp_start_seat_no , l_tmp_end_seat_no);
+	 END IF;
+	 IF purpose_code_in = '**' THEN
+			set purpose_code_in = l_old_purpose_code; 
+	 end if;
+	 set l_purpose_list = concat(l_purpose_list , purpose_code_in);
+	END if;
+	
+
+	
+	set  l_return_code = -22560;
+	
+	IF l_Kind_flag = 0 THEN
+		if output_in='9' then
+			select '7===come is here';
+		 end if;
+		
+		 set share_string_in    = ''
+			,  l_location_share_string = '' 
+			,  share_flag_in      = '0' 
+			,  l_purpose_list    = ''     
+			,  l_schedule_coach    = 'AA'
+			,  l_seat_type_list   = '';
+
+		 
+		  if output_in='9' then 
+			select '7_1====',train_code_in,start_station_telecode_in,end_station_telecode_in,transform_station_telecode_in,seat_type_code_in,purpose_code_in,l_train_start_date;
+			
+		  end if;
+		
+			 INSERT INTO tmp_share2 
+			SELECT station_telecode,delay_days,pre_saletime,wseat_flag,purpose_code,seat_type_code,a.range
+			 ,start_coach_no,end_coach_no,start_seat_no,end_seat_no,station_telecode,pre_saletime
+			 FROM basic.DG50_share_define  a
+				WHERE  train_code = train_code_in 
+			 AND start_station_telecode = start_station_telecode_in 
+			 AND end_station_telecode = end_station_telecode_in
+			 AND transform_station_telecode IN (transform_station_telecode_in,'*')      
+			 AND (seat_type_code = 'z'  OR (INSTR(seat_type_code_in,seat_type_code) > 0 ) )    
+			 AND (purpose_code   = '**' OR (INSTR(purpose_code_in,purpose_code) % 2 = 1) )  
+			
+			 AND start_date <= l_train_start_date
+			 AND stop_date >= l_train_start_date
+			 AND running_rule & (power(2,datediff(l_train_start_date,start_date) % running_style)) > 0;
+			
+			INSERT INTO tmp_share2 
+			SELECT station_telecode,delay_days,pre_saletime,wseat_flag,purpose_code,seat_type_code,YT52_share_detail.range
+			 ,start_coach_no,end_coach_no,start_seat_no,end_seat_no,station_telecode,pre_saletime
+			 FROM basic.YT52_share_detail 
+				WHERE  train_code = train_code_in 
+			 AND start_station_telecode = start_station_telecode_in 
+			 AND end_station_telecode = end_station_telecode_in
+			 AND transform_station_telecode IN (transform_station_telecode_in,'*')      
+			 AND (seat_type_code = 'z'  OR (INSTR(seat_type_code_in,seat_type_code) > 0 ) )    
+			 AND (purpose_code   = '**' OR (INSTR(purpose_code_in,purpose_code) % 2 = 1) )  
+			
+			 AND start_date <= l_train_start_date
+			 AND stop_date >= l_train_start_date
+			 AND running_rule & (power(2,datediff(l_train_start_date,start_date) % running_style)) > 0;
+			 if output_in='9' then
+				 select '8===come is here';
+				select * from TMP_share2 order by station_telecode,delay_days,pre_saletime,w_seat_flag,purpose_code,seat_type_code,range_in
+			,start_coach_no,end_coach_no,start_seat_no,end_seat_no;
+			  end if;
+		 set l_error =  @@error_count,l_rowcount = found_rows();
+		 IF l_rowcount >= 1 AND l_error = 0 THEN      
+		
+				SET share_flag_in = '1' ;                    
+				SELECT count(*) into l_total_row FROM tmp_share2;                
+				SET l_row = l_total_row;
+				
+				IF GCN_in != '%' THEN 
+					SET seat_type_code_in = '%';
+				END IF;
+				 if output_in='9' then
+					 select '8_1===come is here',l_row;
+				
+				 end if;
+				WHILE l_row > 0 DO
+						
+							
+						 
+						set Lable_s = 1;
+						Lable:loop
+						if Lable_s = 0 THEN
+								leave Lable;
+						end if;
+							
+						
+						 SELECT station_telecode
+							,  delay_days
+							,  pre_saletime 
+							,  seat_type_code
+							,  w_seat_flag
+							,  a.range_in
+							,  start_coach_no
+							,  end_coach_no
+							,  start_seat_no
+							,  end_seat_no
+							,  purpose_code
+							into l_original_station_telecode,l_delay_days,l_pre_sale_time,l_seat_type,l_w_seat_flag,l_tmp_range,l_tmp_start_coach_no,
+									 l_tmp_end_coach_no,l_tmp_start_seat_no,l_tmp_end_seat_no,purpose_code_in 
+							FROM tmp_share2 a limit 1;
+						
+						 
+							delete from tmp_share2 limit 1;
+						
+						
+						
+							
+							
+								
+						
+						
+						 IF found_rows() = 0 THEN
+								
+								leave Lable; 
+							end if;
+						 
+						   
+						 IF seat_type_code_in IN ('W','1') OR (Is_Bed_in = 0 ) THEN 
+								IF l_w_seat_flag = "0" THEN 
+								
+									 IF (seat_type_code_in = "W" OR l_old_fetch_w_seat = 9) THEN
+											leave Lable; 
+											 
+									 ELSE 
+											
+											SET fetch_w_seat_in = 1 ;
+											 
+										 
+									 END if;
+								ELSEIF l_w_seat_flag = "2" THEN 
+									 IF l_old_fetch_w_seat = 1 THEN
+											leave Lable;  
+									 ELSE 
+											SET fetch_w_seat_in = 9; 
+									 end if;
+								ELSEIF l_w_seat_flag = "1" THEN 
+								 set fetch_w_seat_in = l_old_fetch_w_seat;
+								END if;
+						ELSEIF l_w_seat_flag = '2' THEN
+								LEAVE Lable; 
+						 end if;
+
+						 
+						
+						 IF output_in = '0' THEN  
+							IF not (l_tmp_start_seat_no = '0000' AND l_tmp_end_seat_no = '9999') THEN
+									
+									LEAVE Lable;
+							end if;
+						 END if;
+						 
+						 
+						 
+						 
+						
+						 
+						 SELECT day_difference,station_no ,start_time, bureau_code ,subbureau_code
+							into l_day_difference1,transform_no_in,l_transform_start_time,l_original_bureau_code,l_original_subbureau_code
+							FROM tmp_share_stop_time
+							 WHERE  train_no = train_no_in
+								AND station_telecode = l_original_station_telecode
+								AND start_date <= l_train_start_date
+								AND stop_date >= l_train_start_date limit 1;
+						
+						 IF found_rows() = 0 THEN 
+								LEAVE Lable;
+							end if;
+				
+						 
+						 
+						 
+						 SELECT day_difference,bureau_code,subbureau_code
+							into l_day_difference2,l_transform_bureau_code,l_transform_subbureau_code
+							FROM tmp_share_stop_time
+							 WHERE train_no = train_no_in
+								AND station_telecode = transform_station_telecode_in
+								AND start_date <= l_train_start_date
+								AND stop_date >= l_train_start_date limit 1;
+						 IF found_rows() = 0 THEN
+								leave Lable;
+							end if;
+						 
+						 IF transform_no_in >= l_from_station_no THEN
+								LEAVE Lable;
+							end if;
+
+						 
+						 set l_delay_days = l_day_difference2 - l_day_difference1;
+						 set transform_date_in = date_format(Date_add(l_train_date,interval - l_delay_days DAY), '%Y%m%d' );
+						
+						 
+						 
+							
+							
+							
+							IF timestampdiff(MINUTE,now(),str_to_date(concat(transform_date_in ,l_transform_start_time),'%Y%m%d%H%i')) > l_pre_sale_time THEN
+								LEAVE Lable;
+							end if;
+						 
+						 SELECT pre_saletime 
+							into l_pre_sale_time
+							FROM tmp_share_schedule
+							 WHERE station_telecode IN (l_original_station_telecode,'*')
+							 AND purpose_code IN ('**',purpose_code_in)
+								AND start_coach_no != end_coach_no;   
+						 set l_error =  @@error_count,l_rowcount = found_rows();
+						 IF l_rowcount > 0 AND l_error = 0 THEN 
+								
+								IF timestampdiff(MINUTE,NOW(),str_to_date(concat(transform_date_in ,l_transform_start_time),'%Y%m%d%H%i')) <= l_pre_sale_time THEN
+									LEAVE Lable;
+								end if;
+						 END if;
+						
+						 
+						  if output_in='9' then
+							select * from tmp_share_schedule;
+							select '11===come is here',l_original_station_telecode;
+						  end if;
+						 SELECT pre_saletime 
+							,  start_coach_no 
+							into l_pre_sale_time,l_schedule_coach
+							FROM tmp_share_schedule
+							 WHERE station_telecode IN (l_original_station_telecode,'*')
+									AND start_coach_no = end_coach_no   
+							ORDER BY start_coach_no desc limit 1;       
+						 set l_error =  @@error_count,l_rowcount = found_rows();
+						 
+						
+						 
+						 IF l_rowcount > 0 AND l_error = 0 THEN 
+								
+								
+								IF timestampdiff(MINUTE,NOW(),str_to_date(concat(transform_date_in ,l_transform_start_time),'%Y%m%d%H%i')) > l_pre_sale_time THEN 
+								 
+								 DELETE FROM tmp_share_schedule WHERE start_coach_no = l_schedule_coach AND pre_saletime = l_pre_sale_time;
+								 set l_schedule_coach = 'AA';
+								 
+								
+								 
+								END if;
+								
+								
+								 
+						 ELSE 
+								SET l_schedule_coach = 'AA';
+						 end if;
+						 
+						 IF output_in = '0' THEN
+								SET l_tmp_start_seat_no = concat(l_schedule_coach , RIGHT(l_tmp_start_seat_no,2)); 
+						 end if;
+						 
+						
+						
+						 
+						 
+						 IF l_tmp_range = 255 THEN
+								set l_tmp_range = 9;
+							end if;
+
+						 
+						 
+						 
+						 
+						 
+					 
+						 
+						 set share_string_in = '';
+						 IF output_in = '0' THEN 
+								
+								set share_string_in = concat(l_original_station_telecode , transform_date_in , transform_no_in , CONVERT(fetch_w_seat_in,CHAR(1)) 
+								 , CONVERT(l_tmp_range,CHAR(1)) , l_tmp_start_coach_no , l_tmp_end_coach_no , l_tmp_start_seat_no 
+								 , substring(l_tmp_end_seat_no,1,1) , purpose_code_in , l_seat_type);
+								
+									
+								
+								IF instr(l_location_share_string,share_string_in) = 0 then  
+									 set l_location_share_string = concat(rtrim(l_location_share_string) , share_string_in);
+								END if;
+						 ELSE 
+									set share_string_in = concat(l_original_station_telecode , transform_date_in , transform_no_in , CONVERT(fetch_w_seat_in,CHAR(1)) 
+									 , CONVERT(l_tmp_range,CHAR(1)) , l_tmp_start_coach_no , l_tmp_end_coach_no , l_tmp_start_seat_no , l_tmp_end_seat_no);
+									
+									IF instr(l_location_share_string,share_string_in) = 0 then  
+										 set l_location_share_string = concat(rtrim(l_location_share_string) , share_string_in);
+									END if;
+						 END if;
+
+						 IF purpose_code_in = '**' THEN 
+								SET purpose_code_in = l_old_purpose_code; 
+						 end if;
+						if LENGTH(l_purpose_list)+length(purpose_code_in)<512 then
+							set l_purpose_list  = concat(l_purpose_list  , purpose_code_in) ; 
+							set  l_seat_type_list = concat(l_seat_type_list , l_seat_type);   
+						end if;
+					 
+				 
+					set lable_s = 0;
+					leave lable;
+					end loop lable;
+					set l_row = l_row - 1;
+				END WHILE;
+				
+				
+				IF instr(l_location_share_string,concat(transform_station_telecode_in , l_train_date , l_from_station_no)) = 0 THEN
+					 set l_tmp_range  = 9         
+						,  purpose_code_in = l_old_purpose_code
+						,  l_seat_type  = seat_type_code_in;     
+					 IF output_in = "0" then   
+							set start_seat_no_in = concat('AA' , RIGHT(start_coach_no_in,2)); 
+							set l_location_share_string = concat(rtrim(l_location_share_string) , transform_station_telecode_in , l_train_date 
+							 , l_from_station_no ,  CONVERT(l_old_fetch_w_seat,CHAR(1)) , CONVERT(l_tmp_range,CHAR(1)) , start_coach_no_in 
+							 , end_coach_no_in , start_seat_no_in , substring(end_seat_no_in,1,1) , purpose_code_in , l_seat_type);
+					 ELSE        
+							SET l_location_share_string = concat(rtrim(l_location_share_string) , transform_station_telecode_in , l_train_date , l_from_station_no
+							 ,  CONVERT(l_old_fetch_w_seat,CHAR(1)) , CONVERT(l_tmp_range,CHAR(1)) , start_coach_no_in , end_coach_no_in , start_seat_no_in
+							 , end_seat_no_in);
+					 END if;
+
+					 set l_purpose_list  = concat(l_purpose_list , l_old_purpose_code)  
+						,  l_seat_type_list = concat(l_seat_type_list , seat_type_code_in);  
+				END if;
+		 END if;
+	END if;
+	
+
+	
+	SET l_new_fetch_w_seat = fetch_w_seat_in;
+	SET share_string_in = l_location_share_string; 
+	IF share_string_in = "" OR share_string_in IS NULL THEN
+	
+		 set share_flag_in = "0";
+	end if;
+
+	IF output_in = "0"  THEN
+		 set return_in = 0;  
+	end if;
+	
+
+	
+	
+	IF share_flag_in = "0" then 
+		 SET fetch_w_seat_in = l_old_fetch_w_seat
+			, transform_date_in= l_train_date
+			, transform_no_in = l_from_station_no
+			, sale_station_in  = l_old_sale_station
+			, range_in      = l_old_range;
+		 LEAVE lable_OK_RETURN;
+	END if;
+	
+	IF output_in IN ("1","9") THEN
+		if output_in='9' then 
+			select '14=====',share_flag_in;
+		end if;
+		 IF share_flag_in = "1" THEN 
+				set l_rowcount = 0 
+					,  l_share_base_id = 27;
+				
+				WHILE l_rowcount < length(rtrim(l_location_share_string)) / (14 + 13) DO
+					 set l_original_station_telecode = substring(l_location_share_string,l_rowcount * l_share_base_id + 1,3);
+					 set transform_date_in = substring(l_location_share_string,l_rowcount * l_share_base_id + 1 + 3, 8);
+					 set transform_no_in = substring(l_location_share_string,l_rowcount * l_share_base_id + 1 + 3 + 8, 2);
+					 set transform_no_in = substring(l_location_share_string,l_rowcount * l_share_base_id + 1 + 3 + 8, 2);
+					 set fetch_w_seat_in = CONVERT(substring(l_location_share_string,l_rowcount * l_share_base_id + 1 + 3 + 8 + 2, 1),signed);
+					 
+					 set l_tmp_range    = CONVERT(substring(l_location_share_string,l_rowcount * l_share_base_id + 1 + 3 + 8 + 2 + 1, 1),signed);
+					 
+					 IF l_tmp_range = 9 THEN 
+							set l_tmp_range = 255;
+					 end if;
+					 
+					 set l_tmp_start_coach_no = substring(l_location_share_string,l_rowcount * l_share_base_id + 1 + 3 + 8 + 2 + 1 + 1, 2);
+					 set l_tmp_end_coach_no = substring(l_location_share_string,l_rowcount * l_share_base_id + 1 + 3 + 8 + 2 + 1 + 1 + 2, 2);
+					 set l_tmp_start_seat_no = substring(l_location_share_string,l_rowcount * l_share_base_id + 1 + 3 + 8 + 2 + 1 + 1 + 2 + 2, 4);
+					 set l_tmp_end_seat_no  = substring(l_location_share_string,l_rowcount * l_share_base_id + 1 + 3 + 8 + 2 + 1 + 1 + 2 + 2 + 4, 4);
+
+					 
+					 
+					 SELECT bureau_code, subbureau_code, start_time
+						into l_transform_bureau_code,l_transform_subbureau_code,l_start_time
+						 FROM basic.stop_time
+							WHERE train_no = train_no_in
+							AND station_telecode = l_original_station_telecode limit 1; 
+					
+					 IF substring(sale_center_code_in,1,1) != l_transform_bureau_code THEN
+							set range_in = 4; 
+					 ELSEIF sale_subbureau_in != l_transform_subbureau_code THEN
+							set range_in = 3; 
+					 ELSEIF l_old_sale_station != l_original_station_telecode then 
+							set range_in = 2; 
+					 ELSE 
+							set range_in = 0;
+					 end if;
+
+					 
+					 IF transform_station_telecode_in <> l_old_sale_station THEN                                       
+							CALL arith.CS50_Same_City(transform_date_in,l_old_sale_station,transform_station_telecode_in,"1",l_union_flag);                                     
+							IF l_union_flag = 1 THEN
+								set range_in = 1  ;
+							end if;
+					 END if;
+					 
+					
+					 set purpose_code_in = substring(ltrim(l_purpose_list),l_rowcount * 2 + 1,2)
+						,  l_seat_type  = substring(ltrim(l_seat_type_list),l_rowcount * 1 + 1,1);
+					 
+					 
+					 INSERT INTO tmp_share_detail VALUES (l_original_station_telecode,transform_date_in,transform_no_in,range_in,fetch_w_seat_in
+							 ,l_tmp_range,l_tmp_start_coach_no,l_tmp_end_coach_no,l_tmp_start_seat_no,l_tmp_end_seat_no,purpose_code_in,0,l_seat_type,0,0,0,0,0,0,l_transform_bureau_code,'00',l_start_time);
+					 set l_rowcount = l_rowcount + 1;
+					 
+				END WHILE;
+		 END if;
+	
+		 IF output_in = '9' then       
+				select '+++++++++++++-DBG.10.DS50_Proc_Share.共用定义明细++++++++++++++-';
+			 
+				SELECT purpose_code AS purpose_code,station_no AS station_no,tmp_share_detail.station_telecode, tmp_share_detail.train_date, tmp_share_detail.station_no, tmp_share_detail.range_in, 
+				tmp_share_detail.fetch_w_seat, tmp_share_detail.define_range, tmp_share_detail.start_coach_no, tmp_share_detail.end_coach_no, tmp_share_detail.start_seat_no, 
+				tmp_share_detail.end_seat_no, tmp_share_detail.purpose_code, tmp_share_detail.flag, tmp_share_detail.seat_type_code, tmp_share_detail.ticket_num, tmp_share_detail.range1, 
+				tmp_share_detail.range2, tmp_share_detail.range3, tmp_share_detail.range4, tmp_share_detail.range5, tmp_share_detail.board_bureau, tmp_share_detail.far_from_no, 
+				tmp_share_detail.start_time FROM tmp_share_detail ORDER BY station_no DESC;
+		 END if;
+
+		 
+		 SET l_STM = substring( GSN_in, 2, 3);
+		 SET l_ATT = 0; 
+		 IF l_STM = "ATT" THEN  
+				
+				IF substring(GSN_in,1,1) != "%" THEN 
+						SET GSN_in = concat(substring(GSN_in,1,1) , "%" );
+				ELSE 
+						SET GSN_in = '%';
+				end if;
+				
+				IF ascii(l_GDP) >= 48 AND ascii(l_GDP) <= 57 then
+						SET l_ATT = ascii(l_GDP) - 48; 
+				ELSEIF ascii(l_GDP) >= 65 THEN
+						SET l_ATT = ascii(l_GDP) - 65 + 10;     
+				end if;
+				SET l_ATT = l_ATT + 1; 
+				SET GDP_in = '%';
+		 END if;
+		
+		 IF share_flag_in = "1" THEN  
+				 IF l_old_fetch_w_seat <> 9 THEN 
+						SET l_row = 0;
+						SELECT count(*) into l_total_row FROM tmp_share_detail; 
+
+						lable_while:
+						WHILE l_row <= l_total_row DO      
+
+							 SET l_row = l_row + 1;
+									
+
+							 SELECT station_telecode
+								, train_date
+								,  station_no
+								,  a.range_in
+								,  fetch_w_seat
+								,  define_range
+								,  start_coach_no
+								,  end_coach_no
+								,  start_seat_no
+								,  end_seat_no
+								,  purpose_code
+								,  seat_type_code  
+								,  board_bureau  
+								,  far_from_no 
+								,  start_time
+								into sale_station_in,transform_date_in,transform_no_in,range_in,fetch_w_seat_in,l_tmp_range,l_tmp_start_coach_no,l_tmp_end_coach_no,l_tmp_start_seat_no,
+								l_tmp_end_seat_no,purpose_code_in,l_seat_type,l_transform_bureau_code,to_station_no_limit_in,l_start_time
+								FROM tmp_share_detail a
+								 WHERE flag = 0   
+								ORDER BY station_no DESC LIMIT 1;
+							 
+							  
+							 UPDATE tmp_share_detail SET flag = 1 WHERE station_telecode = sale_station_in 
+								 AND train_date = transform_date_in AND station_no = transform_no_in 
+								 AND define_range = l_tmp_range AND start_coach_no = l_tmp_start_coach_no AND end_coach_no = l_tmp_end_coach_no
+								 AND fetch_w_seat = fetch_w_seat_in AND start_seat_no = l_tmp_start_seat_no AND end_seat_no = l_tmp_end_seat_no  
+								 AND purpose_code = purpose_code_in AND seat_type_code = l_seat_type
+								 AND flag = 0;
+							 
+							 IF fetch_w_seat_in = 9 THEN
+									Iterate lable_while; 
+							 end if;
+							 
+							 
+							 SET range_in1   = l_old_range1
+								, range_in2   = l_old_range2
+								, range_in3   = l_old_range3
+								, range_in4   = l_old_range4
+								, range_in5   = l_old_range5;
+							 
+							 
+							 IF sale_station_in = l_old_sale_station THEN
+									SET range_in = l_old_range;
+							 end if;
+							
+
+							 IF sale_station_in <> l_old_sale_station THEN
+								
+									IF l_tmp_range <> 255 THEN
+										 IF l_tmp_range = 0 THEN
+												SET range_in = 0;  
+												IF range_in1 = 0 THEN
+														SET range_in2 = 255,range_in3 = 255,range_in4 = 255,range_in5 = 255;
+												ELSE 
+														Iterate lable_while;
+												end if;
+										 ElSEIF l_tmp_range = 1 THEN
+												SET range_in = 1;  
+												IF range_in2 = 1 THEN
+													 SET range_in1 = 255,range_in3 = 255,range_in4 = 255,range_in5 = 255;
+												ELSE 
+														Iterate lable_while;
+												end if;
+										 ELSEIF l_tmp_range = 2 THEN
+												SET range_in = 2;  
+												IF range_in3 = 2 THEN
+														SET range_in1 = 255,range_in2 = 255,range_in4 = 255,range_in5 = 255;
+												ELSE 
+														Iterate lable_while;
+												end if;
+										 ELSEIF l_tmp_range = 3 THEN
+												SET range_in = 3;  
+												IF range_in4 = 3 THEN
+														SET range_in1 = 255,range_in2 = 255,range_in3 = 255,range_in5 = 255;
+												ELSE 
+														Iterate lable_while;
+												end if;
+										 ELSEIF l_tmp_range = 4 THEN
+												SET range_in = 4;  
+												IF range_in5 = 4 THEN
+														SET range_in1 = 255,range_in2 = 255,range_in3 = 255,range_in4 = 255;
+												ELSE 
+														Iterate lable_while;
+												end if;
+										 END if;
+									
+									ELSE
+											SET range_in = 0; 
+									END if;
+							 END if;
+							      
+									
+
+							 
+							 IF seat_type_code_in = '%' AND l_seat_type != 'z' THEN
+									SET l_tmp_seat_type = l_seat_type; 
+							 ELSE 
+									SET l_tmp_seat_type = seat_type_code_in;
+							 end if;
+							
+							 CALL arith.DS50_Train_Time  (transform_date_in,train_no_in,train_code_in,l_tmp_seat_type,range_in,purpose_code_in,ticket_num_ary_in
+								, range_in1,range_in2,range_in3,range_in4,range_in5 ,1
+								, sale_station_in,1,l_sale_mode ,l_return_code);
+							 IF l_return_code = 0 THEN
+									
+									UPDATE tmp_share_detail SET flag = 9
+									 WHERE station_telecode = sale_station_in 
+										AND train_date = transform_date_in AND station_no = transform_no_in 
+										AND define_range = l_tmp_range AND start_coach_no = l_tmp_start_coach_no AND end_coach_no = l_tmp_end_coach_no
+										AND fetch_w_seat = fetch_w_seat_in AND start_seat_no = l_tmp_start_seat_no AND end_seat_no = l_tmp_end_seat_no  
+										AND purpose_code = purpose_code_in AND seat_type_code = l_seat_type
+										AND flag = 1;
+									Iterate lable_while; 
+							 END if;
+							 
+									
+
+							 
+							 
+							 
+								IF to_station_no_limit_in = '00' THEN                     
+									 
+									 set l_start_datetime = str_to_date(concat(transform_date_in , " " , substring(l_start_time,1,2) , ":" , substring(l_start_time,3,2) , ":00"),'%Y%m%d %H:%i:%S')
+										,  to_station_no_limit_in = to_station_no_in;
+										
+										
+									
+									 SELECT ahead_time 
+										into l_ahead_time
+										FROM basic.DJ50_cancel_limit_define 
+										WHERE  inner_code IN (l_transform_bureau_code,sale_station_in)                       
+										 AND start_date <= transform_date_in                              
+										 AND  stop_date  >= transform_date_in                              
+										 AND ((train_code = train_code_in AND start_station_name = l_start_station_name AND end_station_name = l_end_station_name)  
+												OR train_code = '*' OR (train_code != train_code_in AND train_code_in LIKE train_code))           
+										 AND   station_telecode IN (sale_station_in,'*')                          
+										 AND purpose_code IN (purpose_code_in,'*')                            
+										 AND train_type   IN (train_type_in,'*')                            
+										 AND sale_mode   IN (l_sale_mode,'*')                             
+										 AND  l_office_no LIKE cancel_office_no
+										 AND (cancel_window_no = l_window_no OR cancel_window_no = 0)
+										 AND   running_rule & (power(2,datediff(l_train_date,start_date) % running_style)) > 0 
+										ORDER BY level_flag desc,cancel_office_no desc,cancel_window_no desc,purpose_code desc,train_code desc,
+											station_telecode desc,far_from_station desc,seat_type_code desc,train_type desc,sale_mode desc limit 1; 
+
+									 set l_error =  @@error_count,l_rowcount = row_count();
+									 IF l_rowcount = 0 THEN 
+											SET l_ahead_time = CONVERT(substring(right_limit_in, 2,  4),signed); 
+									 end if;
+									 
+									 
+									  IF timestampdiff( MINUTE, now(),l_start_datetime )  <= l_ahead_time THEN
+											
+											SET to_station_no_limit_in = '99';
+									 end if;
+								END if;
+							 
+							 
+							 
+									
+
+							 IF output_in = '9' THEN       
+									SELECT '+++++++++++-DBG.15.DS50_Proc_Share.根据共用定义查询票库条件++++++++++++-';
+									SELECT Left(purpose_code_in,2) AS '用途',sale_station_in AS '被共用站',transform_no_in AS '被共用站序',to_station_no_limit_in AS '以远站',substring(sale_center_code_in,1,1) AS sale_bureau
+									, l_transform_bureau_code AS transform_bureau_code;
+									SELECT '++++++++++++++++++-DBG.16.DS50_Proc_Share.共用例外+++++++++++-';
+									SELECT start_coach_no,station_telecode, delay_days, pre_saletime, w_seat_flag, purpose_code, seat_type_code, range_in, start_coach_no, end_coach_no, start_seat_no, end_seat_no FROM tmp_share_schedule;
+							 END if;
+
+							 IF seat_type_code_in = "%" OR GCN_in != "%" OR (GSN_in != "%" AND GSN_in != "3%") OR GDP_in != ""  THEN
+									SELECT count(*) into l_transform_num FROM  center.seat_area a FORCE INDEX(seat_area_fetch_idx)
+									 WHERE train_date = transform_date_in 
+									 AND train_no  = train_no_in 
+									 AND limit_station >= to_station_no_in
+									 AND coach_no   LIKE GCN_in
+									 AND coach_no  >= l_tmp_start_coach_no
+									 AND coach_no    <= l_tmp_end_coach_no
+									 AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+									 AND seat_no   LIKE GSN_in
+									 AND seat_no   >= l_tmp_start_seat_no
+									 AND seat_no   <= l_tmp_end_seat_no
+									 AND seat_type_code LIKE seat_type_code_in AND (seat_type_code = l_seat_type OR l_seat_type = 'z') 
+									 AND ( ( a.range >= range_in AND a.range <= window_range_in AND a.range in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in) 
+										 OR ( a.range = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+										 ) 
+									 AND arrive_station_no = transform_no_in 
+									 AND far_from_station_no <= to_station_no_limit_in  
+									 AND ( (module_type_in != 'R' AND useful_flag = '0') 
+										 OR (module_type_in = 'R' AND operate_type_in = '1' AND useful_flag = '0') 
+										 OR (module_type_in = 'R' AND operate_type_in <> '1' AND useful_flag IN ('0','D') )
+										 )
+									 AND ticket_type  = 0
+									 AND department  LIKE GDP_in
+									 AND (l_ATT = 0 OR (l_ATT > 0 AND substring(flag1,l_ATT,1) = '1') ) 
+									 AND a.range BETWEEN v_FromRange_in AND v_ToRange_in;
+							 ELSEIF GU_in + GM_in + GD_in > 0 THEN
+									SELECT count(*) into l_transform_num FROM  center.seat_area a FORCE INDEX(seat_area_fetch_idx)
+									 WHERE train_date  = transform_date_in 
+									 AND train_no   = train_no_in 
+									 AND limit_station   >= to_station_no_in
+									 AND ( ( a.range >= range_in AND a.range <= window_range_in AND a.range in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in) 
+										 OR ( a.range = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+										 )  
+									 AND coach_no >= l_tmp_start_coach_no
+									 AND coach_no   <= l_tmp_end_coach_no
+									 AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+									 AND seat_no  >= l_tmp_start_seat_no
+									 AND seat_no  <= l_tmp_end_seat_no
+									 AND seat_type_code     = seat_type_code_in
+									 AND arrive_station_no = transform_no_in 
+									 AND far_from_station_no<= to_station_no_limit_in 
+									 AND ( (module_type_in != 'R' AND useful_flag = '0') 
+										 OR (module_type_in = 'R' AND operate_type_in = '1' AND useful_flag = '0') 
+										 OR (module_type_in = 'R' AND operate_type_in <> '1' AND useful_flag IN ('0','D') )
+										 )
+									 AND ticket_type   = 0
+									 AND instr( SB_LIST_in ,RIGHT(seat_no,1)) > 0
+									 AND a.range BETWEEN v_FromRange_in AND v_ToRange_in;
+							 ELSE
+								SELECT count(*) into l_transform_num FROM  center.aseat_area a FORCE INDEX(seat_area_fetch_idx)
+								 WHERE train_date   = transform_date_in  
+								 AND train_no    = train_no_in 
+								 AND limit_station    >= to_station_no_in
+								 AND seat_type_code     = seat_type_code_in
+								 AND ((GSN_in != "3%" AND seat_no < "3000") 
+									OR (GSN_in = "3%" AND seat_no >= "3000" ))
+								 AND coach_no     >= l_tmp_start_coach_no
+								 AND coach_no       <= l_tmp_end_coach_no
+								 AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+								 AND seat_no      >= l_tmp_start_seat_no
+								 AND seat_no      <= l_tmp_end_seat_no
+								 AND (  ( a.range >= range_in AND a.range <= window_range_in AND a.range in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in) 
+									 OR ( a.range = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+									 )  
+								 AND arrive_station_no = transform_no_in 
+								 AND far_from_station_no<= to_station_no_limit_in 
+								 AND ( (module_type_in != 'R' AND useful_flag = '0') 
+									 OR (module_type_in = 'R' AND operate_type_in = '1' AND useful_flag = '0') 
+									 OR (module_type_in = 'R' AND operate_type_in <> '1' AND useful_flag IN ('0','D') )  
+										)
+								 AND ticket_type    = 0
+								 AND a.range BETWEEN v_FromRange_in AND v_ToRange_in ;
+							 END if;
+							
+							 
+							 IF l_transform_num > 0 THEN
+									IF output_in = '9' THEN       
+										 IF transform_no_in = l_from_station_no THEN
+												SELECT '++++++++++++++++++-DBG.20.DS50_Proc_Share.乘车站票额信息++++++++++++++++-';
+												SELECT l_row AS '第n条定义',Left(purpose_code_in,2) AS '用途',l_transform_num AS '票额张数',ticket_num_in AS '取票张数',sale_station_in AS '乘车站',transform_no_in AS '乘车站序',share_station_in AS tmp_table;
+										 ELSE
+												SELECT '+++++++++++++++-DBG.21.DS50_Proc_Share.被共用站票额信息++++++++++++++++++++-';
+												SELECT l_row AS '第n条定义',Left(purpose_code_in,2) AS '用途',l_transform_num AS '可共用张数',ticket_num_in AS '取票张数',sale_station_in AS '被共用站',transform_no_in AS '被共用站序',l_from_station_no AS '乘车站',share_station_in AS tmp_table;
+										 END if;
+									END if;
+
+									IF l_transform_num >= ticket_num_in THEN
+										 set fetch_w_seat_in = 1 
+											, start_coach_no_in = l_tmp_start_coach_no
+											, end_coach_no_in  = l_tmp_end_coach_no
+											, start_seat_no_in  = l_tmp_start_seat_no
+											, end_seat_no_in  = l_tmp_end_seat_no;
+										 
+										 IF EXISTS(SELECT 1 FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) THEN
+													IF seat_type_code_in = "%" OR GCN_in != "%" OR (GSN_in != "%" AND GSN_in != "3%") OR GDP_in != ""  THEN
+														 SELECT coach_no into l_seat_coach_no FROM  center.seat_area a FORCE INDEX(seat_area_fetch_idx)
+															WHERE train_date = transform_date_in 
+															AND train_no  = train_no_in 
+															AND limit_station >= to_station_no_in
+															AND coach_no   LIKE GCN_in
+															AND coach_no  >= l_tmp_start_coach_no
+															AND coach_no    <= l_tmp_end_coach_no
+															AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+															AND seat_no   LIKE GSN_in
+															AND seat_no   >= l_tmp_start_seat_no
+															AND seat_no   <= l_tmp_end_seat_no
+															AND seat_type_code LIKE seat_type_code_in AND (seat_type_code = l_seat_type OR l_seat_type = 'z') 
+															AND ( ( a.range >= range_in AND a.range <= window_range_in AND a.range in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in) 
+																OR ( a.range = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+																) 
+															AND arrive_station_no = transform_no_in 
+															AND far_from_station_no <= to_station_no_limit_in  
+															AND ( (module_type_in != 'R' AND useful_flag = '0') 
+																OR (module_type_in = 'R' AND operate_type_in = '1' AND useful_flag = '0') 
+																OR (module_type_in = 'R' AND operate_type_in <> '1' AND useful_flag IN ('0','D') )
+																)
+															AND ticket_type  = 0
+															AND department  LIKE GDP_in
+															AND (l_ATT = 0 OR (l_ATT > 0 AND substring(flag1,l_ATT,1) = '1') ) 
+															AND a.range BETWEEN v_FromRange_in AND v_ToRange_in LIMIT 1;
+													ELSEIF GU_in + GM_in + GD_in > 0 THEN
+														 SELECT coach_no into l_seat_coach_no FROM  center.seat_area a FORCE INDEX(seat_area_fetch_idx)
+															WHERE train_date  = transform_date_in 
+															AND train_no   = train_no_in 
+															AND limit_station   >= to_station_no_in
+															AND ( ( a.range >= range_in AND a.range <= window_range_in AND a.range in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in) 
+																OR ( a.range = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+																)  
+															AND coach_no >= l_tmp_start_coach_no
+															AND coach_no   <= l_tmp_end_coach_no
+															AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+															AND seat_no  >= l_tmp_start_seat_no
+															AND seat_no  <= l_tmp_end_seat_no
+															AND seat_type_code     = seat_type_code_in
+															AND arrive_station_no = transform_no_in 
+															AND far_from_station_no<= to_station_no_limit_in 
+															AND ( (module_type_in != 'R' AND useful_flag = '0') 
+																OR (module_type_in = 'R' AND operate_type_in = '1' AND useful_flag = '0') 
+																OR (module_type_in = 'R' AND operate_type_in <> '1' AND useful_flag IN ('0','D') )
+																)
+															AND ticket_type   = 0
+															AND instr(SB_LIST_in,RIGHT(seat_no,1) ) > 0
+															AND a.`range` BETWEEN v_FromRange_in AND v_ToRange_in LIMIT 1;
+													ELSE 
+														 SELECT coach_no into l_seat_coach_no FROM  center.seat_area a FORCE INDEX(seat_area_fetch_idx)
+															WHERE train_date   = transform_date_in 
+															AND train_no    = train_no_in 
+															AND limit_station    >= to_station_no_in
+															AND seat_type_code     = seat_type_code_in
+															AND ((GSN_in != "3%" AND seat_no < "3000") 
+															 OR (GSN_in = "3%" AND seat_no >= "3000" ))
+															AND coach_no     >= l_tmp_start_coach_no
+															AND coach_no       <= l_tmp_end_coach_no
+															AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+															AND seat_no      >= l_tmp_start_seat_no
+															AND seat_no      <= l_tmp_end_seat_no
+															AND (  ( a.`range` >= range_in AND a.`range` <= window_range_in AND a.range in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in) 
+																OR ( a.`range` = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+																)  
+															AND arrive_station_no = transform_no_in 
+															AND far_from_station_no<= to_station_no_limit_in 
+															AND ( (module_type_in != 'R' AND useful_flag = '0') 
+																OR (module_type_in = 'R' AND operate_type_in = '1' AND useful_flag = '0') 
+																OR (module_type_in = 'R' AND operate_type_in <> '1' AND useful_flag IN ('0','D') )
+																 )
+															AND ticket_type    = 0
+															AND a.`range` BETWEEN v_FromRange_in AND v_ToRange_in  LIMIT 1;
+													END if;
+													IF row_count() > 0 THEN 
+														 set start_coach_no_in = l_seat_coach_no
+															,  end_coach_no_in   = l_seat_coach_no;
+													END if;						
+										 END if;
+										 LEAVE lable_OK_return; 
+									
+									ELSE
+										 UPDATE tmp_share_detail SET ticket_num = ticket_num + l_transform_num,range1 = range_in1,range2 = range_in2,range3 = range_in3,range4 = range_in4,range5 = range_in5,range_in = range_in
+											, far_from_no = to_station_no_limit_in
+											WHERE station_telecode = sale_station_in 
+											 AND train_date = transform_date_in AND station_no = transform_no_in 
+											 AND define_range = l_tmp_range AND start_coach_no = l_tmp_start_coach_no AND end_coach_no = l_tmp_end_coach_no
+											 AND fetch_w_seat = fetch_w_seat_in AND start_seat_no = l_tmp_start_seat_no AND end_seat_no = l_tmp_end_seat_no  
+											 AND purpose_code = purpose_code_in AND seat_type_code = l_seat_type
+											 AND flag = 1;
+									END if;
+									
+							 
+							 ELSE
+								UPDATE tmp_share_detail SET ticket_num = ticket_num + l_transform_num,range1 = range_in1,range2 = range_in2,range3 = range_in3,range4 = range_in4,range5 = range_in5,range_in = range_in
+								 , far_from_no = to_station_no_limit_in
+								 WHERE station_telecode = sale_station_in 
+									AND train_date = transform_date_in AND station_no = transform_no_in 
+									AND define_range = l_tmp_range AND start_coach_no = l_tmp_start_coach_no AND end_coach_no = l_tmp_end_coach_no
+									AND fetch_w_seat = fetch_w_seat_in AND start_seat_no = l_tmp_start_seat_no AND end_seat_no = l_tmp_end_seat_no  
+									AND purpose_code = purpose_code_in AND seat_type_code = l_seat_type
+									AND flag = 1;
+							 END if;
+						END WHILE lable_while;
+						
+						IF output_in = '9' THEN       
+						 SELECT '+++++++++++++++++++-DBG.25.DS50_Proc_Share.票额不足时所有有票的共用站信息++++++++++++++++++++++++-';
+						 SELECT ticket_num_in AS fetch_num,ticket_num AS left_num,station_telecode,train_date,station_no,a.range_in,fetch_w_seat,start_coach_no,end_coach_no,start_seat_no,end_seat_no
+							,  purpose_code,seat_type_code,ticket_num,range1,range2,range3,range4,range5,far_from_no
+							FROM tmp_share_detail a WHERE flag = 1 AND ticket_num > 0     
+							 ORDER BY ticket_num,station_no;
+						END if;
+
+						
+						
+						OPEN cursor_share_station;
+
+						lab_share_station:
+						WHILE 1 = 1 DO
+							 FETCH cursor_share_station INTO sale_station_in,transform_date_in,transform_no_in,range_in,fetch_w_seat_in,l_tmp_start_coach_no,l_tmp_end_coach_no
+								 , l_tmp_start_seat_no,l_tmp_end_seat_no,purpose_code_in,l_seat_type,l_transform_num,range_in1,range_in2,range_in3,range_in4,range_in5,to_station_no_limit_in;
+							
+							if record_not_found = 1 THEN
+									leave lab_share_station;
+							end IF;
+						 
+							 SET fetch_w_seat_in = 1; 
+							 
+							 IF EXISTS(SELECT 1 FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) THEN
+									IF seat_type_code_in = "%" OR GCN_in != "%" OR (GSN_in != "%" AND GSN_in != "3%") OR GDP_in != ""  then
+										 SELECT coach_no into l_seat_coach_no FROM  center.seat_area a FORCE INDEX(seat_area_fetch_idx)
+											WHERE train_date = transform_date_in 
+											AND train_no  = train_no_in 
+											AND limit_station >= to_station_no_in
+											AND coach_no   LIKE GCN_in
+											AND coach_no  >= l_tmp_start_coach_no
+											AND coach_no    <= l_tmp_end_coach_no
+											AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+											AND seat_no   LIKE GSN_in
+											AND seat_no   >= l_tmp_start_seat_no
+											AND seat_no   <= l_tmp_end_seat_no
+											AND seat_type_code LIKE seat_type_code_in AND (seat_type_code = l_seat_type OR l_seat_type = 'z') 
+											AND ( ( a.`range` >= range_in AND a.`range` <= window_range_in AND a.`range` in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in) 
+												OR ( a.`range` = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+												) 
+											AND arrive_station_no = transform_no_in 
+											AND far_from_station_no <= to_station_no_limit_in  
+											AND ( (module_type_in != 'R' AND useful_flag = '0') 
+												OR (module_type_in = 'R' AND operate_type_in = '1' AND useful_flag = '0') 
+												OR (module_type_in = 'R' AND operate_type_in <> '1' AND useful_flag IN ('0','D') )
+												)
+											AND ticket_type  = 0
+											AND department  LIKE GDP_in
+											AND (l_ATT = 0 OR (l_ATT > 0 AND substring(flag1,l_ATT,1) = '1') ) 
+											AND a.`range` BETWEEN v_FromRange_in AND v_ToRange_in LIMIT 1;
+									ELSEIF GU_in + GM_in + GD_in > 0 THEN
+										 SELECT coach_no into l_seat_coach_no FROM  center.seat_area a FORCE INDEX(seat_area_fetch_idx)
+											WHERE train_date  = transform_date_in 
+											AND train_no   = train_no_in 
+											AND limit_station   >= to_station_no_in
+											AND ( ( a.`range` >= range_in AND a.`range` <= window_range_in AND a.`range` in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in) 
+												OR ( a.`range` = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+												)  
+											AND coach_no >= l_tmp_start_coach_no
+											AND coach_no   <= l_tmp_end_coach_no
+											AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+											AND seat_no  >= l_tmp_start_seat_no
+											AND seat_no  <= l_tmp_end_seat_no
+											AND seat_type_code     = seat_type_code_in
+											AND arrive_station_no = transform_no_in 
+											AND far_from_station_no<= to_station_no_limit_in 
+											AND ( (module_type_in != 'R' AND useful_flag = '0') 
+												OR (module_type_in = 'R' AND operate_type_in = '1' AND useful_flag = '0') 
+												OR (module_type_in = 'R' AND operate_type_in <> '1' AND useful_flag IN ('0','D') )
+												)
+											AND ticket_type   = 0
+											AND instr(SB_LIST_in ,RIGHT(seat_no,1)) > 0
+											AND a.`range` BETWEEN v_FromRange_in AND v_ToRange_in LIMIT 1;
+									ELSE
+										 SELECT coach_no into l_seat_coach_no FROM  center.seat_area a FORCE INDEX(seat_area_fetch_idx)
+											WHERE train_date   = transform_date_in 
+											AND train_no    = train_no_in 
+											AND limit_station    >= to_station_no_in
+											AND seat_type_code     = seat_type_code_in
+											AND ((GSN_in != "3%" AND seat_no < "3000") 
+											 OR (GSN_in = "3%" AND seat_no >= "3000" ))
+											AND coach_no     >= l_tmp_start_coach_no
+											AND coach_no       <= l_tmp_end_coach_no
+											AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+											AND seat_no      >= l_tmp_start_seat_no
+											AND seat_no      <= l_tmp_end_seat_no
+											AND (  ( a.`range` >= range_in AND a.`range` <= window_range_in AND a.`range` in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in) 
+												OR ( a.`range` = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+												)  
+											AND arrive_station_no = transform_no_in 
+											AND far_from_station_no<= to_station_no_limit_in 
+											AND ( (module_type_in != 'R' AND useful_flag = '0') 
+												OR (module_type_in = 'R' AND operate_type_in = '1' AND useful_flag = '0') 
+												OR (module_type_in = 'R' AND operate_type_in <> '1' AND useful_flag IN ('0','D') )
+												 )
+											AND ticket_type    = 0
+											AND a.`range` BETWEEN v_FromRange_in AND v_ToRange_in LIMIT 1 ;
+									END if;
+									IF row_count() > 0 THEN 
+									 set start_coach_no_in = l_seat_coach_no
+										,  end_coach_no_in   = l_seat_coach_no;
+									END if;
+							 END if;
+							
+							 
+							 IF share_station_in != '' THEN
+									set @l_SQL = concat('INSERT INTO ' , share_station_in , ' VALUES("' , transform_date_in , '","' , transform_no_in , '","' , purpose_code_in , '",' , CONVERT(range_in,CHAR(3)) , ',' , CONVERT(fetch_w_seat_in,CHAR(1))
+									 , ',"' , share_flag_in , '","' , sale_station_in , '",' , CONVERT(range_in1,CHAR(3)) , ',' , CONVERT(range_in2,CHAR(3)) , ',' + CONVERT(range_in3,CHAR(3)) , ',' , CONVERT(range_in4,CHAR(3))
+									 , ',' , CONVERT(range_in5,CHAR(3)) , ',"' , start_coach_no_in , '","' , end_coach_no_in , '","' , start_seat_no_in , '","' , end_seat_no_in , '",' , CONVERT(l_transform_num,CHAR(5)) , ',"' , to_station_no_limit_in , '")');
+									IF output_in = '9' THEN
+									 SELECT '++++++++++++++-DBG.insert -- share_station+++++++++++++++';
+									 SELECT @l_SQL;
+									END if;
+
+									prepare stmt_1 from @l_SQL;
+									EXECUTE stmt_1;
+									set l_multi_flag = 1;     
+							 END if;
+						END while lab_share_station;
+						close cursor_share_station;
+
+						
+						IF l_multi_flag = 1 THEN
+							 IF output_in = '9' THEN      
+								SELECT '+++++++++++++++-DBG.30.DS50_Proc_Share.票额不足时优先共用的车站票额信息+++++++++++++++++++-';
+								SELECT Left(purpose_code_in,2) AS '用途',l_transform_num AS '票额张数',transform_date_in AS '被共用日期',sale_station_in AS '被共用站',transform_no_in AS '被共用',l_from_station_no AS '乘车站序';
+							 END if;
+							 LEAVE lable_OK_return;
+						END if;
+						
+				 ELSE 
+						SET l_row = l_total_row + 1; 
+				 end if;
+				
+				 IF l_old_fetch_w_seat = 1 OR Is_Bed_in = 1 THEN 
+						
+						SET transform_date_in= l_train_date
+						 , transform_no_in = l_from_station_no
+						 , sale_station_in  = transform_station_telecode_in 
+						 , range_in      = l_old_range
+						 , range_in1   = l_old_range1
+						 , range_in2   = l_old_range2
+						 , range_in3   = l_old_range3
+						 , range_in4   = l_old_range4
+						 , range_in5   = l_old_range5
+						 , purpose_code_in = l_old_purpose_code
+						 ,  to_station_no_limit_in = l_old_to_station_no_limit;
+						LEAVE lable_OK_return; 
+				 END if;
+
+				
+				 
+				 IF l_row > l_total_row THEN 
+						 SET fetch_w_seat_in = 9 
+							, transform_date_in= l_train_date
+							, transform_no_in = l_from_station_no
+							, sale_station_in  = transform_station_telecode_in 
+							, range_in      = l_old_range
+							, range_in1   = l_old_range1
+							, range_in2   = l_old_range2
+							, range_in3   = l_old_range3
+							, range_in4   = l_old_range4
+							, range_in5   = l_old_range5
+							, purpose_code_in = l_old_purpose_code
+							,  to_station_no_limit_in = l_old_to_station_no_limit;
+					
+						 
+						 SET GCN_in = "%", GSN_in = "3%";
+
+						 IF output_in = '9' THEN      
+								SELECT '+++++++++++++++++-DBG.40.DS50_Proc_Share.开始计算无座席+++++++++++++++-';
+								SELECT 'CALL arith.DS50_Train_Time',transform_date_in,train_no_in,train_code_in,seat_type_code_in,range_in,purpose_code_in,ticket_num_ary_in
+									, range_in1,range_in2,range_in3,range_in4,range_in5,1
+									, sale_station_in,1,l_sale_mode,l_return_code;
+						 END if;
+
+						 
+						 CALL arith.DS50_Train_Time  (transform_date_in,train_no_in,train_code_in,seat_type_code_in,range_in,purpose_code_in,ticket_num_ary_in
+							, range_in1,range_in2,range_in3,range_in4,range_in5,1
+							, sale_station_in,1,l_sale_mode,l_return_code);
+						 
+						IF output_in = '9' THEN      
+								SELECT 'end CALL arith.DS50_Train_Time',transform_date_in,train_no_in,train_code_in,seat_type_code_in,range_in,purpose_code_in,ticket_num_ary_in
+									, range_in1,range_in2,range_in3,range_in4,range_in5,1
+									, sale_station_in,1,l_sale_mode,l_return_code;
+						 END if;
+						 
+						 IF (fetch_w_seat_in = 9 OR fetch_w_seat_in = 0) AND l_return_code = 1 THEN 
+									
+								 IF seat_type_code_in = "%" OR GCN_in != "%" OR (GSN_in != "%" AND GSN_in != "3%") OR GDP_in != ""  THEN
+										SELECT coach_no INTO l_seat_coach_no FROM center.seat_area a FORCE INDEX(seat_area_fetch_idx)
+										 WHERE train_date  = transform_date_in 
+										 AND train_no  = train_no_in 
+										 AND limit_station >= to_station_no_in
+										 AND coach_no   LIKE GCN_in
+										 AND coach_no  >= start_coach_no_in
+										 AND coach_no    <= end_coach_no_in
+										 AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+										 AND seat_no   LIKE GSN_in
+										 AND seat_no   >= start_seat_no_in
+										 AND seat_no   <= end_seat_no_in
+										 AND seat_type_code LIKE seat_type_code_in
+										 AND ( ( a.`range` >= range_in AND a.`range` <= window_range_in AND a.`range` in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in) 
+											 OR ( a.`range` = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+											 )
+										 AND arrive_station_no = transform_no_in 
+										 AND far_from_station_no <= to_station_no_limit_in   
+										 AND ( (module_type_in != 'R' AND useful_flag = '0') 
+											 OR (module_type_in = 'R' AND operate_type_in = '1' AND useful_flag = '0') 
+											 OR (module_type_in = 'R' AND operate_type_in <> '1' AND useful_flag IN ('0','D') )
+											 )
+										 AND ticket_type  = 0
+										 AND department  LIKE GDP_in
+										 AND a.`range` BETWEEN v_FromRange_in AND v_ToRange_in  LIMIT 1;
+								 ELSE 
+										SELECT coach_no INTO l_seat_coach_no FROM center.seat_area a FORCE INDEX(seat_area_fetch_idx)
+										 WHERE train_date    = transform_date_in 
+										 AND train_no    = train_no_in 
+										 AND limit_station    >= to_station_no_in
+										 AND seat_type_code     = seat_type_code_in
+										 AND ((GSN_in != "3%" AND seat_no < "3000") 
+											OR (GSN_in = "3%" AND seat_no >= "3000" ))
+										 AND coach_no     >= start_coach_no_in
+										 AND coach_no       <= end_coach_no_in
+										 AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+										 AND seat_no      >= start_seat_no_in
+										 AND seat_no      <= end_seat_no_in
+										 AND (  ( a.`range` >= range_in AND a.`range` <= window_range_in AND a.`range` in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in) 
+											 OR ( a.`range` = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+											 )  
+										 AND arrive_station_no  = transform_no_in 
+										 AND far_from_station_no <= to_station_no_limit_in 
+										 AND ( (module_type_in   != 'R' AND useful_flag    = '0') 
+											 OR (module_type_in   = 'R' AND operate_type_in  = '1' AND useful_flag = '0') 
+											 OR (module_type_in   = 'R' AND operate_type_in != '1' AND useful_flag IN ('0','D') )
+												)
+										 AND ticket_type     = 0
+										 AND a.`range` BETWEEN v_FromRange_in AND v_ToRange_in LIMIT 1;
+								 END if;
+								 
+								 IF row_count() > 0 THEN
+										SET start_coach_no_in = "00"
+										 , end_coach_no_in  = "A9"
+										 , start_seat_no_in  = "0000"
+										 , end_seat_no_in  = "9999";
+
+										
+										IF EXISTS(SELECT 1 FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) THEN
+											 SET start_coach_no_in = l_seat_coach_no
+												,  end_coach_no_in   = l_seat_coach_no;
+										END if;
+										LEAVE lable_OK_return; 
+								 END if;
+
+								 
+								 DELETE FROM tmp_share_detail WHERE station_telecode = sale_station_in   
+									 AND train_date = transform_date_in AND station_no = transform_no_in; 
+						 END if;
+						
+						 
+						 
+						
+						 DELETE FROM tmp_share_detail WHERE flag = 9;    
+						 SELECT count(*) INTO l_total_row FROM tmp_share_detail; 
+						 
+						 lab_share_detail:
+						 WHILE l_total_row > 0 DO      
+								set l_total_row = l_total_row - 1;
+								SELECT station_telecode
+								 ,  train_date
+								 ,  station_no
+								 ,  a.range_in
+								 ,  fetch_w_seat 
+								 ,  define_range
+								 ,  start_coach_no
+								 ,  end_coach_no
+								 ,  start_seat_no
+								 ,  end_seat_no
+								 ,  purpose_code
+								 ,  seat_type_code  
+								 ,  range1     
+								 ,  range2
+								 ,  range3
+								 ,  range4
+								 ,  range5
+								 ,  far_from_no
+								 into sale_station_in,transform_date_in,transform_no_in,range_in,fetch_w_seat_in,l_tmp_range,l_tmp_start_coach_no,l_tmp_end_coach_no,
+											l_tmp_start_seat_no,l_tmp_end_seat_no,purpose_code_in,l_seat_type,range_in1,range_in2,range_in3,range_in4,range_in5,to_station_no_limit_in
+								 FROM tmp_share_detail a 
+								 ORDER BY station_no DESC LIMIT 1;
+								IF row_count() = 0 THEN
+									 leave lab_share_detail;
+								end if;
+						 
+								DELETE FROM tmp_share_detail WHERE station_telecode = sale_station_in 
+									AND train_date = transform_date_in AND station_no = transform_no_in 
+									AND define_range = l_tmp_range AND start_coach_no = l_tmp_start_coach_no AND end_coach_no = l_tmp_end_coach_no
+									AND fetch_w_seat = fetch_w_seat_in AND start_seat_no = l_tmp_start_seat_no AND end_seat_no = l_tmp_end_seat_no  
+									AND purpose_code = purpose_code_in AND seat_type_code = l_seat_type;
+
+								
+								IF fetch_w_seat_in = 1 THEN
+									 ITERATE lab_share_detail;
+								end if;
+								IF instr("3456ACFGHL",l_seat_type) > 0 THEN 
+										ITERATE lab_share_detail;  
+								end if;
+								IF to_station_no_limit_in = '00' THEN
+										SET to_station_no_limit_in = l_old_to_station_no_limit;
+								end if;
+								
+								
+								IF 1 = 1 OR range_in1 = 0 AND range_in2 = 0 AND range_in3 = 0 AND range_in4 = 0 AND range_in5 = 0 THEN  
+									 
+									 SET range_in1   = l_old_range1
+										, range_in2   = l_old_range2
+										, range_in3   = l_old_range3
+										, range_in4   = l_old_range4
+										, range_in5   = l_old_range5;
+						 
+									 IF l_tmp_range <> 255 THEN
+											IF l_tmp_range = 0 THEN
+												 SET range_in = 0;  
+												 IF range_in1 = 0 THEN 
+														SET range_in2 = 255,range_in3 = 255,range_in4 = 255,range_in5 = 255;
+												 ELSE 
+														ITERATE lab_share_detail;
+												 end if;
+											ELSEIF l_tmp_range = 1 THEN
+												 SET range_in = 1;  
+												 IF range_in2 = 1 THEN 
+														SET range_in1 = 255,range_in3 = 255,range_in4 = 255,range_in5 = 255;
+												 ELSE 
+														ITERATE lab_share_detail;
+												 end if;
+											ELSEIF l_tmp_range = 2 THEN 
+												 SET range_in = 2;  
+												 IF range_in3 = 2 THEN 
+														SELECT range_in1 = 255,range_in2 = 255,range_in4 = 255,range_in5 = 255;
+												 ELSE 
+														ITERATE lab_share_detail;
+												 end if;
+											ELSEIF l_tmp_range = 3 THEN 
+												 SET range_in = 3;  
+												 IF range_in4 = 3 THEN 
+														SET range_in1 = 255,range_in2 = 255,range_in3 = 255,range_in5 = 255;
+												 ELSE 
+														ITERATE lab_share_detail;
+												 end if;
+											ELSEIF l_tmp_range = 4 THEN 
+												 SET range_in = 4;  
+												 IF range_in5 = 4 THEN 
+														SET range_in1 = 255,range_in2 = 255,range_in3 = 255,range_in4 = 255;
+												 ELSE 
+														ITERATE lab_share_detail;
+												 end if;
+											END if;
+									 
+									 ELSE
+										SET range_in = 0;
+									 END if;
+						 
+									 
+									 CALL arith.DS50_Train_Time  (transform_date_in,train_no_in,train_code_in,seat_type_code_in,range_in,purpose_code_in,ticket_num_ary_in
+										, range_in1,range_in2 ,range_in3 ,range_in4 ,range_in5 ,1
+										, sale_station_in,1,l_sale_mode,l_return_code);
+									 IF l_return_code = 0 THEN 
+											ITERATE lab_share_detail; 
+									 end if;
+									 
+								END if;
+								
+								
+								SELECT coach_no into l_seat_coach_no FROM center.left_base_center a
+								 WHERE  train_no  = train_no_in
+								 AND train_date = transform_date_in 
+								 AND station_no = transform_no_in
+								 AND assign_station = sale_station_in
+								 AND far_from_station_no <= to_station_no_limit_in 
+								 AND limit_station >= to_station_no_in
+								 AND coach_no   >= l_tmp_start_coach_no
+								 AND coach_no   <= l_tmp_end_coach_no
+								 AND coach_no NOT IN (SELECT DISTINCT start_coach_no FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) 
+								 AND seat_type_code = "W" 
+								 AND (( a.`range` >= range_in AND a.`range` <= window_range_in AND a.`range` in (range_in1,range_in2,range_in3,range_in4,range_in5) AND purpose_code = purpose_code_in)
+									 OR ( a.`range` = 0 AND range_in1 = 0 AND purpose_code != '00' AND purpose_code = purpose_code_in AND  assign_station = sale_station_in ) 
+									 )  
+								 AND ticket_quantity >= 1 LIMIT 1;
+								IF ROW_COUNT() > 0 THEN 
+									 SET start_coach_no_in = l_tmp_start_coach_no
+										, end_coach_no_in   = l_tmp_end_coach_no
+										
+										, start_seat_no_in  = l_tmp_start_seat_no
+										, end_seat_no_in  = l_tmp_end_seat_no;
+
+									 
+									 IF EXISTS(SELECT 1 FROM tmp_share_schedule WHERE sale_station_in != transform_station_telecode_in AND station_telecode IN ('*',sale_station_in) AND start_coach_no = end_coach_no) THEN
+										SET start_coach_no_in = l_seat_coach_no
+										 ,  end_coach_no_in   = l_seat_coach_no;
+									 END if;
+									 LEAVE lable_OK_return; 
+								END if;
+						 
+						 END while lab_share_detail; 
+						 
+						 SET fetch_w_seat_in = 9 
+							, transform_date_in= l_train_date
+							, transform_no_in = l_from_station_no
+							, sale_station_in  = transform_station_telecode_in 
+							, range_in      = l_old_range
+							, range_in1   = l_old_range1
+							, range_in2   = l_old_range2
+							, range_in3   = l_old_range3
+							, range_in4   = l_old_range4
+							, range_in5   = l_old_range5
+							, start_coach_no_in = l_old_start_coach_no
+							, end_coach_no_in  = l_old_end_coach_no
+							, start_seat_no_in  = l_old_start_seat_no
+							, end_seat_no_in  = l_old_end_seat_no
+							, purpose_code_in  = l_old_purpose_code
+							,  to_station_no_limit_in = l_old_to_station_no_limit;
+				 END if;
+				 
+		 END if;
+	END if;
+	
+	set Lable_OK_s = 0;
+	end loop lable_OK_return;
+
+	IF output_in = '9' THEN       
+	 SELECT '++++++++++++DBG.100.DS50_Proc_Share.OK_return++++++++++++';
+	 SELECT transform_no_in AS transform_no,purpose_code_in AS purpose_code,share_station_in AS share_station,l_multi_flag AS multi_flag;
+	END if;
+
+	
+	
+	IF l_from_station_no = transform_no_in THEN 
+	
+	 SET start_coach_no_in = "00",end_coach_no_in = "A9",start_seat_no_in = "0000" ,end_seat_no_in = "9999"
+		,fetch_w_seat_in = l_old_fetch_w_seat, transform_date_in= l_train_date, transform_no_in = l_from_station_no,range_in = l_old_range
+		,range_in1 = l_old_range1, range_in2 = l_old_range2, range_in3 = l_old_range3, range_in4 = l_old_range4,range_in5 = l_old_range5
+		,purpose_code_in  = l_old_purpose_code,share_flag_in = '0',sale_station_in = l_old_sale_station,to_station_no_limit_in = l_old_to_station_no_limit;
+	END if;
+	
+	
+	IF l_multi_flag IS NULL THEN SET l_multi_flag = 0; end if;
+	IF l_transform_num IS NULL THEN SET l_transform_num = 0; end if;
+
+	
+	IF share_station_in != '' AND l_multi_flag = 0 THEN
+		 SET @l_SQL = concat('INSERT INTO ' , share_station_in , ' VALUES("' , transform_date_in , '","' , transform_no_in , '","' , purpose_code_in , '",' , CONVERT(range_in,CHAR(3)) , ',' , CONVERT(fetch_w_seat_in,CHAR(1))
+			, ',"' , share_flag_in , '","' , sale_station_in , '",' , CONVERT(range_in1,CHAR(3)) , ',' , CONVERT(range_in2,CHAR(3)) , ',' , CONVERT(range_in3,CHAR(3)) , ',' , CONVERT(range_in4,CHAR(3))
+			, ',' , CONVERT(range_in5,CHAR(3)) , ',"' , start_coach_no_in , '","' , end_coach_no_in , '","' , start_seat_no_in , '","' , end_seat_no_in , '",' , CONVERT(l_transform_num,CHAR(5)) , ',"' , to_station_no_limit_in , '")');
+		
+		 prepare stmt_1 from @l_SQL;
+		 EXECUTE stmt_1;
+	END if;
+
+	 IF output_in = '9' THEN       
+		 SELECT '++++++-DBG.110.DS50_Proc_Share.OK_return.details++++++++++++++-',share_station_in;
+		 select '31====',share_string_in;
+		 if share_station_in != '' then 
+			 SET @l_SQL = concat('SELECT * FROM ' , share_station_in);
+			 select @l_SQL;
+			 prepare stmt_1 from @l_SQL;
+			 EXECUTE stmt_1;
+		end if;
+	 END if;
+
+	SET  return_in =0;
+	IF output_in = '9' THEN
+	 select 'end DS50_Proc_Share';
+	end if;
+END ;;
+DELIMITER ;

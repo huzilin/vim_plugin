@@ -1,0 +1,59 @@
+import sys
+
+sys.path.append("..")
+from include.unpack_byte import *
+
+
+class User_Var_Event:
+    """
+    14
+    user_var_len_size_len = 4
+    user_var_is_null_len = 1
+    user_var_type_size_len = 1
+    user_charset_number_size_len = 4
+    user_var_value_len_size_len = 4
+    flags = 1
+    """
+
+    def __init__(self, post_buf):
+        self.parse = unpack_byte.Parse_Byte_Stream(post_buf)
+
+        self.user_var_len_size = self.parse.get_uint32()
+        self.user_var = self.parse.get_char(self.user_var_len_size)
+        self.user_var_is_null = self.parse.get_uint8()
+        if not self.user_var_is_null:
+            self.user_var_type = self.parse.get_uint8()
+            self.user_charset_number_size = self.parse.get_uint32()
+            self.user_var_value_len_size = self.parse.get_uint32()
+            if self.user_var_type == 0:
+                self.user_var_value =\
+                    self.parse.get_char(self.user_var_value_len_size)
+            elif self.user_var_type == 1:
+                self.user_var_value = self.parse.get_double()
+            elif self.user_var_type == 2:
+                self.parse.pos += 8
+                self.flags = self.parse.get_uint8()
+                self.parse.pos -= 9
+                if self.flags:
+                    self.user_var_value = self.parse.get_uint64()
+                else:
+                    self.user_var_value = self.parse.get_int64()
+                self.parse.pos += 1
+            elif self.user_var_type == 4:
+                precision = self.parse.get_uint8()
+                scale = self.parse.get_uint8()
+                self.user_var_value = self.parse.get_decimal(precision, scale)
+
+    def event_output(self):
+        print "user_var_len_size: %d" % self.user_var_len_size
+        print "user_var: %s" % self.user_var
+        print "user_var_is_null: %d" % self.user_var_is_null
+        if not self.user_var_is_null:
+            print "user_var_type: %d" % self.user_var_type
+            print "user_charset_number_size: %d" %\
+                self.user_charset_number_size
+            print "user_var_value_len_size: %d" %\
+                self.user_var_value_len_size
+            print "user_var_value: %s" % self.user_var_value
+            if self.user_var_type == 2:
+                print "flags: %d" % self.flags

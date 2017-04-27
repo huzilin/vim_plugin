@@ -1,0 +1,6 @@
+class Stop_Event:
+
+    """3"""
+
+    def event_output(self, post_buf):
+        pass

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for i in $(seq 401)
+do
+    mysql -uroot -p123 -S mysql.sock test -e "create table t$i (c1 int)"
+done

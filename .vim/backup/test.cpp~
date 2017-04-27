@@ -1,0 +1,14 @@
+#include <iostream>
+
+int main(){
+  using namespace std;
+  int a=1;
+  int b=2;
+  int c;
+  int d;
+  c=a+(b>0);
+  d=a+(b>3);
+  cout << c,"\n";
+  cout << d,"\n";
+  return 1;
+}

@@ -1,0 +1,15 @@
+#!/usr/bin/python
+#coding:utf-8
+
+import struct
+
+log = open('/opt/mysql-5.5/data/mybinlog.000005', 'rb')
+log.seek(9167+19+6+2+1+1+1)
+
+a, b, c = struct.unpack('BBB',log.read(3))
+ret = a + (b << 8) + (c << 16)
+if ret:
+    value = '%04d-%02d-%02d' % (ret / (16 * 32), ret / 32 % 16, ret % 32)
+else:
+    value = "0000-00-00"
+print value

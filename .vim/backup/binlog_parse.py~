@@ -1,0 +1,126 @@
+#!/usr/bin/python2
+# coding:utf-8
+
+import struct
+import binascii
+import sys
+import pickle
+import re
+import os
+import getopt
+
+a=os.path
+print a
+print "1111111111111111111111"
+
+from include.unpack_byte import *
+import event
+
+
+CRC32_len = 4
+common_header_len = 19
+
+
+log_event_type = {
+    2: event.query_event.Query_Event,
+    3: event.stop_event.Stop_Event,
+    4: event.rotate_event.Rotate_Event,
+    5: event.intvar_event.Intvar_Event,
+    13: event.rand_event.Rand_Event,
+    14: event.user_var_event.User_Var_Event,
+    15: event.format_description_event.Format_Description_Event,
+    16: event.xid_event.Xid_Event,
+    17: event.begin_load_query_event.Begin_Load_Query_Event,
+    18: event.execute_load_query_event.Execute_Load_Query_Event,
+    19: event.table_map_event.Table_Map_Event,
+    23: event.rows_event.Write_Rows_Event_V1,
+    24: event.rows_event.Update_Rows_Event_V1,
+    25: event.rows_event.Delete_Rows_Event_V1,
+    26: event.incident_event.Incident_Event,
+    29: event.rows_query_log_event.Rows_Query_Log_Event,
+    30: event.rows_event.Write_Rows_Event_V2,
+    31: event.rows_event.Update_Rows_Event_V2,
+    32: event.rows_event.Delete_Rows_Event_V2,
+    33: event.gtid_log_event.Gtid_Log_Event,
+    35: event.previous_gtids_log_event.Previous_Gtids_Log_Event,
+}
+
+
+def get_first_event():
+    pos = 4
+    log_stream.seek(pos, 0)
+
+    database_name, table_name, column_info = str(), str(), str()
+
+    common_header_buf = buffer(log_stream.read(19))
+    parse_common_header = event.event_common_header.Event_Common_Header(
+        common_header_buf)
+    type_code, event_size = parse_common_header.event_output()
+
+    post_buf = buffer(log_stream.read(event_size - common_header_len))
+    binlog_event = log_event_type[type_code](post_buf)
+    global CRC32_flag
+    CRC32_flag = binlog_event.event_output()
+    print "#" * 100
+
+
+def usage():
+    print("Usage:%s [--help|--log|--start_pos|--stop_pos] args...." %
+          sys.argv[0])
+
+if "__main__" == __name__:
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], [],
+                                   ["help", "log=", "start_pos=", "stop_pos="])
+        for opt, arg in opts:
+            if opt == ("--help"):
+                usage()
+                sys.exit(1)
+            elif opt == ("--log"):
+                log_file = arg
+            elif opt == ("--start_pos"):
+                start_pos = int(arg)
+            elif opt == ("--stop_pos"):
+                end_pos = int(arg)
+
+    except getopt.GetoptError:
+        print("getopt error!")
+        usage()
+        sys.exit(1)
+
+    log_stream = open(log_file, 'rb')
+
+    get_first_event()
+
+    if 'start_pos' in locals().keys():
+        if start_pos != 4:
+            log_stream.seek(start_pos, 0)
+
+    while 1:
+        common_header_buf = buffer(log_stream.read(19))
+        parse_common_header = event.event_common_header.Event_Common_Header(
+            common_header_buf)
+        type_code, event_size = parse_common_header.event_output()
+
+        if CRC32_flag == 0 or type_code == 15:
+            post_buf = buffer(log_stream.read(event_size - common_header_len))
+        else:
+            post_buf = buffer(log_stream.read(event_size -
+                                              common_header_len - CRC32_len))
+        if CRC32_flag:
+            checksum = struct.unpack('<I', log_stream.read(4))[0]
+            print "CRC32: %d" % checksum
+
+        binlog_event = log_event_type[type_code](post_buf)
+        binlog_event.event_output()
+
+        if 'end_pos' in locals().keys():
+            if end_pos < log_stream.tell():
+                print "Bad end_pos!"
+                os.exit(1)
+            elif end_pos == log_stream.tell():
+                break
+
+        if type_code == 3 or type_code == 4:
+            break
+        print "#" * 100

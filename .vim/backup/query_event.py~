@@ -1,0 +1,259 @@
+import sys
+import os
+import pickle
+
+from include import unpack_byte
+
+
+charset_file = open('include/charset.pkl', 'rb')
+charset_dic = pickle.load(charset_file)
+charset_file.close()
+
+sql_mode_file = open('include/sql_mode.pkl', 'rb')
+sql_mode_dic = pickle.load(sql_mode_file)
+sql_mode_file.close() 
+
+class Query_Event:
+
+    """2"""
+    post_header_len = 13
+
+    thread_id_len = 4
+    exec_time_len = 4
+    db_len_size_len = 1
+    error_code = 2
+    status_vars_len_size_len = 2
+
+    flags2_len = 4
+    sql_mode_len = 8
+    auto_increment_len = 2 * 2
+    charset_len = 3 * 2
+    lc_time_names_number_len = 2
+    charset_database_number_len = 2
+    table_map_for_update_len = 8
+    master_data_written_len = 4
+    microseconds_len = 3
+
+    """
+    catalog_len: in variable-length string
+    time_zone: in variable-length string
+    invoker: in variable-length string
+    update_db_name: 1-byte count + <count> \0 terminated string
+
+    db_name with \0 terminated string
+    db_name_len = db_len + 1
+    query_len = event_size - common_header_len - post_header_len -
+    status_vars_len - db_name_len [- CRC32_len (if CRC32_flag == 1)]
+    """
+
+    def __init__(self, post_buf):
+        self.parse = unpack_byte.Parse_Byte_Stream(post_buf)
+        self.post_buf = post_buf
+
+        """post_header"""
+        self.thread_id = self.parse.get_uint32()
+        self.exec_time = self.parse.get_uint32()
+        self.db_len_size = self.parse.get_uint8()
+        self.error_code = self.parse.get_uint16()
+        self.status_vars_len_size = self.parse.get_uint16()
+
+        """post_body"""
+        """status_vars"""
+        self.sql_auto_is_null = 'off'
+        self.foreign_key_checks = 'on'
+        self.unique_checks = 'on'
+        self.autocommit = 'on'
+        self.auto_increment_increment = 1
+        self.auto_increment_offset = 1
+        self.time_zone = 'en_US'
+        self.lc_time_names_number = 0
+        self.charset_database_number = 0
+        self.table_map_for_update = 0
+        self.master_data_written = 0
+        self.invoker_user = str()
+        self.invoker_host = str()
+        self.db_list = list()
+        self.microseconds = 0
+
+    def set_status_vars(self):
+        status_vars_remain = self.status_vars_len_size
+
+        while status_vars_remain > 0:
+            if status_vars_remain < 0:
+                print "Binlog have something wrong."
+                break
+
+            code_num = self.parse.get_uint8()
+
+            if code_num == 0:
+                flags2 = self.parse.get_uint32()
+
+                if flags2 == 16384:
+                    self.sql_auto_is_null = 'on'
+                if flags2 == 67108864:
+                    self.foreign_key_checks = 'off'
+                if flags2 == 67125248:
+                    self.sql_auto_is_null = 'on'
+                    self.foreign_key_checks = 'off'
+                if flags2 == 134217728:
+                    self.unique_checks = 'off'
+                if flags2 == 134234112:
+                    self.sql_auto_is_null = 'on'
+                    self.unique_checks = 'off'
+                if flags2 == 201326592:
+                    self.foreign_key_checks = 'off'
+                    self.unique_checks = 'off'
+                if flags2 == 201342976:
+                    self.sql_auto_is_null = 'on'
+                    self.foreign_key_checks = 'off'
+                    self.unique_checks = 'off'
+
+                status_vars_remain -= 1 + Query_Event.flags2_len
+                continue
+
+            elif code_num == 1:
+                mode_num = bin(self.parse.get_uint64()).split('b')[1].zfill(32)
+                self.sql_mode = list()
+                sql_num_list =\
+                    filter(lambda n: mode_num[n] == '1', range(0, 32))
+                for each in sql_num_list:
+                    self.sql_mode.append(sql_mode_dic[each])
+                status_vars_remain -= 1 + Query_Event.sql_mode_len
+                continue
+
+            elif code_num == 6:
+                catalog_len_size = self.parse.get_uint8()
+                self.catalog = self.parse.get_char(catalog_len_size)
+                status_vars_remain -= 1 + catalog_len_size + 1
+                continue
+
+            elif code_num == 3:
+                self.auto_increment_increment, self.auto_increment_offset\
+                    = self.parse.get_uint16(2)
+                status_vars_remain -= 1 + Query_Event.auto_increment_len
+                continue
+
+            elif code_num == 4:
+                charset_num = self.parse.get_uint16(3)
+                self.character_set_client = charset_dic[charset_num[0]][0]
+                self.collation_connection = charset_dic[charset_num[1]][1]
+                self.collation_server = charset_dic[charset_num[2]][0]
+                status_vars_remain -= 1 + Query_Event.charset_len
+                continue
+
+            elif code_num == 5:
+                time_zone_len_size = self.parse.get_uint8()
+                self.time_zone = self.parse.get_char(self.file_handler,
+                                                     time_zone_len_size)
+
+                status_vars_remain -= 1 + time_zone_len_size + 1
+                continue
+
+            elif code_num == 7:
+                self.lc_time_names_number = self.parse.get_uint16()
+                status_vars_remain -= 1 + Query_Event.lc_time_names_number_len
+                continue
+
+            elif code_num == 8:
+                self.charset_database_number = self.parse.get_uint16()
+                status_vars_remain -=\
+                    1 + Query_Event.charset_database_number_len
+                continue
+
+            elif code_num == 9:
+                self.table_map_for_update = self.parse.get_uint64()
+                status_vars_remain -= 1 + Query_Event.table_map_for_update_len
+                continue
+
+            elif code_num == 10:
+                self.master_data_written = self.parse.get_uint32()
+                status_vars_remain -= 1 + Query_Event.master_data_written_len
+                continue
+
+            elif code_num == 11:
+                user_len_size = self.parse.get_uint8()
+                self.invoker_user = self.parse.get_char(user_len_size)
+                host_len_size = self.parse.get_uint8()
+                self.invoker_host = self.parse.get_char(host_len_size)
+                status_vars_remain -= 1 + 1 + user_len_size + 1 + host_len_size
+                continue
+
+            elif code_num == 12:
+                start_pos = self.parse.pos
+                db_count = self.parse.get_uint8()
+                db_list = list()
+                db_num = 0
+                db_name = ''
+                while db_num < db_count:
+                    new_str = self.parse.get_char()
+                    if new_str == '\x00':
+                        self.db_list.append(db_name)
+                        db_name = ''
+                        db_num += 1
+                        continue
+                    db_name += new_str
+                fin_pos = self.parse.pos
+                status_vars_remain -= 1 + fin_pos - start_pos
+                continue
+
+            elif code_num == 13:
+                self.microseconds = self.parse.get_uint24()
+                status_vars_remain -= 1 + Query_Event.microseconds_len
+                continue
+
+            else:
+                print "Binlog have something wrong."
+
+    def set_db_name(self):
+        self.db_name = self.parse.get_char(self.db_len_size)
+        self.parse.pos += 1
+
+    def __set_query(self):
+        self.query = self.parse.get_char(
+            len(self.post_buf) - Query_Event.post_header_len -
+            self.status_vars_len_size - self.db_len_size - 1)
+
+    def parse_post_body(self):
+        self.set_status_vars()
+        self.set_db_name()
+        self.__set_query()
+
+    def event_output(self):
+
+        self.parse_post_body()
+        print "thread_id: %d" % self.thread_id
+        print "exec_time: %d" % self.exec_time
+        print "error_code: %d" % self.error_code
+
+        print\
+            "sql_auto_is_null: %s\tforeign_key_checks: %s\t\
+unique_checks: %s" % (self.sql_auto_is_null,
+                      self.foreign_key_checks, self.foreign_key_checks)
+        print "sql_mode: %s" % self.sql_mode
+        if hasattr(self, 'catalog'):
+            print "catalog: %s" % self.catalog
+        print "auto_increment_increment: %s\t\
+auto_increment_offset: %s" % (self.auto_increment_increment,
+                              self.auto_increment_offset)
+        print \
+            "character_set_client: %s\tcollation_connection: %s\tcollation\
+_server: %s" % (self.character_set_client, self.collation_connection,
+            self.collation_server)
+        print "time_zone: %s" % self.time_zone
+        if self.lc_time_names_number:
+            print "lc_time_names_number: %d" % self.lc_time_names_number
+        if self.charset_database_number:
+            print "charset_database_number: %d" % self.charset_database_number
+        if self.table_map_for_update:
+            print "table_map_for_update: %d" % self.table_map_for_update
+        if self.master_data_written:
+            print "master_data_written: %d" % self.master_data_written
+        if self.invoker_user and self.invoker_host:
+            print "invoker_user: %s\ninvoker_host: %s" % (self.invoker_user,
+                                                          self.invoker_host)
+        if self.db_list:
+            print "db_list: %s" % self.db_list
+        if self.microseconds:
+            print "microseconds: %d" % self.microseconds
+        print "db_name: %s" % self.db_name
+        print "query: %s" % self.query

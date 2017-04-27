@@ -1,0 +1,18 @@
+[mysqld]
+basedir = /database/mysql
+datadir = /database/mysql21111/data21111
+port = 21111
+socket = /database/mysql21111/tmp/mysql21111.sock
+log-error = /database/mysql21111/log/error21111.log
+pid-file = /database/mysql21111/tmp/mysql21111.pid
+log-bin = 1
+performance_schema = off
+innodb_log_group_home_dir = /database/mysql21111/redolog/
+server_id = 
+wait_timeout = 31536000
+interactive_timeout = 31536000
+log_slave_updates = 1
+gtid_mode = on
+enforce-gtid-consistency = 1
+tmpdir = /database/mysql21111/tmpdir
+

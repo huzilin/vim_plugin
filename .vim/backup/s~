@@ -1,0 +1,131 @@
+mysql> select * from replication_applier_status_by_worker\G
+*************************** 1. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 0
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: 7aaf67fb-7327-11e6-bad8-780cb8c4c633:195
+    LAST_ERROR_NUMBER: 1050
+   LAST_ERROR_MESSAGE: Error 'Table 't2' already exists' on query. Default database: 'performance_schema'. Query: 'create table test.t2(c1 int)'
+ LAST_ERROR_TIMESTAMP: 2016-09-13 13:01:49
+1 row in set (0.00 sec)
+
+mysql> start slave;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> select * from replication_applier_status_by_worker\G
+*************************** 1. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 0
+            THREAD_ID: 36
+        SERVICE_STATE: ON
+LAST_SEEN_TRANSACTION: 7aaf67fb-7327-11e6-bad8-780cb8c4c633:195
+    LAST_ERROR_NUMBER: 0
+   LAST_ERROR_MESSAGE: 
+ LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+1 row in set (0.00 sec)
+
+---
+这个表单线程是空的
+mysql> select * from  replication_applier_status_by_coordinator\G
+*************************** 1. row ***************************
+        CHANNEL_NAME: 1
+           THREAD_ID: NULL
+       SERVICE_STATE: OFF
+   LAST_ERROR_NUMBER: 1050
+  LAST_ERROR_MESSAGE: Coordinator stopped because there were error(s) in the worker(s). The most recent failure being: Worker 9 failed executing transaction '7aaf67fb-7327-11e6-bad8-780cb8c4c633:196' at master log mybinlog.000004, end_log_pos 4520624. See error log and/or performance_schema.replication_applier_status_by_worker table for more details about this failure or others, if any.
+LAST_ERROR_TIMESTAMP: 2016-09-13 13:13:56
+
+mysql> select * from replication_applier_status_by_worker\G
+*************************** 1. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 1
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: 
+    LAST_ERROR_NUMBER: 0
+   LAST_ERROR_MESSAGE: 
+ LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+*************************** 2. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 2
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: 
+    LAST_ERROR_NUMBER: 0
+   LAST_ERROR_MESSAGE: 
+ LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+*************************** 3. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 3
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: 
+    LAST_ERROR_NUMBER: 0
+   LAST_ERROR_MESSAGE: 
+ LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+*************************** 4. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 4
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: 
+    LAST_ERROR_NUMBER: 0
+   LAST_ERROR_MESSAGE: 
+ LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+*************************** 5. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 5
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: 
+    LAST_ERROR_NUMBER: 0
+   LAST_ERROR_MESSAGE: 
+ LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+*************************** 6. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 6
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: 
+    LAST_ERROR_NUMBER: 0
+   LAST_ERROR_MESSAGE: 
+ LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+*************************** 7. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 7
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: 
+    LAST_ERROR_NUMBER: 0
+   LAST_ERROR_MESSAGE: 
+ LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+*************************** 8. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 8
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: 
+    LAST_ERROR_NUMBER: 0
+   LAST_ERROR_MESSAGE: 
+ LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+*************************** 9. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 9
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: 
+    LAST_ERROR_NUMBER: 0
+   LAST_ERROR_MESSAGE: 
+ LAST_ERROR_TIMESTAMP: 0000-00-00 00:00:00
+*************************** 10. row ***************************
+         CHANNEL_NAME: 1
+            WORKER_ID: 10
+            THREAD_ID: NULL
+        SERVICE_STATE: OFF
+LAST_SEEN_TRANSACTION: 7aaf67fb-7327-11e6-bad8-780cb8c4c633:196
+    LAST_ERROR_NUMBER: 1050
+   LAST_ERROR_MESSAGE: Worker 9 failed executing transaction '7aaf67fb-7327-11e6-bad8-780cb8c4c633:196' at master log mybinlog.000004, end_log_pos 4520624; Error 'Table 't3' already exists' on query. Default database: 'performance_schema'. Query: 'create table test.t3(c1 int)'
+ LAST_ERROR_TIMESTAMP: 2016-09-13 13:13:56
+10 rows in set (0.00 sec)
+

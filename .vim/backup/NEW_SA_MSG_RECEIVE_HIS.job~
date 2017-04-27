@@ -1,0 +1,47 @@
+
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "oraclereader", 
+                    "parameter": {
+                        "column": ["MSG_ID", "RECEIVER_ID", "RECEIVER_NAME", "RECEIVE_FLAG", "RECEIVE_TIME", "MSG_SORT_ID", "MSG_TITLE", "MSG_CONTENT", "MSG_TYPE", "MSG_KIND", "SENDER_ID", "SENDER_NAME", "SEND_TIME", "KEYDATA_ID", "EXTEND_PARAM", "RELATION_ID"],
+                        "connection": [
+                            {
+                            "jdbcUrl": ["jdbc:oracle:thin:@10.0.0.114:1521:orcl"], 
+                                "table": ["NEW_SA_MSG_RECEIVE_HIS"]
+                            }
+                        ], 
+                        "password": "sgpms_ln_all", 
+                        "username": "sgpms_ln_all"
+                        "splitPk": "spk",
+                        "samplePercentage": "0.005",
+                    }
+                }, 
+                "writer": {
+                    "name": "mysqlwriter", 
+                    "parameter": {
+                        "column": ["MSG_ID", "RECEIVER_ID", "RECEIVER_NAME", "RECEIVE_FLAG", "RECEIVE_TIME", "MSG_SORT_ID", "MSG_TITLE", "MSG_CONTENT", "MSG_TYPE", "MSG_KIND", "SENDER_ID", "SENDER_NAME", "SEND_TIME", "KEYDATA_ID", "EXTEND_PARAM", "RELATION_ID"],
+                        "connection": [
+                            {
+                                "jdbcUrl": "jdbc:mysql://10.0.0.216:23306/sgpms_ln", 
+                                "table": ["NEW_SA_MSG_RECEIVE_HIS"]
+                            }
+                        ], 
+                        "password": "DBScale!123456", 
+                        "preSql": [], 
+                        "session": [], 
+                        "username": "dbscale", 
+                        "writeMode": "insert"
+                    }
+                }
+            }
+        ], 
+        "setting": {
+            "speed": {
+                "channel": "10",
+            }
+        }
+    }
+}

@@ -1,0 +1,20 @@
+#!/usr/bin/python2
+#coding:utf-8
+
+import struct
+import binascii
+import sys
+import pickle
+import re
+import os
+
+from include import unpack_byte
+
+
+blob_type = {
+    1: [249, 'TinyBlob/Tiny Text'],
+    2: [252, 'Blob/Text'],
+    3: [250, 'MediumBlob/Medium Text'],
+    4: [251, 'LongBlob/Long Text']
+}
+

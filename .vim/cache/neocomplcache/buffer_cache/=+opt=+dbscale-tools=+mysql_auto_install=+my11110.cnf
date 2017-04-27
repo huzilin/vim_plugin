@@ -1,0 +1,1 @@
+['mysqld', 'basedir', 'database', 'mysql', 'datadir', 'mysql11110', 'data11110', 'port', '11110', 'socket', 'sock', 'error', 'error11110', 'file', 'performance_schema', 'innodb_log_group_home_dir', 'redolog', 'server_id', 'wait_timeout', '31536000', 'interactive_timeout', 'log_slave_updates', 'gtid_mode', 'enforce', 'gtid', 'consistency', 'tmpdir', 'my11110']

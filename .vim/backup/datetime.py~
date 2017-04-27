@@ -1,0 +1,19 @@
+#!/usr/bin/python
+#coding:utf-8
+
+import struct
+
+log = open('/opt/mysql-5.5/data/mybinlog.000005','rb')
+log.seek(8634+19+6+2+1+1+1)
+
+ret = struct.unpack('<Q', log.read(8))[0]
+if ret:
+    value = '%04d-%02d-%02d %02d:%02d:%02d' % (ret / 10000000000,
+                                               (ret % 10000000000) / 100000000,
+                                               (ret % 100000000) / 1000000,
+                                               (ret % 1000000) / 10000,
+                                               (ret % 10000) / 100,
+                                               (ret % 100))
+else:
+    value = "0000-00-00 00:00:00"
+print value

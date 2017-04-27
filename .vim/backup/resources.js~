@@ -1,0 +1,39 @@
+angular.module('gtms.resources', [])
+
+.factory('Profile', function ($resource) {
+    return $resource('/api/users/update/:type/', {}, {
+        update_profile: {isArray: false, method: 'POST', params: {type: 'profile'}},
+        update_password: {isArray: false, method: 'POST', params: {type: 'password'}}
+    });
+})
+
+.factory('DBScaleInstance', function ($resource) {
+    return $resource('/api/dbscale/instances/:id/:action/', {id: '@id'}, {
+        get: {isArray: false, method: 'GET'},
+        create: {isArray: false, method: 'POST', params: {action: 'create'}},
+        update: {isArray: false, method: 'POST', params: {action: 'update'}},
+        delete: {isArray: false, method: 'POST', params: {action: 'delete'}},
+        sql_query: {isArray: false, method: 'POST', params: {action: 'sql-query'}},
+        topo_struct: {isArray: false, method: 'GET', params: {action: 'topo-struct'}},
+
+        get_task: {isArray: false, method: 'GET', params: {action: 'tasks'}},
+        create_task: {isArray: false, method: 'POST', params: {action: 'create-task'}},
+        delete_task: {isArray: false, method: 'POST', params: {action: 'delete-task'}},
+        task_detail: {isArray: false, method: 'GET', params: {action: 'task-detail'}}
+    });
+})
+
+.factory('DBScaleTask', function ($resource) {
+    return $resource('/api/dbscale/tasks/:id/:action/', {id: '@id'}, {
+        get: {isArray: false, method: 'GET'}
+    });
+})
+
+.factory('Node', function ($resource) {
+    return $resource('/api/nodes/:id/:action/', {id: '@id'}, {
+        get: {isArray: false, method: 'GET'},
+        create: {isArray: false, method: 'POST', params: {action: 'create'}},
+        update: {isArray: false, method: 'POST', params: {action: 'update'}},
+        delete: {isArray: false, method: 'POST', params: {action: 'delete'}}
+    });
+})

@@ -1,0 +1,6 @@
+#!/bin/bash
+instanceDir=`find /home/hu/sandboxes -maxdepth 2 -mindepth 2 -type d -name start`
+for i in $instanceDir;
+do
+    $i/start $@
+done

@@ -1,0 +1,46 @@
+#coding:gbk
+
+import time
+import os
+import threading
+import Queue
+
+from threading import Thread
+
+
+class Consumer(Thread):
+    
+    def __init__(self, queue):
+        Thread.__init__(self)
+        self.queue = queue
+        
+    def run(self):
+        while True:
+            filename = self.queue.get()
+            new_name = filename + '.bak'
+            os.rename(filename, new_name)
+            time.sleep(9)
+        
+
+
+def Producer():
+    
+    queue = Queue.Queue()
+    worker = Consumer(queue)
+    worker.start()
+    
+    start_time = time.time()
+    
+    i = 1
+    while 1:
+        file_name = str(time.time())
+        f=open(file_name,'w')
+        f.close()
+        queue.put(file_name)
+        time.sleep(10)
+    
+    queue.put('quit')
+    worker.join()
+
+
+Producer()

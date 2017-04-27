@@ -1,0 +1,50 @@
+[main]
+packet_position = /home/hu/mysql-5.6.28-linux-glibc2.5-x86_64.tar.gz
+remote_tmp_dir = /tmp
+global_ssh_user = root
+global_ssh_password = ' '
+global_ssh_port = 22
+db_admin_user = dbscale@'%%'
+db_admin_password = "123"
+
+[my_cnf_info]
+my_cnf_name = my11110.cnf,my11111.cnf
+
+[my11110.cnf]
+local_position = /tmp/my11110.cnf
+remote_position = /database/mysql11110/my11110.cnf
+	
+[my11111.cnf]
+local_position = /tmp/my11111.cnf
+remote_position = /database/mysql11111/my11111.cnf
+	
+[mysql_server_info]
+mysql_instance_name = data-server auth1,data-server auth2,data-server data1_1,data-server data1_2
+
+[data-server auth1]
+host = 172.16.110.68
+db_user = dbscale@'%%'
+db_password = "123"
+db_port = 11110
+cnf =  my11110.cnf
+
+[data-server auth2]
+host = 172.16.110.69
+db_user = dbscale@'%%'
+db_password = "123"
+db_port = 11110
+cnf = my11110.cnf
+
+[data-server data1_1]
+host = 172.16.110.68
+db_user = dbscale@'%%'
+db_password = "123"
+db_port = 11111
+cnf = my11111.cnf
+
+[data-server data1_2]
+host = 172.16.110.69
+db_user = dbscale@'%%'
+db_password = "123"
+db_port = 11112
+cnf = my11112.cnf

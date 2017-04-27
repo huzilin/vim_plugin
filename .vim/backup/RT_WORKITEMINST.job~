@@ -1,0 +1,47 @@
+
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "oraclereader", 
+                    "parameter": {
+                        "column": ["PROC_INSTANCE_ID", "ACTIVITY_INS_ID", "WORKITEM_INS_ID", "PARENT_WORKITEM", "NAME", "CURRENT_STATE", "COMPLETE_TIME", "CREATE_TIME", "LIMIT_TIME", "APP_NAME", "APP_TYPE", "APP_URL", "CATEGORY", "SEND_TYPE", "SUSPEND_COUNT", "USER_NAME", "USER_ID", "TYPE", "IF_CREATE_WORKITEM", "CUSTOM_MSG", "MSG_APP_TYPE", "USER_ENTITY_TYPE", "USER_ENTITY_NAME", "USER_ENTITY_ID", "R_DATA_ID", "PARTICIPANT_TYPE", "OVERDUED", "IFHANDLING", "PRIORITY", "NEED_PART_ROLE", "DESCRIPTION", "EXT_PROP", "FLOW_DIRECTION", "ORIGIN_ID", "ORIGIN_NAME", "ORIGIN_TYPE", "IS_SUBSTITUTED", "ACTOR_ID", "ACTOR_NAME", "ACTOR_TYPE", "BUSINESSKEY", "DEPART_ID"],
+                        "connection": [
+                            {
+                            "jdbcUrl": ["jdbc:oracle:thin:@10.0.0.114:1521:orcl"], 
+                                "table": ["RT_WORKITEMINST"]
+                            }
+                        ], 
+                        "password": "sgpms_ln_all", 
+                        "username": "sgpms_ln_all"
+                        "splitPk": "spk",
+                        "samplePercentage": "0.005",
+                    }
+                }, 
+                "writer": {
+                    "name": "mysqlwriter", 
+                    "parameter": {
+                        "column": ["PROC_INSTANCE_ID", "ACTIVITY_INS_ID", "WORKITEM_INS_ID", "PARENT_WORKITEM", "NAME", "CURRENT_STATE", "COMPLETE_TIME", "CREATE_TIME", "LIMIT_TIME", "APP_NAME", "APP_TYPE", "APP_URL", "CATEGORY", "SEND_TYPE", "SUSPEND_COUNT", "USER_NAME", "USER_ID", "TYPE", "IF_CREATE_WORKITEM", "CUSTOM_MSG", "MSG_APP_TYPE", "USER_ENTITY_TYPE", "USER_ENTITY_NAME", "USER_ENTITY_ID", "R_DATA_ID", "PARTICIPANT_TYPE", "OVERDUED", "IFHANDLING", "PRIORITY", "NEED_PART_ROLE", "DESCRIPTION", "EXT_PROP", "FLOW_DIRECTION", "ORIGIN_ID", "ORIGIN_NAME", "ORIGIN_TYPE", "IS_SUBSTITUTED", "ACTOR_ID", "ACTOR_NAME", "ACTOR_TYPE", "BUSINESSKEY", "DEPART_ID"],
+                        "connection": [
+                            {
+                                "jdbcUrl": "jdbc:mysql://10.0.0.216:23306/sgpms_ln", 
+                                "table": ["RT_WORKITEMINST"]
+                            }
+                        ], 
+                        "password": "DBScale!123456", 
+                        "preSql": [], 
+                        "session": [], 
+                        "username": "dbscale", 
+                        "writeMode": "insert"
+                    }
+                }
+            }
+        ], 
+        "setting": {
+            "speed": {
+                "channel": "10",
+            }
+        }
+    }
+}

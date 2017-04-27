@@ -1,0 +1,11 @@
+from fabric.api import local, settings, abort, run, cd
+from fabric.contrib.console import confirm
+
+def deploy():
+    tmp_dir = '/tmp/a'
+    with settings(warn_only=True):
+        if run("test -d %s" % tmp_dir).failed:
+            run("mkdir %s" % tmp_dir)
+    with cd(tmp_dir):
+        run("pwd")
+        run("ip a")

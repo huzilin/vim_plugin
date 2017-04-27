@@ -1,0 +1,1 @@
+['import', 'path', 'append', 'from', 'include', 'unpack_byte', 'class', 'Rotate_Event', 'rotate_to_log_file_len', 'event_size', 'common_header_len', 'rotate_to_pos_len', 'CRC32_len', 'CRC32_flag', '__init__', 'self', 'post_buf', 'parse', 'Parse_Byte_Stream', 'rotate_to_pos', 'get_uint64', 'rotate_to_log_file', 'get_char', 'event_output', 'print']

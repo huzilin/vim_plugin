@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# Configration
+
+MYSQL=/opt/mysql-5.7/bin/mysql
+TPCCLOAD=./tpcc_load
+TABLESQL=./create_table.sql
+CONSTRAINTSQL=./add_fkey_idx.sql
+DEGREE=`getconf _NPROCESSORS_ONLN`
+
+SERVER="127.0.0.1"
+DATABASE=tpcc
+USER=root
+PASS=123
+WAREHOUSE=10
+PORT=3306
+
+# Load
+
+set -e
+$MYSQL -u $USER -p$PASS -h$SERVER -P3306 -e "DROP DATABASE IF EXISTS $DATABASE"
+$MYSQL -u $USER -p$PASS -h$SERVER -P3306 -e "CREATE DATABASE $DATABASE"
+$MYSQL -u $USER -p$PASS -h$SERVER -P3306 $DATABASE < $TABLESQL
+$MYSQL -u $USER -p$PASS -h$SERVER -P3306 $DATABASE < $CONSTRAINTSQL
+
+echo 'Loading item ...'
+$TPCCLOAD -h$SERVER -d$DATABASE -u$USER -p$PASS -P$PORT -w$WAREHOUSE -l1 -m1 -n$WAREHOUSE > /dev/null
+
+set +e
+STATUS=0
+trap 'STATUS=1; kill 0' INT TERM
+
+for ((WID = 1; WID <= WAREHOUSE; WID++)); do
+    echo "Loading warehouse id $WID ..."
+    
+    (
+        set -e
+        
+        # warehouse, stock, district
+        $TPCCLOAD -h$SERVER -d$DATABASE -u$USER -p$PASS -P$PORT -w$WAREHOUSE -l2 -m$WID -n$WID > /dev/null
+        
+        # customer, history
+        $TPCCLOAD -h$SERVER -d$DATABASE -u$USER -p$PASS -P$PORT -w$WAREHOUSE -l3 -m$WID -n$WID > /dev/null
+        
+        # orders, new_orders, order_line
+        $TPCCLOAD -h$SERVER -d$DATABASE -u$USER -p$PASS -P$PORT -w$WAREHOUSE -l4 -m$WID -n$WID > /dev/null
+    ) &
+    
+    PIDLIST=(${PIDLIST[@]} $!)
+    
+    if [ $((WID % DEGREE)) -eq 0 ]; then
+        for PID in ${PIDLIST[@]}; do
+            wait $PID
+            
+            if [ $? -ne 0 ]; then
+                STATUS=1
+            fi
+        done
+        
+        if [ $STATUS -ne 0 ]; then
+            exit $STATUS
+        fi
+        
+        PIDLIST=()
+    fi
+done
+
+for PID in ${PIDLIST[@]}; do
+    wait $PID
+    
+    if [ $? -ne 0 ]; then
+        STATUS=1
+    fi
+done
+
+if [ $STATUS -eq 0 ]; then
+    echo 'Completed.'
+fi
+
+exit $STATUS

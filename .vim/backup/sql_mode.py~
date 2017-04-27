@@ -1,0 +1,50 @@
+#!/usr/bin/python
+#codeing:utf-8
+
+global sql_mode_dic,sql_set
+sql_mode_dic = {
+    '0x1': 'MODE_REAL_AS_FLOAT',
+    '0x2': 'MODE_PIPES_AS_CONCAT',
+    '0x4': 'MODE_ANSI_QUOTES',
+    '0x8': 'MODE_IGNORE_SPACE',
+    '0x10': 'MODE_NOT_USED',
+    '0x20': 'MODE_ONLY_FULL_GROUP_BY',
+    '0x40': 'MODE_NO_UNSIGNED_SUBTRACTION',
+    '0x80': 'MODE_NO_DIR_IN_CREATE',
+    '0x100': 'MODE_POSTGRESQL',
+    '0x200': 'MODE_ORACLE',
+    '0x400': 'MODE_MSSQL',
+    '0x800': 'MODE_DB2',
+    '0x1000': 'MODE_MAXDB',
+    '0x2000': 'MODE_NO_KEY_OPTIONS',
+    '0x4000': 'MODE_NO_TABLE_OPTIONS',
+    '0x8000': 'MODE_NO_FIELD_OPTIONS',
+    '0x10000': 'MODE_MYSQL323',
+    '0x20000': 'MODE_MYSQL323',
+    '0x40000': 'MODE_MYSQL40',
+    '0x80000': 'MODE_ANSI',
+    '0x100000': 'MODE_NO_AUTO_VALUE_ON_ZERO',
+    '0x200000': 'MODE_NO_BACKSLASH_ESCAPES',
+    '0x400000': 'MODE_STRICT_TRANS_TABLES',
+    '0x800000': 'MODE_STRICT_ALL_TABLES',
+    '0x1000000': 'MODE_NO_ZERO_IN_DATE',
+    '0x2000000': 'MODE_NO_ZERO_DATE',
+    '0x4000000': 'MODE_INVALID_DATES',
+    '0x8000000': 'MODE_ERROR_FOR_DIVISION_BY_ZERO',
+    '0x10000000': 'MODE_TRADITIONAL',
+    '0x20000000': 'MODE_NO_AUTO_CREATE_USER',
+    '0x40000000': 'MODE_HIGH_NOT_PRECEDENCE',
+    '0x80000000': 'MODE_PAD_CHAR_TO_FULL_LENGTH'
+}
+
+sql_set = set()
+
+
+#def sql(num, mode):
+#    global sql_mode_dic,sql_set
+#    base = sql_mode_dic.pop(sql_mode_dic.keys[0])
+#    for each in sql_mode_dic:
+#        sql_mode_dic[each]
+print sql_mode_dic.keys()
+for each in sql_mode_dic.keys():
+    print each,bin(int(each,16))

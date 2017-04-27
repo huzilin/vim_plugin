@@ -1,0 +1,106 @@
+[client]
+port				= 3306
+socket				= /opt/mysql-5.7/mysql.sock
+
+[mysql]
+prompt="\\u@\\h\\D\\R:\\m:\\s[\\d]>
+#pager="less -i -n -S"
+tee=/opt/mysql-5.7/query.log
+no-auto-rehash
+
+[mysqld]
+date_format = %Y%m%d
+datetime_format = %Y%m%d%H%i%s
+lower_case_table_names=1
+#misc
+user				= hu
+basedir				= /opt/mysql-5.7
+datadir				= /opt/mysql-5.7/data
+port				= 3306
+socket				= /opt/mysql-5.7/data/mysql.sock
+tmpdir                          = /opt/mysql-5.7/tmp
+event-scheduler			= 0
+
+
+#timeout
+interactive-timeout		= 300
+wait-timeout			= 300
+
+#character set
+character-set-server		= utf8
+
+open-files-limit		= 65535
+max-connections			= 100
+max-connect-errors		= 100000
+
+#logs
+log-output			= file
+slow-query-log			= 1
+slow-query-log_file		= /opt/mysql-5.7/data/slow.log
+log-error			= /opt/mysql-5.7/log/error.log
+log-warnings			= 2
+pid-file			= /opt/mysql-5.7/data/mysql.pid
+long-query-time			= 1
+#log-slow-admin-statements	= 1
+#log-queries_not-using-indexes	= 1
+log-slow-slave-statements	= 1
+
+#binlog
+binlog-format			= row
+server-id			= 1
+log-bin				= mybinlog
+binlog-cache-size		= 4M
+max-binlog-size			= 1G
+max-binlog-cache-size		= 2G
+sync-binlog			= 1
+#expire-log-days			= 10
+
+#relay log
+skip-slave-start		= 1
+max-relay-log-size		= 1G
+relay-log-purge			= 1
+relay-log-recovery		= 1
+log-slave-updates
+#slave-skip-errors		= 1032,1053,1062
+
+#buffer & cache
+table-open-cache		= 2048
+table-definition-cache		= 2048
+max-heap-table-size		= 96M
+sort-buffer-size		= 2M
+join-buffer-size		= 2M
+thread-cache-size		= 256
+query-cache-size		= 0
+query-cache-type		= 0
+query-cache-limit		= 256K
+query-cache-min-res-unit	= 512
+thread-stack			= 192K
+tmp-table-size			= 96M
+key-buffer-size			= 8M
+read-buffer-size		= 2M
+read-rnd-buffer-size		= 16M
+bulk-insert-buffer-size		= 32M
+
+#myisam
+myisam-sort-buffer-size		= 128M
+myisam-max-sort-file-size	= 10G
+myisam-repair-threads		= 1
+
+#innodb
+innodb-buffer-pool-size		= 1G
+innodb-buffer-pool-instances	= 1
+innodb-data-file-path		= ibdata1:1G:autoextend
+innodb-flush-log-at-trx-commit	= 1
+innodb-log-buffer-size		= 64M
+innodb-log-file-size		= 256M
+innodb-log-files-in-group	= 2
+innodb-max-dirty-pages-pct	= 50
+innodb-file-per-table		= 1
+#innodb-rollback-no-timeout
+innodb-status-file		= 1
+innodb-io-capacity		= 2000
+transaction-isolation		= READ-COMMITTED
+innodb-flush-method		= O_DIRECT
+gtid_mode=ON
+enforce_gtid_consistency
+performance-schema-instrument='%=ON'

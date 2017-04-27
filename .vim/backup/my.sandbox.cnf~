@@ -1,0 +1,21 @@
+
+[mysql]
+prompt='mysql [\h] {\u} (\d) > '
+#
+
+[client]
+user               = dbscale
+password           = dbscale
+port               = 3214
+socket             = /home/hu/sandboxes/auth_mysql_sandbox/master/mysql_sandbox3214.sock
+
+[mysqld]
+user               = dbscale
+port               = 3214
+socket             = /home/hu/sandboxes/auth_mysql_sandbox/master/mysql_sandbox3214.sock
+basedir            = /opt/mysql
+datadir            = /home/hu/sandboxes/auth_mysql_sandbox/master/data/
+tmpdir             = /home/hu/sandboxes/auth_mysql_sandbox/master/tmp
+lower_case_table_names = 0
+pid-file           = /home/hu/sandboxes/auth_mysql_sandbox/master/data/data/mysql_sandbox3214.pid
+bind-address       = 127.0.0.1

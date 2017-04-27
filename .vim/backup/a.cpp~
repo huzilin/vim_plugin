@@ -1,0 +1,11 @@
+#include <cstdio>
+
+void main(){
+    int a, b;
+    a=5;
+    b=a++;
+    printf("b: %d",b);
+    a=5;
+    b=++a;
+    printf("b: %d",b);
+}

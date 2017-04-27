@@ -1,0 +1,126 @@
+Optimize stored procedure
+
+1.
+
+```
+    ALTER TABLE basic.DG50_train_price_type ADD INDEX goidx_tc(train_code);
+
+    sp: DG50_fetch_price_program
+    sql: select   DG50_train_price_type.price_type_code
+    INTO price_type_code
+    from basic.DG50_train_price_type
+    where DG50_train_price_type.train_code = train_code
+    and DG50_train_price_type.start_station_telecode = start_station_telecode
+    and DG50_train_price_type.end_station_telecode = end_station_telecode
+    and DG50_train_price_type.start_date <= start_train_date
+    and DG50_train_price_type.stop_date  >= start_train_date
+    and DG50_train_price_type.running_rule & power(2,(TIMESTAMPDIFF(DAY,CAST(DG50_train_price_type.start_date AS DATETIME),CAST(start_train_date AS DATETIME))%DG50_train_price_type.running_style)) <> 0
+    and DG50_train_price_type.seat_type_code in(seat_type_code,'z')
+    and DG50_train_price_type.ticket_type & power(2,ticket_type -1) = power(2,ticket_type -1)   order by seat_type_code DESC LIMIT 1
+```
+
+2.
+```
+    alter table basic.DJ50_reuse_train_define add index idx_tse(train_code,start_station_telecode,end_station_telecode);
+    
+    sp: DS60_ticket_left
+    sql: SELECT reuse_flag INTO l_share_to_wseat
+    FROM basic.DJ50_reuse_train_define
+    WHERE train_code = l_train_code
+      AND start_station_telecode = l_start_station_telecode
+      AND end_station_telecode = l_end_station_telecode
+      AND start_date <= l_start_train_date
+      AND stop_date >= l_start_train_date
+      AND seat_type_code IN ('1',
+                             'B',
+                             '*')
+      AND running_rule & (power(2,datediff(l_start_train_date,start_date) % running_style)) > 0
+    ORDER BY seat_type_code DESC LIMIT 1
+```
+3.
+```
+    line: 158
+    CREATE Temporary TABLE if not exists  tmp_query_train_info
+            (train_date 	 CHAR(8) NOT NULL,
+             train_no		 CHAR(12) NOT NULL,
+             train_code 	 CHAR(8) NOT NULL,
+             from_station	 CHAR(10) NOT NULL,
+             to_station		 CHAR(10) NOT NULL,
+             flag				 INTEGER NOT NULL,
+             KEY `idx_tc`(`train_code`)         --- add index
+             );
+
+
+    line: 299
+        CREATE Temporary TABLE if not exists tmp_stop_time
+        (
+        start_date char(8)   NOT NULL,
+        stop_date char(8)   NOT NULL,
+        train_no char(12)   NOT NULL,
+        station_name char(10)   NOT NULL,
+        station_telecode char(3)   NOT NULL,
+        station_no varchar(2)   NOT NULL,
+        station_train_code char(8)   NOT NULL,
+        bureau_code char(1)   NOT NULL,
+        subbureau_code char(2)   NOT NULL,
+        day_difference INTEGER   NOT NULL,
+        arrive_time char(4)   NOT NULL,
+        start_time char(4)   NOT Null,
+        KEY `idx_st`(`station_telecode`)        --- add index
+        );
+
+    sp: DS60_ticket_left
+    sql:INSERT INTO tmp_cancel_limit_define
+        SELECT a.* FROM basic.DJ50_cancel_limit_define a  , tmp_query_train_info b
+        WHERE inner_code IN (SELECT station_telecode FROM tmp_stop_time where station_telecode<>l_from_station) 
+          AND a.start_date <= l_max_train_date                          
+          AND a.stop_date  >= l_min_train_date
+          AND   (a.train_code = b.train_code OR a.train_code = '*' OR b.train_code LIKE a.train_code) 
+          AND   sale_mode       IN (sale_mode_in,'*')
+          AND (a.purpose_code   = '*' OR instr( purpose_code_in,a.purpose_code) % 2  = 1 ) 
+          AND a.cancel_office_no   = '%'
+          AND a.cancel_window_no   = 0;
+```
+
+4.
+```
+    line: 127
+                CREATE Temporary TABLE if not exists tmp_share_stop_time
+        (    
+         start_date char(8)   NOT NULL,
+         stop_date char(8)   NOT NULL,
+         train_no char(12)   NOT NULL,
+         station_no char(2)   NOT NULL,
+         station_name char(10)   NOT NULL,
+         station_shortcode char(3)   NOT NULL,
+         station_telecode char(3)   NOT NULL,
+         station_train_code char(8)   NOT NULL,
+         route_tele_code char(3)   NOT NULL,
+         segment_code char(4)   NOT NULL,
+         bureau_code char(1)   NOT NULL,
+         subbureau_code char(2)   NOT NULL,
+         day_difference tinyint unsigned   NOT NULL,
+         arrive_time char(4)   NOT NULL,
+         start_time char(4)   NOT NULL,
+         distance smallint   NOT NULL,
+         distance1 smallint   NOT NULL,
+         distance2 smallint   NOT NULL,
+         distance3 smallint   NOT NULL,
+         distance4 smallint   NOT NULL,
+         distance5 smallint   NOT NULL,
+         line_alter1 char(7)   NOT NULL,
+         line_alter2 char(7)   NOT NULL,
+         line_alter3 char(7)   NOT NULL,
+         line_alter4 char(7)   NOT NULL,
+         origin char(2)   NOT NULL,
+         KEY `idx_ss` (`station_telecode`, `start_date`)      --- add index
+        ); 
+
+    sp: DS50_Proc_Share.sql
+    sql: SELECT day_difference,station_no ,start_time, bureau_code ,subbureau_code
+     into l_day_difference1,transform_no_in,l_transform_start_time,l_original_bureau_code,l_original_subbureau_code
+     FROM tmp_share_stop_time
+     WHERE  train_no = train_no_in                     --- only have one value
+     AND station_telecode = l_original_station_telecode
+     AND start_date <= l_train_start_date
+     AND stop_date >= l_train_start_date limit 1 

@@ -1,0 +1,149 @@
+var dbscale_schema = {
+    'properties': {
+        'main': {
+            'type': 'object',
+            'properties': {
+                'metadata-source': {
+                    'type': 'string'
+                },
+                'log-file': {
+                    'type': 'string'
+                },
+                'authenticate-source': {
+                    'type': 'string'
+                },
+                'conn-pool-num': {
+                    'type': 'integer',
+                    'minimum' : 1
+                },
+                'datasource-in-one': {
+                    'enum': ['on', 'off']
+                },
+                'max-conn-limit': {
+                    'type': 'integer',
+                    'minimum' : 0
+                },
+                'zookeeper-host': {
+                    'type': 'string',
+                    'pattern' : '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-4]|[01]\d\d|[1-9]\d|[1-9]):(6[0-5]{2}[0-3][0-5]|[1-5]\d{4}|\d{1,4})$'
+                },
+                'zk-log-file': {
+                    'type': 'string'
+                },
+                'max-fetchnode-ready-rows-size': {
+                    'type': 'integer',
+                    'minimum' : 0
+                },
+                'admin-password': {
+                    'type': 'string'
+                },
+                'on-view': {
+                    'enum': ['on', 'off']
+                },
+                'multiple-mode': {
+                    'enum': ['on', 'off']
+                },
+                'cluster-user': {
+                    'type': 'string'
+                },
+                'handler-thread-pool-num': {
+                    'type': 'integer',
+                    'minimum' : 1
+                },
+                'lower-case-table-names': {
+                    'enum': ['on', 'off']
+                },
+                'enable-block-table': {
+                    'enum': ['on', 'off']
+                },
+                'enable-xa-transaction': {
+                    'enum': ['on', 'off']
+                },
+                'enable-get-rep-connection': {
+                    'enum': ['on', 'off']
+                },
+                'support-tokudb': {
+                    'enum': ['on', 'off']
+                },
+                'use-partial-parse': {
+                    'enum': ['on', 'off']
+                },
+                'restrict-auth-source-topo': {
+                    'enum': ['on', 'off']
+                },
+                'node-host-addr': {
+                    'type': 'string'
+                },
+                'admin-user': {
+                    'type': 'string'
+                },
+                'enable-acl': {
+                    'enum': ['on', 'off']
+                },
+                'support-show-warning': {
+                    'enum': ['on', 'off']
+                },
+                'enable-session-swap': {
+                    'enum': ['on', 'off']
+                },
+                'driver': {
+                    'type': 'string'
+                },
+                'cluster-password': {
+                    'type': 'string'
+                },
+                'config-source': {
+                    'type': 'string'
+                },
+                'support-gtid': {
+                    'enum': ['on', 'off']
+                },
+                'enable-session-swap-during-execution': {
+                    'enum': ['on', 'off']
+                },
+                'pid-file': {
+                    'type': 'string'
+                },
+                'default-login-schema': {
+                    'type': 'string'
+                },
+                'monitor-net-timeout': {
+                    'type': 'integer',
+                    'minimum' : 1
+                },
+                'record-auto-increment-delete-value': {
+                    'enum': ['on', 'off']
+                },
+                'log-level': {
+                    'enum': ['ERROR'. 'WARN', 'INFO', 'DEBUG']
+                },
+                'backlog': {
+                    'type': 'integer',
+                    'minimum' : 1
+                }
+            }
+        },
+        'driver mysql': {
+            'type': 'object',
+            'properties': {
+                'admin-port': {
+                    'type': 'integer',
+                    'minimum' : 1,
+                    'maximum': 65535
+                },
+                'type': {
+                    'enum': ['MySQLDriver']
+                },
+                'port': {
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 65535
+                },
+                'bind-address': {
+                    'type': 'string',
+                    'pattern' : '^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-4]|[01]\d\d|[1-9]\d|[1-9])$'
+                }
+            }
+        }
+    }
+};
