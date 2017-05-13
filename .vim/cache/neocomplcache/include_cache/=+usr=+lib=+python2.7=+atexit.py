@@ -1,1 +1,0 @@
-[{'word': '__all__', 'kind': 'v', 'abbr': '__all__ = ["register"]', 'dup': 1}, {'word': '_exithandlers', 'kind': 'v', 'abbr': '_exithandlers = []', 'dup': 1}, {'word': '_run_exitfuncs', 'kind': 'f', 'abbr': 'def _run_exitfuncs():', 'dup': 1}, {'word': 'register', 'kind': 'f', 'abbr': 'def register(func, *targs, **kargs):', 'dup': 1}]

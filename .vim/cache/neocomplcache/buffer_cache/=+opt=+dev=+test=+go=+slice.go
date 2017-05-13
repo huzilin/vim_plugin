@@ -1,1 +1,0 @@
-['package', 'main', 'import', 'func', 'numbers', 'printSlice', '允许追加空切片', 'append', '向切片添加一个元素', '同时添加多个元素', '创建切片', 'numbers1', '是之前切片的两倍容量', 'make', '拷贝', '的内容到', 'copy', 'Println', 'numbers2', 'Printf', 'slice']

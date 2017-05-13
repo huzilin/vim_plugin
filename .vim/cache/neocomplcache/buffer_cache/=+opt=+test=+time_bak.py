@@ -1,1 +1,0 @@
-['coding', 'import', 'time', 'threading', 'Queue', 'from', 'Thread', 'class', 'Consumer', '__init__', 'self', 'queue', 'while', 'True', 'filename', 'new_name', 'rename', 'Producer', 'worker', 'start', 'start_time', 'file_name', 'open', 'close', 'sleep', 'quit', 'join']

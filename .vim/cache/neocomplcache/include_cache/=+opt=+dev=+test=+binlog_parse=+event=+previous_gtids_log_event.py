@@ -1,1 +1,0 @@
-[{'word': 'Previous_Gtids_Log_Event', 'kind': 'c', 'abbr': 'Previous_Gtids_Log_Event: <class>', 'dup': 1}, {'word': '__init__', 'menu': 'Previous_Gtids_Log_Event', 'kind': 'm', 'abbr': 'def __init__(self, post_buf):', 'dup': 1}, {'word': 'event_output', 'menu': 'Previous_Gtids_Log_Event', 'kind': 'm', 'abbr': 'def event_output(self):', 'dup': 1}]

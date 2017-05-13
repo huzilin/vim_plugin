@@ -1,7 +1,0 @@
-yum -y install cmake libtool bison ncurses-base.x86_64 ncurses-term.x86_64 ncurses-libs.x86_64 ncurses-devel.x86_64 ncurses.x86_64 zlib-devel.x86_64 automake autoconf gcc gcc-c++.x86_64 libaio-devel
-
-
-cmake -DBUILD_CONFIG=mysql_release -DCMAKE_INSTALL_PREFIX=xxxx ..
-make 
-make install
-

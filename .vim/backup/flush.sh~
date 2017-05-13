@@ -1,7 +1,0 @@
-#!/bin/bash
-
-for i in $(seq 100)
-do
-    mysql -uroot -p123 -h127.0.0.1 -P3307 -BNe "flush logs"
-    sleep 0.1
-done

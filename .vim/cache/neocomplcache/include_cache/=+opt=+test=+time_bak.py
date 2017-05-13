@@ -1,1 +1,0 @@
-[{'word': 'Consumer', 'kind': 'c', 'abbr': 'Consumer(Thread): <class>', 'dup': 1}, {'word': 'Producer', 'kind': 'f', 'abbr': 'def Producer():', 'dup': 1}, {'word': '__init__', 'menu': 'Consumer', 'kind': 'm', 'abbr': 'def __init__(self, queue):', 'dup': 1}]

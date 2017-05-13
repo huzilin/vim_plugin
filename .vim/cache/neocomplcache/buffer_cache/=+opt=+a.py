@@ -1,1 +1,0 @@
-['python', 'import', 'shutil', 'get_myconf', 'data_home', 'port', 'myconf', 'return', 'prepare_recovery_env', 'recovery_port', 'src_conf', 'recovery_conf', 'path', 'exists', 'system', 'mkdir', 'data', 'logs', 'copy', 'mysql', 'with', 'open', 'line', 'read', 'replace', 'write', '__name__', '__main__']

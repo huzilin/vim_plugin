@@ -1,1 +1,0 @@
-[{'word': 'InitScript2All', 'kind': 'f', 'abbr': 'InitScript2All', 'dup': 1}, {'word': 'InstallMySQLScripts', 'kind': 'f', 'abbr': 'InstallMySQLScripts', 'dup': 1}, {'word': 'utils', 'kind': 'p', 'abbr': 'package utils', 'dup': 1}]

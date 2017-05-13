@@ -1,1 +1,0 @@
-['mysql', 'password', 'dbscale', 'grant', 'identified', 'localhost', 'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP', 'INDEX', 'ALTER', 'SHOW', 'DATABASES', 'TEMPORARY', 'TABLES', 'LOCK', 'EXECUTE', 'dbscale_rw', 'dbscale_ro', 'REPLICATION', 'SLAVE', 'rdbscale', 'delete', 'from', 'user', 'where', 'flush', 'privileges', 'create', 'database', 'exists', 'test']

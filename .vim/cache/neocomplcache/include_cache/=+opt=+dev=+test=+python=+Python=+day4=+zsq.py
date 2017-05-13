@@ -1,1 +1,0 @@
-[{'word': '_deco', 'kind': 'f', 'abbr': 'def _deco():', 'dup': 1}, {'word': 'confession', 'kind': 'v', 'abbr': 'confession = deco(confession)', 'dup': 1}, {'word': 'deco', 'kind': 'f', 'abbr': 'def deco(func):', 'dup': 1}]

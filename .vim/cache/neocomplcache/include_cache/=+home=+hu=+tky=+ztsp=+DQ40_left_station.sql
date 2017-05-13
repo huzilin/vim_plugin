@@ -1,1 +1,0 @@
-[{'word': 'cursor_board_station', 'kind': 'c', 'abbr': 'DECLARE cursor_board_station CURSOR FOR ', 'dup': 1}, {'word': 'cursor_end_station', 'kind': 'c', 'abbr': 'DECLARE cursor_end_station CURSOR FOR ', 'dup': 1}]

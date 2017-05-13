@@ -1,1 +1,0 @@
-['python2', 'import', 'MySQLdb', 'conn', 'connect', 'host', 'port', 'user', 'root', 'passwd', 'test', 'charset', 'utf8', 'cursor', 'range', 'execute', 'drop', 'table', 'exists', 'create', 'engine', 'myisam', 'ifnull', 'concat', 't_parent', 'union', 'insert_method', 'first', 'mrg_myisam', 'select', 'prepare', 'stmt', 'from', 'close']

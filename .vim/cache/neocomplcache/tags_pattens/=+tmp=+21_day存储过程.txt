@@ -1,4 +1,0 @@
-\k\+
-/home/hu/.vim/cache/neocomplcache/tags_output/=+tmp=+21_day存储过程.txt
-
-text
