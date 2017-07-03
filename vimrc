@@ -1,43 +1,7 @@
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"       _       _
-"      (_)   __(_)___ ___
-"     / / | / / / __ `__ \
-"    / /| |/ / / / / / / /
-"   /_/ |___/_/_/ /_/ /_/
-"
-"   Main Contributor: Xiao-Ou Zhang (kepbod) <kepbod@gmail.com>
-"   Version: 2.1
-"   Created: 2012-01-20
-"   Last Modified: 2015-10-10
-"
-"   Sections:
-"     -> ivim Setting
-"     -> General
-"     -> Platform Specific Setting
-"     -> NeoBundle
-"     -> User Interface
-"     -> Colors and Fonts
-"     -> Indent Related
-"     -> Search Related
-"     -> Fold Related
-"     -> File Type Specific Setting
-"     -> Key Mapping
-"     -> Plugin Setting
-"     -> Local Setting
-"
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-"------------------------------------------------
-" => ivim Setting
-"------------------------------------------------
-
 " ivim user setting
-let g:ivim_user='Xiao-Ou Zhang' " User name
-let g:ivim_email='kepbod@gmail.com' " User email
-let g:ivim_github='https://github.com/kepbod' " User github
+let g:ivim_user='Hu Zilin' " User name
+let g:ivim_email='huzilin@zhangyue.com' " User email
+let g:ivim_github='https://github.com/huzilin' " User github
 " ivim color settings (hybrid or gruvbox)
 let g:ivim_default_scheme='hybrid'
 " ivim ui setting
@@ -161,6 +125,7 @@ if count(g:ivim_bundle_groups, 'ui') " UI setting
     NeoBundle 'mhinz/vim-startify' " Start page
     NeoBundle 'junegunn/goyo.vim' " Distraction-free
     NeoBundle 'junegunn/limelight.vim' " Hyperfocus-writing
+    NeoBundle 'vim-airline/vim-airline-themes'
 endif
 
 if count(g:ivim_bundle_groups, 'enhance') " Vim enhancement
@@ -641,7 +606,6 @@ if count(g:ivim_bundle_groups, 'ui')
                 \'      (_)   __(_)___ ___ ',
                 \'     / / | / / / __ `__ \',
                 \'    / /| |/ / / / / / / /',
-                \'   /_/ |___/_/_/ /_/ /_/ ',
                 \'                         ']
     let g:startify_custom_footer=['', '    This configuration is maintained by Xiao-Ou Zhang <kepbod@gmail.com> and other contributors. Thanks!']
     if has('gui_running')
@@ -736,9 +700,6 @@ if count(g:ivim_bundle_groups, 'enhance')
     " -> investigate.vim
     nnoremap K :call investigate#Investigate()<CR>
     let g:investigate_use_dash=1
-
-    " -> EnhancedDiff
-    let &diffexpr='EnhancedDiff#Diff("git diff", "--diff-algorithm=patience")'
 
 endif
 
@@ -870,10 +831,10 @@ endif
 if count(g:ivim_bundle_groups, 'compile')
 
     " -> Syntastic
-    let g:syntastic_check_on_open=1
-    let g:syntastic_aggregate_errors=1
-    let g:syntastic_auto_jump=1
-    let g:syntastic_auto_loc_list=1
+    "let g:syntastic_check_on_open=1
+    "let g:syntastic_aggregate_errors=1
+    "let g:syntastic_auto_jump=1
+    "let g:syntastic_auto_loc_list=1
     if g:ivim_fancy_font
         let g:syntastic_error_symbol = '✗'
         let g:syntastic_style_error_symbol = '✠'
@@ -937,7 +898,8 @@ set cursorcolumn
 set cursorline
 
 let g:vimrc_author='Hu Zilin' 
-let g:vimrc_email='zilin.hu@greatopensource.com'
+let g:vimrc_email='huzilin@zhangyue.com'
+let g:vimrc_homepage=''
 nmap <F2> :AuthorInfoDetect<cr> 
 cmap WW w !sudo tee %
 cmap BB B s# \(.*\)\(\W\) *#**\1**\2#
@@ -945,3 +907,8 @@ map <S-m> <Esc>:set syntax=markdow<cr>
 set pastetoggle=<F10> 
 
 let g:autopep8_max_line_length=79
+set langmenu=zh_CN
+let $LANG = 'zh_CN.UTF-8'
+set encoding=utf-8
+set termencoding=utf-8
+set fileencoding=utf-8
