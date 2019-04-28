@@ -1,21 +1,21 @@
-" ivim user setting
-let g:ivim_user='Hu Zilin' " User name
-let g:ivim_email='huzilin@zhangyue.com' " User email
-let g:ivim_github='https://github.com/huzilin' " User github
-" ivim color settings (hybrid or gruvbox)
-let g:ivim_default_scheme='hybrid'
-" ivim ui setting
-let g:ivim_fancy_font=1 " Enable using fancy font
-let g:ivim_show_number=1 " Enable showing number
-" ivim autocomplete setting (YCM or NEO)
-let g:ivim_autocomplete='NEO'
-" ivim plugin setting
-let g:ivim_bundle_groups=['ui', 'enhance', 'move', 'navigate',
+" vim user setting
+let g:vim_user='Hu Zilin' " User name
+let g:vim_email='huzilin@zhangyue.com' " User email
+let g:vim_github='https://github.com/huzilin' " User github
+" vim ui setting
+" vim color settings (hybrid_material, gruvbox or tender)
+let g:vim_default_scheme='hybrid_material'
+let g:vim_fancy_font=1 " Enable using fancy font
+let g:vim_show_number=1 " Enable showing number
+" vim autocomplete setting (YCM or NEO)
+let g:vim_autocomplete='NEO'
+" vim plugin setting
+let g:vim_vundle_groups=['ui', 'enhance', 'move', 'navigate',
             \'complete', 'compile', 'git', 'language', 'autopep8', 'authinfo']
 
-" Customise ivim settings for personal usage
-if filereadable(expand($HOME . '/.vimrc.ivim.local'))
-    source $HOME/.vimrc.ivim.local
+" Customise vim settings for personal usage
+if filereadable(expand($HOME . '/.vimrc.vim.local'))
+    source $HOME/.vimrc.vim.local
 endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -32,7 +32,7 @@ set timeoutlen=500 " Time to wait for a command
 
 " Source the vimrc file after saving it
 autocmd BufWritePost $MYVIMRC source $MYVIMRC
-autocmd BufWritePost $MYVIMRC NeoBundleClean
+autocmd BufWritePost $MYVIMRC PluginClean
 " Fast edit the .vimrc file using ,x
 nnoremap <Leader>x :tabedit $MYVIMRC<CR>
 
@@ -101,62 +101,56 @@ set viewoptions-=options " in case of mapping change
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-"--------------------------------------------------
-" => NeoBundle
-"--------------------------------------------------
 
 if has('vim_starting')
     set nocompatible
-    set runtimepath+=$HOME/.vim/bundle/neobundle.vim/
-    let g:neobundle#install_process_timeout=600
+    set runtimepath+=$HOME/.vim/bundle/Vundle.vim
 endif
 
-call neobundle#begin(expand($HOME . '/.vim/bundle/'))
+call vundle#begin('~/.vim/bundle/')
+Plugin 'VundleVim/Vundle.vim'
 
-" Use NeoBundle to manager plugins
-NeoBundleFetch 'Shougo/neobundle.vim'
-
-if count(g:ivim_bundle_groups, 'ui') " UI setting
-    NeoBundle 'mrhooray/vim-hybrid' " Colorscheme hybrid
-    NeoBundle 'morhetz/gruvbox' " Colorscheme gruvbox
-    NeoBundle 'bling/vim-airline' " Status line
-    NeoBundle 'bling/vim-bufferline' " Buffer line
-    NeoBundle 'nathanaelkane/vim-indent-guides' " Indent guides
-    NeoBundle 'mhinz/vim-startify' " Start page
-    NeoBundle 'junegunn/goyo.vim' " Distraction-free
-    NeoBundle 'junegunn/limelight.vim' " Hyperfocus-writing
-    NeoBundle 'vim-airline/vim-airline-themes'
+if count(g:vim_vundle_groups, 'ui') " UI setting
+    Plugin 'kristijanhusak/vim-hybrid-material' " Colorscheme hybrid
+    Plugin 'jacoborus/tender.vim' " Colorscheme tender
+    Plugin 'morhetz/gruvbox' " Colorscheme gruvbox
+    Plugin 'bling/vim-airline' " Status line
+    Plugin 'bling/vim-bufferline' " Buffer line
+    Plugin 'nathanaelkane/vim-indent-guides' " Indent guides
+    Plugin 'mhinz/vim-startify' " Start page
+    Plugin 'junegunn/goyo.vim' " Distraction-free
+    Plugin 'junegunn/limelight.vim' " Hyperfocus-writing
+    Plugin 'vim-airline/vim-airline-themes'
 endif
 
-if count(g:ivim_bundle_groups, 'enhance') " Vim enhancement
-    NeoBundle 'Raimondi/delimitMate' " Closing of quotes
-    NeoBundle 'scrooloose/nerdcommenter' " NERD commenter
-    NeoBundle 'tpope/vim-abolish' " Abolish
-    NeoBundle 'tpope/vim-speeddating' " Speed dating
-    NeoBundle 'tpope/vim-repeat' " Repeat
-    NeoBundle 'kristijanhusak/vim-multiple-cursors' " Multiple cursors
-    NeoBundle 'mbbill/undotree' " Undo tree
-    NeoBundle 'tpope/vim-surround' " Surround
-    NeoBundle 'godlygeek/tabular' " Tabular
-    NeoBundle 'AndrewRadev/splitjoin.vim' " Splitjoin
-    NeoBundle 'sickill/vim-pasta' " Vim pasta
-    NeoBundle 'Keithbsmiley/investigate.vim' " Helper
-    NeoBundle 'wikitopian/hardmode' " Hard mode
-    NeoBundle 'wellle/targets.vim' " Text objects
-    NeoBundle 'roman/golden-ratio' " Resize windows
-    NeoBundle 'chrisbra/vim-diff-enhanced' " Create better diffs
+if count(g:vim_vundle_groups, 'enhance') " Vim enhancement
+    Plugin 'Raimondi/delimitMate' " Closing of quotes
+    Plugin 'scrooloose/nerdcommenter' " NERD commenter
+    Plugin 'tpope/vim-abolish' " Abolish
+    Plugin 'tpope/vim-speeddating' " Speed dating
+    Plugin 'tpope/vim-repeat' " Repeat
+    Plugin 'kristijanhusak/vim-multiple-cursors' " Multiple cursors
+    Plugin 'mbbill/undotree' " Undo tree
+    Plugin 'tpope/vim-surround' " Surround
+    Plugin 'godlygeek/tabular' " Tabular
+    Plugin 'AndrewRadev/splitjoin.vim' " Splitjoin
+    Plugin 'sickill/vim-pasta' " Vim pasta
+    Plugin 'Keithbsmiley/investigate.vim' " Helper
+    Plugin 'wikitopian/hardmode' " Hard mode
+    Plugin 'wellle/targets.vim' " Text objects
+    Plugin 'roman/golden-ratio' " Resize windows
+    Plugin 'chrisbra/vim-diff-enhanced' " Create better diffs
 endif
 
-if count(g:ivim_bundle_groups, 'move') " Moving
-    NeoBundle 'tpope/vim-unimpaired' " Pairs of mappings
-    NeoBundle 'Lokaltog/vim-easymotion' " Easy motion
-    NeoBundle 'unblevable/quick-scope' " Quick scope
-    NeoBundle 'bkad/CamelCaseMotion' " Camel case motion
-    NeoBundle 'majutsushi/tagbar' " Tag bar
-    NeoBundle 'edsono/vim-matchit' " Match it
-    NeoBundle 'Shougo/unite.vim' " Search engine
-    NeoBundle 'Shougo/unite-outline' " Unite outline
-    NeoBundle 'Shougo/vimproc', {
+if count(g:vim_vundle_groups, 'move') " Moving
+    Plugin 'tpope/vim-unimpaired' " Pairs of mappings
+    Plugin 'Lokaltog/vim-easymotion' " Easy motion
+    Plugin 'unblevable/quick-scope' " Quick scope
+    Plugin 'bkad/CamelCaseMotion' " Camel case motion
+    Plugin 'majutsushi/tagbar' " Tag bar
+    Plugin 'Shougo/unite.vim' " Search engine
+    Plugin 'Shougo/unite-outline' " Unite outline
+    Plugin 'Shougo/vimproc', {
                 \ 'build' : {
                 \     'windows' : 'make -f make_mingw32.mak',
                 \     'cygwin' : 'make -f make_cygwin.mak',
@@ -166,26 +160,26 @@ if count(g:ivim_bundle_groups, 'move') " Moving
                 \ }
 endif
 
-if count(g:ivim_bundle_groups, 'navigate') " Navigation
-    NeoBundle 'scrooloose/nerdtree' " NERD tree
-    NeoBundle 'jistr/vim-nerdtree-tabs' " NERD tree tabs
-    NeoBundle 'mhinz/vim-tmuxify' " Tmux panes
+if count(g:vim_vundle_groups, 'navigate') " Navigation
+    Plugin 'scrooloose/nerdtree' " NERD tree
+    Plugin 'jistr/vim-nerdtree-tabs' " NERD tree tabs
+    Plugin 'mhinz/vim-tmuxify' " Tmux panes
 endif
 
-if count(g:ivim_bundle_groups, 'complete') " Completion
-    if g:ivim_autocomplete=='NEO'
+if count(g:vim_vundle_groups, 'complete') " Completion
+    if g:vim_autocomplete=='NEO'
         if has('lua')
-            NeoBundle 'Shougo/neocomplete.vim' " Auto completion framework
-            let g:ivim_completion_engine='neocomplete'
+            Plugin 'Shougo/neocomplete.vim' " Auto completion framework
+            let g:vim_completion_engine='neocomplete'
         else
-            NeoBundle 'Shougo/neocomplcache.vim' " Auto completion framework
-            let g:ivim_completion_engine='neocomplcache'
+            Plugin 'Shougo/neocomplcache.vim' " Auto completion framework
+            let g:vim_completion_engine='neocomplcache'
         endif
-        NeoBundle 'Shougo/neosnippet.vim' " Snippet engine
-        NeoBundle 'Shougo/neosnippet-snippets' " Snippets
+        Plugin 'Shougo/neosnippet.vim' " Snippet engine
+        Plugin 'Shougo/neosnippet-snippets' " Snippets
     else
         " Auto completion framework
-        NeoBundle 'Valloric/YouCompleteMe', {
+        Plugin 'Valloric/YouCompleteMe', {
                     \ 'build' : {
                     \     'mac' : './install.sh --clang-completer --system-libclang --omnisharp-completer',
                     \     'unix' : './install.sh --clang-completer --system-libclang --omnisharp-completer',
@@ -193,51 +187,47 @@ if count(g:ivim_bundle_groups, 'complete') " Completion
                     \     'cygwin' : './install.sh --clang-completer --system-libclang --omnisharp-completer'
                     \    }
                     \ }
-        let g:ivim_completion_engine='YouCompleteMe'
-        NeoBundle 'sirver/ultisnips' " Snippet engine
+        let g:vim_completion_engine='YouCompleteMe'
+        Plugin 'sirver/ultisnips' " Snippet engine
     endif
-    NeoBundle 'honza/vim-snippets' " Snippets
+    Plugin 'honza/vim-snippets' " Snippets
 endif
 
-if count(g:ivim_bundle_groups, 'autopep8') " autopep8
-    NeoBundle 'tell-k/vim-autopep8'
+if count(g:vim_vundle_groups, 'autopep8') " autopep8
+    Plugin 'tell-k/vim-autopep8'
 endif
 
-if count(g:ivim_bundle_groups, 'authinfo') " authinfo
-    NeoBundle 'dantezhu/authorinfo'
+if count(g:vim_vundle_groups, 'authinfo') " authinfo
+    Plugin 'dantezhu/authorinfo'
 endif
 
-if count(g:ivim_bundle_groups, 'compile') " Compiling
-    NeoBundle 'scrooloose/syntastic' " Syntax checking
-    NeoBundle 'xuhdev/SingleCompile' " Single compile
+if count(g:vim_vundle_groups, 'compile') " Compiling
+    Plugin 'vim-syntastic/syntastic' " Syntax checking
+    Plugin 'xuhdev/SingleCompile' " Single compile
 endif
 
-if count(g:ivim_bundle_groups, 'git') " Git
-    NeoBundle 'tpope/vim-fugitive' " Git wrapper
-    NeoBundle 'gregsexton/gitv' " Gitk clone
+if count(g:vim_vundle_groups, 'git') " Git
+    Plugin 'tpope/vim-fugitive' " Git wrapper
+    Plugin 'gregsexton/gitv' " Gitk clone
     if has('signs')
-        NeoBundle 'airblade/vim-gitgutter' " Git diff sign
+        Plugin 'airblade/vim-gitgutter' " Git diff sign
     endif
 endif
 
-if count(g:ivim_bundle_groups, 'language') " Language Specificity
-    NeoBundle 'matthias-guenther/hammer.vim' " Markup
-    NeoBundle 'fatih/vim-go' " Golang
-    NeoBundle 'tpope/vim-rails' " Rails
-    NeoBundle 'mattn/emmet-vim' " Emmet
-    NeoBundle 'LaTeX-Box-Team/LaTeX-Box' " LaTex
-    NeoBundle 'sheerun/vim-polyglot' " Language Support
+if count(g:vim_vundle_groups, 'language') " Language Specificity
+    Plugin 'matthias-guenther/hammer.vim' " Markup
+    Plugin 'fatih/vim-go' " Golang
+    Plugin 'tpope/vim-rails' " Rails
+    Plugin 'mattn/emmet-vim' " Emmet
+    Plugin 'LaTeX-Box-Team/LaTeX-Box' " LaTex
+    Plugin 'sheerun/vim-polyglot' " Language Support
 endif
 
 if filereadable(expand($HOME . '/.vimrc.bundles.local')) " Load local bundles
     source $HOME/.vimrc.bundles.local
 endif
 
-call neobundle#end()
-
-filetype plugin indent on " Required!
-
-NeoBundleCheck
+call vundle#end()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -292,27 +282,31 @@ function! MyTabLine()
     let s.=(tabpagenr('$')>1 ? '%999XX' : 'X')
     return s
 endfunction
+
 " Set tabline colorscheme
-if g:ivim_default_scheme=='gruvbox'
+if g:vim_default_scheme=='gruvbox'
     let g:gruvbox_invert_tabline=1
 endif
 " Set up tab tooltips with each buffer name
 set guitabtooltip=%F
 
 " Set status line
-if count(g:ivim_bundle_groups, 'ui')
+if count(g:vim_vundle_groups, 'ui')
     set laststatus=2 " Show the statusline
     set noshowmode " Hide the default mode text
     " Set status line colorscheme
-    if g:ivim_default_scheme=='gruvbox'
+    if g:vim_default_scheme=='gruvbox'
         let g:airline_theme='gruvbox'
-    elseif g:ivim_default_scheme=='hybrid'
-        let g:airline_theme='bubblegum'
+    elseif g:vim_default_scheme=='hybrid_material'
+        let g:airline_theme='hybrid'
+    elseif g:vim_default_scheme=='tender'
+        let g:tender_airline=1
+        let g:airline_theme='tender'
     endif
     set ttimeoutlen=50
     let g:bufferline_echo=0
     let g:bufferline_modified='[+]'
-    if g:ivim_fancy_font
+    if g:vim_fancy_font
         let g:airline_powerline_fonts=1
     else
         let g:airline_left_sep=''
@@ -341,7 +335,7 @@ set sidescrolloff=10 " Minimal number of screen columns to keep away from cursor
 set showmatch " Show matching brackets/parenthesis
 set matchtime=2 " Decrease the time to blink
 
-if g:ivim_show_number
+if g:vim_show_number
     set number " Show line numbers
     " Toggle relativenumber
     nnoremap <Leader>n :set relativenumber!<CR>
@@ -350,7 +344,7 @@ endif
 set formatoptions+=rnlmM " Optimize format options
 "set wrap  Set wrap
 "set textwidth=80 " Change text width
-if g:ivim_fancy_font
+if g:vim_fancy_font
     "set list " Show these tabs and spaces and so on"
     set listchars=tab:▸\ ,eol:¬,extends:❯,precedes:❮ " Change listchars
     set linebreak " Wrap long lines at a blank
@@ -382,11 +376,13 @@ if !has('gui_running')
 endif
 
 " Load a colorscheme
-if count(g:ivim_bundle_groups, 'ui')
-    if g:ivim_default_scheme=='gruvbox'
+if count(g:vim_vundle_groups, 'ui')
+    if g:vim_default_scheme=='gruvbox'
         colorscheme gruvbox
-    elseif g:ivim_default_scheme=='hybrid'
-        colorscheme hybrid
+    elseif g:vim_default_scheme=='hybrid_material'
+        colorscheme hybrid_material
+    elseif g:vim_default_scheme=='tender'
+        colorscheme tender
     endif
 else
     colorscheme desert
@@ -494,33 +490,6 @@ augroup ft_quickfix
     autocmd filetype qf setlocal nolist nocursorline nowrap textwidth=0
 augroup END
 
-" Markdown
-augroup ft_markdown
-    autocmd!
-    " Use <localLeader>1/2/3/4/5/6 to add headings
-    autocmd filetype markdown nnoremap <buffer> <LocalLeader>1 I# <ESC>
-    autocmd filetype markdown nnoremap <buffer> <LocalLeader>2 I## <ESC>
-    autocmd filetype markdown nnoremap <buffer> <LocalLeader>3 I### <ESC>
-    autocmd filetype markdown nnoremap <buffer> <LocalLeader>4 I#### <ESC>
-    autocmd filetype markdown nnoremap <buffer> <LocalLeader>5 I##### <ESC>
-    autocmd filetype markdown nnoremap <buffer> <LocalLeader>6 I###### <ESC>
-    " Use <LocalLeader>b to add blockquotes in normal and visual mode
-    autocmd filetype markdown nnoremap <buffer> <LocalLeader>b I> <ESC>
-    autocmd filetype markdown vnoremap <buffer> <LocalLeader>b :s/^/> /<CR>
-    " Use <localLeader>ul and <localLeader>ol to add list symbols in visual mode
-    autocmd filetype markdown vnoremap <buffer> <LocalLeader>ul :s/^/* /<CR>
-    autocmd filetype markdown vnoremap <buffer> <LocalLeader>ol :s/^/\=(line(".")-line("'<")+1).'. '/<CR>
-    " Use <localLeader>e1/2/3 to add emphasis symbols
-    autocmd filetype markdown nnoremap <buffer> <LocalLeader>e1 I*<ESC>A*<ESC>
-    autocmd filetype markdown nnoremap <buffer> <LocalLeader>e2 I**<ESC>A**<ESC>
-    autocmd filetype markdown nnoremap <buffer> <LocalLeader>e3 I***<ESC>A***<ESC>
-    autocmd filetype markdown vnoremap <buffer> <LocalLeader>e1 :s/\%V\(.*\)\%V/\*\1\*/<CR>
-    autocmd filetype markdown vnoremap <buffer> <LocalLeader>e2 :s/\%V\(.*\)\%V/\*\*\1\*\*/<CR>
-    autocmd filetype markdown vnoremap <buffer> <LocalLeader>e3 :s/\%V\(.*\)\%V/\*\*\*\1\*\*\*/<CR>
-    " Turn on spell
-    autocmd filetype markdown setlocal spell
-augroup END
-
 " HTML
 augroup ft_html
     autocmd!
@@ -586,10 +555,10 @@ command! DiffOrig vert new | set bt=nofile | r ++edit # | 0d_
 "--------------------------------------------------
 
 " Setting for UI plugins
-if count(g:ivim_bundle_groups, 'ui')
+if count(g:vim_vundle_groups, 'ui')
 
     " -> Indent Guides
-    if !has('gui_running') && g:ivim_default_scheme=='hybrid'
+    if !has('gui_running') && g:vim_default_scheme=='hybrid_material'
         let g:indent_guides_auto_colors=0
         autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd ctermbg=235
         autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=235
@@ -601,12 +570,7 @@ if count(g:ivim_bundle_groups, 'ui')
 
     " -> Startify
     let g:startify_session_dir=$HOME . '/.vim/session'
-    let g:startify_custom_header=[
-                \'       _       _         ',
-                \'      (_)   __(_)___ ___ ',
-                \'     / / | / / / __ `__ \',
-                \'    / /| |/ / / / / / / /',
-                \'                         ']
+    let g:startify_custom_header=[]
     let g:startify_custom_footer=['', '    This configuration is maintained by Xiao-Ou Zhang <kepbod@gmail.com> and other contributors. Thanks!']
     if has('gui_running')
         hi StartifyHeader  guifg=#87afff
@@ -636,7 +600,7 @@ if count(g:ivim_bundle_groups, 'ui')
 endif
 
 " Setting for enhancement plugins
-if count(g:ivim_bundle_groups, 'enhance')
+if count(g:vim_vundle_groups, 'enhance')
 
     " -> delimitMate
     let delimitMate_expand_cr=1
@@ -669,9 +633,9 @@ if count(g:ivim_bundle_groups, 'enhance')
 
     " -> Multiple cursors
     " Called once right before you start selecting multiple cursors
-    if g:ivim_autocomplete=='NEO'
+    if g:vim_autocomplete=='NEO'
         function! Multiple_cursors_before()
-            if g:ivim_completion_engine=='neocomplete'
+            if g:vim_completion_engine=='neocomplete'
                 exe 'NeoCompleteLock'
             else
                 exe 'NeoComplCacheLock'
@@ -679,7 +643,7 @@ if count(g:ivim_bundle_groups, 'enhance')
         endfunction
         " Called once only when the multiple selection is canceled (default <Esc>)
         function! Multiple_cursors_after()
-            if g:ivim_completion_engine=='neocomplete'
+            if g:vim_completion_engine=='neocomplete'
                 exe 'NeoCompleteUnlock'
             else
                 exe 'NeoComplCacheUnlock'
@@ -704,7 +668,7 @@ if count(g:ivim_bundle_groups, 'enhance')
 endif
 
 " setting for moving plugins
-if count(g:ivim_bundle_groups, 'move')
+if count(g:vim_vundle_groups, 'move')
 
     " -> Tag bar
     nnoremap <Leader>t :TagbarToggle<CR>
@@ -722,7 +686,7 @@ if count(g:ivim_bundle_groups, 'move')
     let g:unite_data_directory=$HOME . '/.vim/cache/unite'
     let g:unite_source_history_yank_enable=1
     let g:unite_source_rec_max_cache_files=100
-    if g:ivim_fancy_font
+    if g:vim_fancy_font
         let g:unite_prompt='» '
     endif
     if executable('ag')
@@ -759,7 +723,7 @@ if count(g:ivim_bundle_groups, 'move')
 endif
 
 " Setting for navigation plugins
-if count(g:ivim_bundle_groups, 'navigate')
+if count(g:vim_vundle_groups, 'navigate')
 
     " -> NERD Tree
     nnoremap <Leader>d :NERDTreeTabsToggle<CR>
@@ -774,14 +738,14 @@ if count(g:ivim_bundle_groups, 'navigate')
 endif
 
 " Setting for completion plugins
-if count(g:ivim_bundle_groups, 'complete')
+if count(g:vim_vundle_groups, 'complete')
 
-    if g:ivim_autocomplete=='NEO'
+    if g:vim_autocomplete=='NEO'
         " -> Neocomplete & Neocomplcache
         " Use Tab and S-Tab to select candidate
         inoremap <expr><Tab>  pumvisible() ? "\<C-N>" : "\<Tab>"
         inoremap <expr><S-Tab> pumvisible() ? "\<C-P>" : "\<S-Tab>"
-        if g:ivim_completion_engine=='neocomplete'
+        if g:vim_completion_engine=='neocomplete'
             let g:neocomplete#enable_at_startup=1
             let g:neocomplete#data_directory=$HOME . '/.vim/cache/neocomplete'
             let g:neocomplete#enable_auto_delimiter=1
@@ -821,21 +785,22 @@ if count(g:ivim_bundle_groups, 'complete')
     endif
 
     " Setting info for snips
-    let g:snips_author=g:ivim_user
-    let g:snips_email=g:ivim_email
-    let g:snips_github=g:ivim_github
+    let g:snips_author=g:vim_user
+    let g:snips_email=g:vim_email
+    let g:snips_github=g:vim_github
 
 endif
 
 " Setting for compiling plugins
-if count(g:ivim_bundle_groups, 'compile')
+if count(g:vim_vundle_groups, 'compile')
 
+    let g:syntastic_go_checkers=['go']
     " -> Syntastic
     "let g:syntastic_check_on_open=1
     "let g:syntastic_aggregate_errors=1
     "let g:syntastic_auto_jump=1
     "let g:syntastic_auto_loc_list=1
-    if g:ivim_fancy_font
+    if g:vim_fancy_font
         let g:syntastic_error_symbol = '✗'
         let g:syntastic_style_error_symbol = '✠'
         let g:syntastic_warning_symbol = '∆'
@@ -849,11 +814,11 @@ if count(g:ivim_bundle_groups, 'compile')
 endif
 
 " Setting for git plugins
-if count(g:ivim_bundle_groups, 'git')
+if count(g:vim_vundle_groups, 'git')
 endif
 
 " Setting for language specificity
-if count(g:ivim_bundle_groups, 'language')
+if count(g:vim_vundle_groups, 'language')
 
     " -> Emmet
     let g:user_emmet_leader_key='<C-m>'
@@ -867,7 +832,7 @@ if count(g:ivim_bundle_groups, 'language')
     \	    },
     \}
     let g:use_emmet_complete_tag=1
-    let GOPATH='/usr/bin/go'
+    let GOPATH='/usr/local/go/bin/go'
 
 endif
 
@@ -890,10 +855,29 @@ if has('gui_running')
 endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-nmap <F5> :SCCompileRun<cr>
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 1
+
+" python pylint
+let g:syntastic_python_checkers = ['pylint']
+
+let mapleader=","
+
 nmap <F3> :NERDTreeMirror<CR>
 nmap <F3> :NERDTreeToggle<CR>
+nmap <F5> :SCCompileRun<cr>
+nmap <F4> :TagbarToggle<CR>
 nmap <F7> :Autopep8<cr>
+
+"nmap <leader>v; "+gp
+"nmap <leader>c; "+y
+
 set cursorcolumn
 set cursorline
 
@@ -903,7 +887,6 @@ let g:vimrc_homepage=''
 nmap <F2> :AuthorInfoDetect<cr> 
 cmap WW w !sudo tee %
 cmap BB B s# \(.*\)\(\W\) *#**\1**\2#
-map <S-m> <Esc>:set syntax=markdow<cr>
 set pastetoggle=<F10> 
 
 let g:autopep8_max_line_length=79
@@ -911,4 +894,10 @@ set langmenu=zh_CN
 let $LANG = 'zh_CN.UTF-8'
 set encoding=utf-8
 set termencoding=utf-8
-set fileencoding=utf-8
+set guifont=Source\ Code\ Pro\ for\ Powerline
+
+"nmap <leader>c "+y
+"nmap <leader>v "+gp
+"
+vmap <C-S-c> y:call system("pbcopy", getreg("\""))<CR>
+nmap <C-p> :call setreg("\"",system("pbpaste"))<CR>p
